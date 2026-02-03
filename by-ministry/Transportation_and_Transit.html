@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation and Transit - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Transportation and Transit</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Transportation and Transit
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$537.11M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">154</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Transportation and Transit</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>B C TRANSIT</td>
+            <td class="amount">$219,351,354.00</td>
+        </tr>
+        <tr>
+            <td>BC TRANSPORTATION FINANCING AUTHORITY</td>
+            <td class="amount">$160,237,997.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH COAST BRITISH COLUMBIA TRANSPORTATION AUTHORITY</td>
+            <td class="amount">$115,399,000.00</td>
+        </tr>
+        <tr>
+            <td>ECOFORWARD SUSTAINABLE SOLUTIONS SOCIETY</td>
+            <td class="amount">$2,976,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS AIRPORT AUTHORITY SOCIETY</td>
+            <td class="amount">$1,800,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CITY OF CASTLEGAR</td>
+            <td class="amount">$1,681,108.00</td>
+        </tr>
+        <tr>
+            <td>TERRACE–KITIMAT AIRPORT SOCIETY</td>
+            <td class="amount">$1,500,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CHILLIWACK</td>
+            <td class="amount">$1,106,375.00</td>
+        </tr>
+        <tr>
+            <td>SCY SOCIETY FOR CHILDREN AND YOUTH OF B.C.</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA TRUCKING ASSOCIATION</td>
+            <td class="amount">$900,000.00</td>
+        </tr>
+        <tr>
+            <td>YELLOW CAB COMPANY LTD.</td>
+            <td class="amount">$877,463.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KELOWNA</td>
+            <td class="amount">$851,659.00</td>
+        </tr>
+        <tr>
+            <td>HUB CYCLING</td>
+            <td class="amount">$826,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF DAWSON CREEK</td>
+            <td class="amount">$789,375.00</td>
+        </tr>
+        <tr>
+            <td>STIKINE AIRPORT SOCIETY</td>
+            <td class="amount">$688,989.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE DISTRICT OF SAANICH</td>
+            <td class="amount">$625,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VICTORIA</td>
+            <td class="amount">$625,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LANGFORD</td>
+            <td class="amount">$625,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE TOWNSHIP OF LANGLEY</td>
+            <td class="amount">$550,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER AIRPORT AUTHORITY</td>
+            <td class="amount">$550,000.00</td>
+        </tr>
+        <tr>
+            <td>GO BY BIKE BC SOCIETY</td>
+            <td class="amount">$545,000.00</td>
+        </tr>
+        <tr>
+            <td>PITT MEADOWS AIRPORT SOCIETY</td>
+            <td class="amount">$520,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF BURNS LAKE</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO AIRPORT COMMISSION</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CAMPBELL RIVER</td>
+            <td class="amount">$498,050.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SQUAMISH</td>
+            <td class="amount">$493,754.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FORT ST JOHN</td>
+            <td class="amount">$483,700.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NANAIMO</td>
+            <td class="amount">$480,311.00</td>
+        </tr>
+        <tr>
+            <td>BLACK TOP CABS LTD.</td>
+            <td class="amount">$393,898.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DELTA</td>
+            <td class="amount">$381,850.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COQUITLAM</td>
+            <td class="amount">$375,000.00</td>
+        </tr>
+        <tr>
+            <td>TZEACHTEN FIRST NATION</td>
+            <td class="amount">$375,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF WEST KELOWNA</td>
+            <td class="amount">$375,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF MCBRIDE</td>
+            <td class="amount">$370,125.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CHETWYND</td>
+            <td class="amount">$356,218.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA CYCLING COALITION</td>
+            <td class="amount">$350,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF INVERMERE</td>
+            <td class="amount">$342,774.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF KITIMAT</td>
+            <td class="amount">$332,220.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF SMITHERS</td>
+            <td class="amount">$331,090.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER TAXI LTD.</td>
+            <td class="amount">$310,490.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE AIRPORT AUTHORITY INC.</td>
+            <td class="amount">$306,271.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SOOKE</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF FORT ST JAMES</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>BONNY'S TAXI LTD.</td>
+            <td class="amount">$299,287.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA FIRST NATION</td>
+            <td class="amount">$283,500.00</td>
+        </tr>
+        <tr>
+            <td>NEWTON WHALLEY HI WAY TAXI LTD.</td>
+            <td class="amount">$274,354.00</td>
+        </tr>
+        <tr>
+            <td>PROJECT 529, INC</td>
+            <td class="amount">$270,000.00</td>
+        </tr>
+        <tr>
+            <td>KIMBER CABS LTD.</td>
+            <td class="amount">$257,938.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER SEWERAGE & DRAINAGE DISTRICT</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF PEACHLAND</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ROSSLAND</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF VIEW ROYAL</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF PENTICTON</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KOOTENAY BOUNDARY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF CRANBROOK</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGIONAL DISTRICT</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN ISLAND MUNICIPALITY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LAKE COUNTRY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE TOWNSHIP OF ESQUIMALT</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF WHITE ROCK</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF REVELSTOKE</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>GITLAXT'AAMIKS VILLAGE GOVERNMENT</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TUMBLER RIDGE</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF SIDNEY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF LUMBY</td>
+            <td class="amount">$245,990.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF ALERT BAY</td>
+            <td class="amount">$244,995.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF RICHMOND</td>
+            <td class="amount">$237,563.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF COMOX</td>
+            <td class="amount">$236,420.00</td>
+        </tr>
+        <tr>
+            <td>MACLURE'S CABS (1984) LTD.</td>
+            <td class="amount">$232,883.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TAYLOR</td>
+            <td class="amount">$229,948.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SALMON ARM</td>
+            <td class="amount">$226,500.00</td>
+        </tr>
+        <tr>
+            <td>SURDELL KENNEDY TAXI LTD.</td>
+            <td class="amount">$225,194.00</td>
+        </tr>
+        <tr>
+            <td>KABIR TAXI LTD.</td>
+            <td class="amount">$224,587.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA SHUSWAP REGIONAL DISTRICT</td>
+            <td class="amount">$216,392.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY AIRPORT COMMISSION</td>
+            <td class="amount">$216,209.00</td>
+        </tr>
+        <tr>
+            <td>WHITE ROCK SOUTH SURREY TAXI LTD.</td>
+            <td class="amount">$213,868.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF UCLUELET</td>
+            <td class="amount">$212,161.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND CABS LTD.</td>
+            <td class="amount">$207,634.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TERRACE</td>
+            <td class="amount">$206,940.00</td>
+        </tr>
+        <tr>
+            <td>GUILDFORD CAB (1993) LTD.</td>
+            <td class="amount">$193,548.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL CITY TAXI LTD.</td>
+            <td class="amount">$190,113.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF PORT COQUITLAM</td>
+            <td class="amount">$183,143.00</td>
+        </tr>
+        <tr>
+            <td>DELTA SUNSHINE TAXI (1972) LTD.</td>
+            <td class="amount">$174,360.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF VANDERHOOF</td>
+            <td class="amount">$170,170.00</td>
+        </tr>
+        <tr>
+            <td>TSAWOUT FIRST NATION</td>
+            <td class="amount">$170,000.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA CABS (1981) LTD.</td>
+            <td class="amount">$167,750.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NORTH VANCOUVER</td>
+            <td class="amount">$155,378.00</td>
+        </tr>
+        <tr>
+            <td>GREEN COMMUNITIES CANADA</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$149,000.00</td>
+        </tr>
+        <tr>
+            <td>BLUEBIRD CABS, LTD.</td>
+            <td class="amount">$146,821.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OLIVER</td>
+            <td class="amount">$141,373.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF QUESNEL</td>
+            <td class="amount">$136,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CANAL FLATS</td>
+            <td class="amount">$130,222.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KIMBERLEY</td>
+            <td class="amount">$126,729.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT MOODY</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF FERNIE</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VANCOUVER</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>TSQ'ESCEN' FIRST NATION</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF ANMORE</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ABBOTSFORD</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FORT ST. JOHN</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF NELSON</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH SHORE TAXI (1966) LTD.</td>
+            <td class="amount">$124,615.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$122,811.00</td>
+        </tr>
+        <tr>
+            <td>TSAWWASSEN TAXI LTD.</td>
+            <td class="amount">$122,103.00</td>
+        </tr>
+        <tr>
+            <td>COQUITLAM TAXI (1977) LTD.</td>
+            <td class="amount">$117,547.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF PEMBERTON</td>
+            <td class="amount">$115,886.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF TELKWA</td>
+            <td class="amount">$110,170.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF ALBERNI–CLAYOQUOT</td>
+            <td class="amount">$108,995.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF RADIUM HOT SPRINGS</td>
+            <td class="amount">$108,889.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT BAND</td>
+            <td class="amount">$106,741.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CLINTON</td>
+            <td class="amount">$106,007.00</td>
+        </tr>
+        <tr>
+            <td>GARDEN CITY CABS OF RICHMOND LTD.</td>
+            <td class="amount">$100,326.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CENTRAL SAANICH</td>
+            <td class="amount">$100,260.00</td>
+        </tr>
+        <tr>
+            <td>A. C. TAXI LTD.</td>
+            <td class="amount">$100,055.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF MERRITT</td>
+            <td class="amount">$99,205.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK TAXI LTD.</td>
+            <td class="amount">$84,958.00</td>
+        </tr>
+        <tr>
+            <td>PORT COQUITLAM TAXI LTD.</td>
+            <td class="amount">$74,527.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COURTENAY</td>
+            <td class="amount">$68,324.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF VALEMOUNT</td>
+            <td class="amount">$66,149.00</td>
+        </tr>
+        <tr>
+            <td>ALOUETTE TRANSIT SYSTEMS LTD.</td>
+            <td class="amount">$61,745.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF CRESTON</td>
+            <td class="amount">$57,502.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL VALLEY TAXI LTD.</td>
+            <td class="amount">$54,626.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COLWOOD</td>
+            <td class="amount">$52,019.00</td>
+        </tr>
+        <tr>
+            <td>STRATHCONA REGIONAL DISTRICT</td>
+            <td class="amount">$49,150.00</td>
+        </tr>
+        <tr>
+            <td>SKEENA TAXI LTD.</td>
+            <td class="amount">$38,244.00</td>
+        </tr>
+        <tr>
+            <td>NOW SHUTTLE LIMITED</td>
+            <td class="amount">$37,375.00</td>
+        </tr>
+        <tr>
+            <td>SUNSHINE CABS LIMITED</td>
+            <td class="amount">$36,844.00</td>
+        </tr>
+        <tr>
+            <td>VERNON TAXI INC.</td>
+            <td class="amount">$34,972.00</td>
+        </tr>
+        <tr>
+            <td>THIS RIDES 4 U WHEELCHAIR SERVICES LTD.</td>
+            <td class="amount">$34,107.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE TAXI LTD.</td>
+            <td class="amount">$32,637.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT AIRPORT AUTHORITY</td>
+            <td class="amount">$30,250.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CHASE</td>
+            <td class="amount">$29,926.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON ECO TAXI LTD.</td>
+            <td class="amount">$28,930.00</td>
+        </tr>
+        <tr>
+            <td>SYD'S TAXI (1984) LTD.</td>
+            <td class="amount">$28,905.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD TAXI LTD.</td>
+            <td class="amount">$27,742.00</td>
+        </tr>
+        <tr>
+            <td>ALDERGROVE–LANGLEY TAXI LTD.</td>
+            <td class="amount">$27,630.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF FRASER LAKE</td>
+            <td class="amount">$27,630.00</td>
+        </tr>
+        <tr>
+            <td>SNUNEYMUXW FIRST NATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LANTZVILLE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NANAIMO</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>RESORT MUNICIPALITY OF WHISTLER</td>
+            <td class="amount">$24,600.00</td>
+        </tr>
+        <tr>
+            <td>WEST KELOWNA TAXI SERVICES LTD</td>
+            <td class="amount">$23,505.00</td>
+        </tr>
+        <tr>
+            <td>SODA CREEK INDIAN BAND</td>
+            <td class="amount">$19,844.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CLEARWATER</td>
+            <td class="amount">$18,942.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TRAIL</td>
+            <td class="amount">$18,802.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF 100 MILE HOUSE</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>SWIFTSURE TAXI CO. LTD.</td>
+            <td class="amount">$12,994.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SECHELT</td>
+            <td class="amount">$12,250.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF GRANISLE</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF PORT ALICE</td>
+            <td class="amount">$7,200.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF GOLD RIVER</td>
+            <td class="amount">$6,015.00</td>
+        </tr>
+        <tr>
+            <td>TUNNEL49 ADVENTURE INC.</td>
+            <td class="amount">$4,836.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF CUMBERLAND</td>
+            <td class="amount">$2,568.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

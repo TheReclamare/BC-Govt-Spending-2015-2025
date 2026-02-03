@@ -1,0 +1,4052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labour - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Labour</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Labour
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$55.46M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">869</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Labour</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>WORKERS' COMPENSATION BOARD OF BRITISH COLUMBIA</td>
+            <td class="amount">$14,560,015.00</td>
+        </tr>
+        <tr>
+            <td>BUSINESS COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$512,413.00</td>
+        </tr>
+        <tr>
+            <td>RAYMOND JAMES LTD.</td>
+            <td class="amount">$125,379.00</td>
+        </tr>
+        <tr>
+            <td>GRAY, LYLE DAVID</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>WERY, PAUL DAVID</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>STODDAR, EUGENE</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>GIBSON, GAREY</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>BOLES, KEVIN ERNEST</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>BRACUN, BERNARD</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>HUNTLEY, COLIN JOHN</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>PIERCE, CORINNE</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>FAMINOFF, GEORGE FREDERICK</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>BURNS, GLENN MICHAEL CRUMBLY</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>FURTADO, JOSE CARLOS AMARAL</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>ROZSAS, STEVEN</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>NYSTORUK, DION EUGENE</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>CARTER, KEVIN FREDRIK</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>MCLAREN, ROBERT</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>JAGGERS, MICHAEL JAMES THOMAS</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>ZACHARIAS, HELEN</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>PESCE, DOMENICO</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>SLATER, CLIFFORD</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHMIDT, TIMOTHY WILLIAM</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>SIEMENS, RAYMOND WILLIAM</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>BROSSOIT, KELLY ANDREW</td>
+            <td class="amount">$74,500.00</td>
+        </tr>
+        <tr>
+            <td>LAMINSKI, MICHAEL ANTHONY</td>
+            <td class="amount">$74,500.00</td>
+        </tr>
+        <tr>
+            <td>ARBANAS, RICHARD</td>
+            <td class="amount">$74,500.00</td>
+        </tr>
+        <tr>
+            <td>CENTOMO, ORIANO MAURISIO</td>
+            <td class="amount">$74,500.00</td>
+        </tr>
+        <tr>
+            <td>HUTCHINSON, FRANK</td>
+            <td class="amount">$74,000.00</td>
+        </tr>
+        <tr>
+            <td>PONTE, ARTHUR MANUEL</td>
+            <td class="amount">$73,800.00</td>
+        </tr>
+        <tr>
+            <td>HANSON, ALLEN LAURENCE</td>
+            <td class="amount">$73,800.00</td>
+        </tr>
+        <tr>
+            <td>PREVOST, IRENE MARGUERITE</td>
+            <td class="amount">$73,800.00</td>
+        </tr>
+        <tr>
+            <td>COURT, MICHAEL</td>
+            <td class="amount">$73,500.00</td>
+        </tr>
+        <tr>
+            <td>CAIRNS, SEAN PATRICK</td>
+            <td class="amount">$73,500.00</td>
+        </tr>
+        <tr>
+            <td>COOK, DEAN NICOLAS</td>
+            <td class="amount">$73,500.00</td>
+        </tr>
+        <tr>
+            <td>WESTERMAN, MICHAEL SHANE</td>
+            <td class="amount">$73,157.00</td>
+        </tr>
+        <tr>
+            <td>LAMBE, DEAN WALTER</td>
+            <td class="amount">$72,600.00</td>
+        </tr>
+        <tr>
+            <td>UPPAL, AVTAR SINGH</td>
+            <td class="amount">$72,600.00</td>
+        </tr>
+        <tr>
+            <td>LOKKEN, VERNON IVAN</td>
+            <td class="amount">$72,600.00</td>
+        </tr>
+        <tr>
+            <td>CADONIC, JOHNNY</td>
+            <td class="amount">$72,600.00</td>
+        </tr>
+        <tr>
+            <td>HAMILTON, MICHAEL LEE</td>
+            <td class="amount">$72,144.00</td>
+        </tr>
+        <tr>
+            <td>VAN SICKLE, JARET LEIGH</td>
+            <td class="amount">$71,670.00</td>
+        </tr>
+        <tr>
+            <td>VAN DIJK, WIHELMINA PETRONELLA</td>
+            <td class="amount">$71,670.00</td>
+        </tr>
+        <tr>
+            <td>BANNING, CORALEA GWYN</td>
+            <td class="amount">$71,670.00</td>
+        </tr>
+        <tr>
+            <td>MAYENBURG, JEFFERY FRANCIS</td>
+            <td class="amount">$71,669.00</td>
+        </tr>
+        <tr>
+            <td>KASTOR, KARL</td>
+            <td class="amount">$71,519.00</td>
+        </tr>
+        <tr>
+            <td>GAGNE, PAUL EDMUND</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>DENNY, LAWRENCE CHARLES</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>OPHUS, SHANE MARK</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>CARSON, LYNNETTE MARIE</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>MCKIE, ROBERT FRED</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS, JAMES</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>DANROTH, VICTORIA LEANNE</td>
+            <td class="amount">$71,400.00</td>
+        </tr>
+        <tr>
+            <td>CHEEMA, RANJIT SINGH</td>
+            <td class="amount">$71,328.00</td>
+        </tr>
+        <tr>
+            <td>HOLLMAN, DALE JOHN</td>
+            <td class="amount">$71,328.00</td>
+        </tr>
+        <tr>
+            <td>FLATEN, ARNE WILLIAM</td>
+            <td class="amount">$70,500.00</td>
+        </tr>
+        <tr>
+            <td>JOLES, LESLIE KAROLE</td>
+            <td class="amount">$70,500.00</td>
+        </tr>
+        <tr>
+            <td>KENTEL, CARMEN RUTH</td>
+            <td class="amount">$70,500.00</td>
+        </tr>
+        <tr>
+            <td>JEFFCOTT, JILL–ANN</td>
+            <td class="amount">$70,500.00</td>
+        </tr>
+        <tr>
+            <td>WATSON, DEREK BRENT</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>HADIKIN, WAYNE LESLIE</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>SUMEN, STEFAN</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>WILSON, KELLY LYNN</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>TREMBLAY, RICHARD TODD</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>SAWYER, WARRENN</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>JANNEY, TODD GREGORY</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>D'ARSIE, MICHAEL</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>DOUCETTE, MICHAEL ALBERT LLOYD</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>CLARK, RAYMOND GLEN</td>
+            <td class="amount">$69,990.00</td>
+        </tr>
+        <tr>
+            <td>STIRLING, BRUCE DOUGLAS</td>
+            <td class="amount">$69,975.00</td>
+        </tr>
+        <tr>
+            <td>RUBBOLI, DENNIS</td>
+            <td class="amount">$69,872.00</td>
+        </tr>
+        <tr>
+            <td>BOUCHARD, KEVIN</td>
+            <td class="amount">$69,500.00</td>
+        </tr>
+        <tr>
+            <td>AFFLECK, WADE MATHER</td>
+            <td class="amount">$68,800.00</td>
+        </tr>
+        <tr>
+            <td>URQUHART, CINDY MARY</td>
+            <td class="amount">$68,800.00</td>
+        </tr>
+        <tr>
+            <td>TOEWS, MARTIN KEITH</td>
+            <td class="amount">$68,800.00</td>
+        </tr>
+        <tr>
+            <td>HIGGINS, NORMAN RICHARD</td>
+            <td class="amount">$68,000.00</td>
+        </tr>
+        <tr>
+            <td>HEYD, KELLY HERBERT</td>
+            <td class="amount">$68,000.00</td>
+        </tr>
+        <tr>
+            <td>DAFFURN, LESLIE</td>
+            <td class="amount">$67,600.00</td>
+        </tr>
+        <tr>
+            <td>BUHLER, WAYNE DAVID</td>
+            <td class="amount">$67,600.00</td>
+        </tr>
+        <tr>
+            <td>NATER, STEVEN</td>
+            <td class="amount">$66,670.00</td>
+        </tr>
+        <tr>
+            <td>PELLEY, CARL ROY LESTER</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>DE TEVES, ANTHONY</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>CRUMP, TRACY WALTER CARL</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>DESCHAMPS, MICHAEL BERNARD</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>CALCUTT, ROY HOWARD</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>THAPAR, SUSHIL KUMAR</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>LAM, TAI</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>MCFADZEN, JACKIE JAMES ROY</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>PETERSEN, CURTIS</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>KHAKH, KULWINDER</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>HOLLMAN, BRENT JOSEPH</td>
+            <td class="amount">$66,328.00</td>
+        </tr>
+        <tr>
+            <td>RUSSELL, RAYMOND SCOTT</td>
+            <td class="amount">$66,328.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS, DAVID</td>
+            <td class="amount">$66,328.00</td>
+        </tr>
+        <tr>
+            <td>COTTON, DAVID</td>
+            <td class="amount">$66,277.00</td>
+        </tr>
+        <tr>
+            <td>SPRIESZLE, JAMES FRANK</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>COUGIAS, JOHN THOMAS</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>KOLINS, BRADLEY GLEN</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>GOMERICH, MARKO LAURIE</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>MARCHILDON, RANDY RICHARD</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>VOYSEY, KEVIN FREDRICK</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>COTE, VERNON</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>LONGPRE, HERMAS JOSEPH</td>
+            <td class="amount">$64,683.00</td>
+        </tr>
+        <tr>
+            <td>HAWRYLIW, EDWARD ERVIN LEE</td>
+            <td class="amount">$64,638.00</td>
+        </tr>
+        <tr>
+            <td>YOUNG, GORDON</td>
+            <td class="amount">$64,549.00</td>
+        </tr>
+        <tr>
+            <td>LANGARD, ALBERT PHILIP</td>
+            <td class="amount">$64,510.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTSON, JOHN RICHARD</td>
+            <td class="amount">$64,500.00</td>
+        </tr>
+        <tr>
+            <td>BRIENEN, SHANE MARCELL</td>
+            <td class="amount">$64,155.00</td>
+        </tr>
+        <tr>
+            <td>METHAM, RAYMOND JOHN</td>
+            <td class="amount">$64,024.00</td>
+        </tr>
+        <tr>
+            <td>PALUCK, TERRY GRANT</td>
+            <td class="amount">$64,000.00</td>
+        </tr>
+        <tr>
+            <td>DANGELMAIER, KRISTIN ANNE</td>
+            <td class="amount">$64,000.00</td>
+        </tr>
+        <tr>
+            <td>BOEHLER, BRUCE ERVIN</td>
+            <td class="amount">$64,000.00</td>
+        </tr>
+        <tr>
+            <td>ARMSTRONG, ROY CHARLES</td>
+            <td class="amount">$63,842.00</td>
+        </tr>
+        <tr>
+            <td>HORNING, DEBRA ANN</td>
+            <td class="amount">$63,842.00</td>
+        </tr>
+        <tr>
+            <td>MCCULLY, LINDSEY MINOR</td>
+            <td class="amount">$63,842.00</td>
+        </tr>
+        <tr>
+            <td>URQUHART, WILLIAM JAMES</td>
+            <td class="amount">$63,800.00</td>
+        </tr>
+        <tr>
+            <td>MACLEAN, LIONEL MORRIS</td>
+            <td class="amount">$63,800.00</td>
+        </tr>
+        <tr>
+            <td>CLEGHORN, GEOFFREY DONALD</td>
+            <td class="amount">$63,650.00</td>
+        </tr>
+        <tr>
+            <td>MARCEAU, NOLA LENETTE</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>JOHANSEN, AMIN</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>HOEK, MICHAEL CORNELIS</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, GRAEME M</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>MURATSPAHIC, FAHRUDIN</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>FIEGE, GARY WAYNE</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>CARLTON, KEVIN ANDREW</td>
+            <td class="amount">$63,500.00</td>
+        </tr>
+        <tr>
+            <td>AUXI, RICHARD JOHN</td>
+            <td class="amount">$63,269.00</td>
+        </tr>
+        <tr>
+            <td>VARAICH, JASWINDER SINGH</td>
+            <td class="amount">$63,269.00</td>
+        </tr>
+        <tr>
+            <td>FARMER, BRIAN K</td>
+            <td class="amount">$63,229.00</td>
+        </tr>
+        <tr>
+            <td>GALLANT, RODNEY LANCE</td>
+            <td class="amount">$63,229.00</td>
+        </tr>
+        <tr>
+            <td>LABBY, TROY</td>
+            <td class="amount">$63,118.00</td>
+        </tr>
+        <tr>
+            <td>JONES, SCOTT EDWARD</td>
+            <td class="amount">$63,000.00</td>
+        </tr>
+        <tr>
+            <td>VANDERGAAG, DOUGLAS MURRAY</td>
+            <td class="amount">$63,000.00</td>
+        </tr>
+        <tr>
+            <td>PALMIERE, BARBARA DAWN</td>
+            <td class="amount">$62,880.00</td>
+        </tr>
+        <tr>
+            <td>BAKER, TIMOTHY THOMAS</td>
+            <td class="amount">$62,780.00</td>
+        </tr>
+        <tr>
+            <td>MITCHELL, LEANNE</td>
+            <td class="amount">$62,645.00</td>
+        </tr>
+        <tr>
+            <td>LIEUWEN, DOUGLAS</td>
+            <td class="amount">$62,600.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS, BLAKE DONALD</td>
+            <td class="amount">$62,555.00</td>
+        </tr>
+        <tr>
+            <td>TRUJILLO, BLAS PRADA</td>
+            <td class="amount">$62,500.00</td>
+        </tr>
+        <tr>
+            <td>FORSYTHE, MURDOCK TODD</td>
+            <td class="amount">$62,404.00</td>
+        </tr>
+        <tr>
+            <td>MACPHERSON, KENNETH WILLIAM</td>
+            <td class="amount">$62,144.00</td>
+        </tr>
+        <tr>
+            <td>HAGGARTY, ELDON BLAINE</td>
+            <td class="amount">$61,675.00</td>
+        </tr>
+        <tr>
+            <td>STEWART, GREGORY JOHN</td>
+            <td class="amount">$61,675.00</td>
+        </tr>
+        <tr>
+            <td>BARCLAY, KEVIN ROBERT</td>
+            <td class="amount">$61,672.00</td>
+        </tr>
+        <tr>
+            <td>GIBSON, STEPHANIE</td>
+            <td class="amount">$61,670.00</td>
+        </tr>
+        <tr>
+            <td>OUILLETTE, DWAYNE PHILLIP</td>
+            <td class="amount">$61,670.00</td>
+        </tr>
+        <tr>
+            <td>MACLEAN, BRIAN DOUGLAS</td>
+            <td class="amount">$61,634.00</td>
+        </tr>
+        <tr>
+            <td>PETRASCHUK, ANDREW</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>MOLL, RICHARD WESLEY</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>SCHWARTZ, TODD</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>ARKY, STEVE</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>WRIGHT, JAMES</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>BHATTI, DIDAR</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>NEWGARD, LISA MARIE</td>
+            <td class="amount">$61,400.00</td>
+        </tr>
+        <tr>
+            <td>SUNDBERG, RORY WILLIAMS</td>
+            <td class="amount">$61,342.00</td>
+        </tr>
+        <tr>
+            <td>WHITE, GORDON ANDREW</td>
+            <td class="amount">$61,088.00</td>
+        </tr>
+        <tr>
+            <td>MCGEE, SEAN PATRICK</td>
+            <td class="amount">$61,054.00</td>
+        </tr>
+        <tr>
+            <td>KOPECK, LAURELEE R</td>
+            <td class="amount">$60,533.00</td>
+        </tr>
+        <tr>
+            <td>WATSON, MICHAEL SHANE</td>
+            <td class="amount">$60,533.00</td>
+        </tr>
+        <tr>
+            <td>HANSON, TERRI</td>
+            <td class="amount">$60,500.00</td>
+        </tr>
+        <tr>
+            <td>BRIGGS, DARREN WILFRED CARL</td>
+            <td class="amount">$60,498.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, JANICE LYNN</td>
+            <td class="amount">$60,328.00</td>
+        </tr>
+        <tr>
+            <td>PINIEWSKI, ELMO</td>
+            <td class="amount">$60,272.00</td>
+        </tr>
+        <tr>
+            <td>GOUGH, MICHAEL DOUGLAS</td>
+            <td class="amount">$60,254.00</td>
+        </tr>
+        <tr>
+            <td>WAGMAN, SHANNON PAUL</td>
+            <td class="amount">$60,254.00</td>
+        </tr>
+        <tr>
+            <td>WESTERMAN, KELVIN GLENN</td>
+            <td class="amount">$60,253.00</td>
+        </tr>
+        <tr>
+            <td>MALLOY, TIMOTHY BRYON</td>
+            <td class="amount">$60,253.00</td>
+        </tr>
+        <tr>
+            <td>TUINSTRA, LARRY WAYNE</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>DEADDER, KEITH OWEN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>DHATT, SURINDER PAL SINGH</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>NEVEU, HEATH</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>CLARK, BRUCE</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>MOOR, RANA SINGH</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>FARLEY, DENIS JOHN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>ZORN, LARRY ALLEN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>KOSOLOFSKI, RICHARD FRANKLIN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>SPENCER, RONALD GORDON</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>BOPANRAI, GURDIAL SINGH</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>EDWARDS, CLARK ALLEN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>BURNETT, MICHAEL</td>
+            <td class="amount">$59,898.00</td>
+        </tr>
+        <tr>
+            <td>AEBISCHER, CHARLES</td>
+            <td class="amount">$59,861.00</td>
+        </tr>
+        <tr>
+            <td>SCOTT, WAYNE ALEXANDER</td>
+            <td class="amount">$59,861.00</td>
+        </tr>
+        <tr>
+            <td>DYSON, TIMOTHY PETER</td>
+            <td class="amount">$59,861.00</td>
+        </tr>
+        <tr>
+            <td>OE, DAVID</td>
+            <td class="amount">$59,731.00</td>
+        </tr>
+        <tr>
+            <td>SIMPSON, ROSS MURRAY</td>
+            <td class="amount">$59,674.00</td>
+        </tr>
+        <tr>
+            <td>GALLOWAY, KEVIN</td>
+            <td class="amount">$59,613.00</td>
+        </tr>
+        <tr>
+            <td>MCKAY, KEVIN BARRY</td>
+            <td class="amount">$59,500.00</td>
+        </tr>
+        <tr>
+            <td>RAI, SABA</td>
+            <td class="amount">$59,500.00</td>
+        </tr>
+        <tr>
+            <td>DEWAAL, BRIAN</td>
+            <td class="amount">$59,500.00</td>
+        </tr>
+        <tr>
+            <td>HECK, DARRYL</td>
+            <td class="amount">$59,500.00</td>
+        </tr>
+        <tr>
+            <td>DICK, ROBERT PETER</td>
+            <td class="amount">$59,477.00</td>
+        </tr>
+        <tr>
+            <td>ARNOTT, JOHN SCOTT</td>
+            <td class="amount">$59,429.00</td>
+        </tr>
+        <tr>
+            <td>RYCKMAN, ANGUS ROBERT</td>
+            <td class="amount">$59,358.00</td>
+        </tr>
+        <tr>
+            <td>BROWETT, GARY ANDREW</td>
+            <td class="amount">$59,358.00</td>
+        </tr>
+        <tr>
+            <td>HARDIE, RODERICK JASON</td>
+            <td class="amount">$59,291.00</td>
+        </tr>
+        <tr>
+            <td>SHUTES, JAMES EDWARD</td>
+            <td class="amount">$59,248.00</td>
+        </tr>
+        <tr>
+            <td>RAYMOND, WENDY JOYCE</td>
+            <td class="amount">$59,148.00</td>
+        </tr>
+        <tr>
+            <td>CUMMING, LORNE</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>MARUTT, GUNTER KEITH</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>WOJAK, RICHARD BRUNO</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>WEINHARDT, TIFFANY ANN DEVRIES</td>
+            <td class="amount">$58,960.00</td>
+        </tr>
+        <tr>
+            <td>KOENIG, HAROLD</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>DUNN, CANDACE ELLA</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>PARR, PEGGY DARLENE</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>CRICK, SHEILA ELIZABETH</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>SCHULER, TODD AARON</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>JOAQUIN, JOSEPH</td>
+            <td class="amount">$58,800.00</td>
+        </tr>
+        <tr>
+            <td>MCGREGOR, DWIGHT</td>
+            <td class="amount">$58,509.00</td>
+        </tr>
+        <tr>
+            <td>SASAKI, KELLY</td>
+            <td class="amount">$58,500.00</td>
+        </tr>
+        <tr>
+            <td>AHIRA, SURINDER</td>
+            <td class="amount">$58,500.00</td>
+        </tr>
+        <tr>
+            <td>VAN LENT, PERRY ANDREW</td>
+            <td class="amount">$58,500.00</td>
+        </tr>
+        <tr>
+            <td>HORSPOOL, CHRISTOPHER ALLAN</td>
+            <td class="amount">$58,500.00</td>
+        </tr>
+        <tr>
+            <td>BA, ISMAILA</td>
+            <td class="amount">$58,493.00</td>
+        </tr>
+        <tr>
+            <td>FOUGERE, LEONARD WARD</td>
+            <td class="amount">$58,168.00</td>
+        </tr>
+        <tr>
+            <td>LIND, CHARLES GILBERT</td>
+            <td class="amount">$58,000.00</td>
+        </tr>
+        <tr>
+            <td>JEAN, CHERYL</td>
+            <td class="amount">$57,859.00</td>
+        </tr>
+        <tr>
+            <td>FRIESEN, DAVID</td>
+            <td class="amount">$57,747.00</td>
+        </tr>
+        <tr>
+            <td>TOMPKINS, RONALD JAMES</td>
+            <td class="amount">$57,635.00</td>
+        </tr>
+        <tr>
+            <td>TURNER, BRADFORD</td>
+            <td class="amount">$57,600.00</td>
+        </tr>
+        <tr>
+            <td>MCPHAIL, NELSON SULLIVAN</td>
+            <td class="amount">$56,736.00</td>
+        </tr>
+        <tr>
+            <td>MASSULLO, MICHAEL W</td>
+            <td class="amount">$56,675.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON, ADRIAN MARK</td>
+            <td class="amount">$56,670.00</td>
+        </tr>
+        <tr>
+            <td>MACPHERSON, SCOTT THOMAS</td>
+            <td class="amount">$56,670.00</td>
+        </tr>
+        <tr>
+            <td>GARHAM, MATTHEW</td>
+            <td class="amount">$56,670.00</td>
+        </tr>
+        <tr>
+            <td>OUILLETTE, REGINALD CHARLES</td>
+            <td class="amount">$56,670.00</td>
+        </tr>
+        <tr>
+            <td>BRISBOURNE, RITCHIE SCOTT</td>
+            <td class="amount">$56,670.00</td>
+        </tr>
+        <tr>
+            <td>GATT, DAVID JOSEPH</td>
+            <td class="amount">$56,634.00</td>
+        </tr>
+        <tr>
+            <td>MANAHAN, KEVIN</td>
+            <td class="amount">$56,525.00</td>
+        </tr>
+        <tr>
+            <td>CRAWFORD, JOHN WILLIAM</td>
+            <td class="amount">$56,519.00</td>
+        </tr>
+        <tr>
+            <td>BREUER, GEOFFREY PETER</td>
+            <td class="amount">$56,400.00</td>
+        </tr>
+        <tr>
+            <td>MORRIS, JAMES RONALD</td>
+            <td class="amount">$56,400.00</td>
+        </tr>
+        <tr>
+            <td>COULDWELL, WILLARD DALE</td>
+            <td class="amount">$56,400.00</td>
+        </tr>
+        <tr>
+            <td>OAKLAND, CHRISTINE MICHELLE</td>
+            <td class="amount">$56,400.00</td>
+        </tr>
+        <tr>
+            <td>PORTER, TERRY THOMAS SHAW</td>
+            <td class="amount">$56,232.00</td>
+        </tr>
+        <tr>
+            <td>PEDERSON, GUY CHRIS</td>
+            <td class="amount">$56,000.00</td>
+        </tr>
+        <tr>
+            <td>BUTTERS, HEIDI</td>
+            <td class="amount">$55,500.00</td>
+        </tr>
+        <tr>
+            <td>MITCHELL, WAYNE TIMOTHY</td>
+            <td class="amount">$55,254.00</td>
+        </tr>
+        <tr>
+            <td>HEYD, DONALD JAMES</td>
+            <td class="amount">$55,254.00</td>
+        </tr>
+        <tr>
+            <td>MCMASTER, DANIEL</td>
+            <td class="amount">$55,253.00</td>
+        </tr>
+        <tr>
+            <td>RIVINGTON, DAVID RONALD</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>KESSLER, WADE GARRETT</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>PICHOR, MICHAEL BENNY</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>WADDELL, LEE ANTHONY</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>DURHAM, DONALD GREGORY</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>TYSON, RICHARD CHARLES</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>UYEYAMA, MICHAEL</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>PARMAR, MANBIR</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>MORGAN, RICHARD LYLE</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>POMERLEAU, GERALD AINSWORTH</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>NICHOLSON, COLBY ALLEN</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>GRIFFIN, RODNEY MICHAEL</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>JOHNSON, QUENTIN ELROY</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>DOHERTY, WAYNE CYRIL THOMAS</td>
+            <td class="amount">$54,898.00</td>
+        </tr>
+        <tr>
+            <td>NICKOLET, BRUCE</td>
+            <td class="amount">$54,861.00</td>
+        </tr>
+        <tr>
+            <td>HAGEN, CURTIS ANDREW KLAUS</td>
+            <td class="amount">$54,861.00</td>
+        </tr>
+        <tr>
+            <td>RACHER, DANIEL</td>
+            <td class="amount">$54,861.00</td>
+        </tr>
+        <tr>
+            <td>MAYENBURG, CLAYTON THEO</td>
+            <td class="amount">$54,674.00</td>
+        </tr>
+        <tr>
+            <td>GERMAN, KELCEY ARLIS</td>
+            <td class="amount">$54,638.00</td>
+        </tr>
+        <tr>
+            <td>LOVER, JOHN</td>
+            <td class="amount">$54,500.00</td>
+        </tr>
+        <tr>
+            <td>MANHAS, SUKHDEV SINGH</td>
+            <td class="amount">$54,500.00</td>
+        </tr>
+        <tr>
+            <td>BACHMEIER, DONALD JAMES</td>
+            <td class="amount">$54,500.00</td>
+        </tr>
+        <tr>
+            <td>MANCHANDA, JASWINDER SINGH</td>
+            <td class="amount">$54,500.00</td>
+        </tr>
+        <tr>
+            <td>PEARSALL, JOHN GEORGE</td>
+            <td class="amount">$54,280.00</td>
+        </tr>
+        <tr>
+            <td>EBERHERR, KEVIN JOHN</td>
+            <td class="amount">$54,248.00</td>
+        </tr>
+        <tr>
+            <td>BOUWMAN, MARY ROSE</td>
+            <td class="amount">$54,154.00</td>
+        </tr>
+        <tr>
+            <td>STREIFEL, VICKI PATRICIA</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>TURGEON, TERANCE PATRICK</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>PELLERIN, RENE MAURICE</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>HENDRIKS, GEOFFREY</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>BALDWIN, RICKY NELSON</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>RIVET, DARCY ROLAND</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>KITCHEN, ARDEN DERRYL</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>FOLLACK, BLAINE</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>RAYMOND, NATHAN JEFFREY</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>ARMATAGE, DARLENE JESUS</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>LINDAAS, WAYNE KARL</td>
+            <td class="amount">$53,640.00</td>
+        </tr>
+        <tr>
+            <td>PERREAULT, SHAWN ROBERT</td>
+            <td class="amount">$53,509.00</td>
+        </tr>
+        <tr>
+            <td>TEWINKEL, GERALD JOHN</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>MCKEE, STUART LAVERY</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>REDFORD, MICHAEL</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>WOODFIN, JOHN CHARLES</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>MATTHEWS, LENNARD EDWARD</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>BALL, VINCENT EDWARD DION</td>
+            <td class="amount">$53,456.00</td>
+        </tr>
+        <tr>
+            <td>ROBINSON, MARK EDWARD</td>
+            <td class="amount">$53,269.00</td>
+        </tr>
+        <tr>
+            <td>DORSAY, TIMOTHY JOHN</td>
+            <td class="amount">$53,229.00</td>
+        </tr>
+        <tr>
+            <td>ANDJELKOVIC, JOHN</td>
+            <td class="amount">$53,229.00</td>
+        </tr>
+        <tr>
+            <td>BOURQUE, RODNEY</td>
+            <td class="amount">$53,123.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL, THOMAS AIKEN</td>
+            <td class="amount">$53,000.00</td>
+        </tr>
+        <tr>
+            <td>MACKINNON, DEAN</td>
+            <td class="amount">$53,000.00</td>
+        </tr>
+        <tr>
+            <td>WATT, WILLIAM ANDREW</td>
+            <td class="amount">$53,000.00</td>
+        </tr>
+        <tr>
+            <td>WASILENKOFF, GORDON</td>
+            <td class="amount">$53,000.00</td>
+        </tr>
+        <tr>
+            <td>NEIL, ALAN ROBERT</td>
+            <td class="amount">$52,870.00</td>
+        </tr>
+        <tr>
+            <td>MCKENZIE, SANDY WESLEY</td>
+            <td class="amount">$52,672.00</td>
+        </tr>
+        <tr>
+            <td>LARSON, MARTIN WILLIAM</td>
+            <td class="amount">$52,600.00</td>
+        </tr>
+        <tr>
+            <td>COMETA, ALLADIN</td>
+            <td class="amount">$52,600.00</td>
+        </tr>
+        <tr>
+            <td>MACDONALD, MICHAEL</td>
+            <td class="amount">$52,600.00</td>
+        </tr>
+        <tr>
+            <td>KINGCOTT, EDWARD</td>
+            <td class="amount">$52,600.00</td>
+        </tr>
+        <tr>
+            <td>ZOGAS, VINCENT JOHN</td>
+            <td class="amount">$52,500.00</td>
+        </tr>
+        <tr>
+            <td>JOHAL, HARNEK SINGH</td>
+            <td class="amount">$52,437.00</td>
+        </tr>
+        <tr>
+            <td>KEMP, ALLEN</td>
+            <td class="amount">$52,366.00</td>
+        </tr>
+        <tr>
+            <td>MCLEAN, DEAN GEORGE</td>
+            <td class="amount">$52,144.00</td>
+        </tr>
+        <tr>
+            <td>SHAW, KEVIN GERALD</td>
+            <td class="amount">$51,997.00</td>
+        </tr>
+        <tr>
+            <td>BROSSEAU, RAYMOND DAVID</td>
+            <td class="amount">$51,675.00</td>
+        </tr>
+        <tr>
+            <td>VOLPATTI, PATRICK SHANE</td>
+            <td class="amount">$51,670.00</td>
+        </tr>
+        <tr>
+            <td>PAZDZIERSKI, DAVID RONALD</td>
+            <td class="amount">$51,670.00</td>
+        </tr>
+        <tr>
+            <td>PARR, SCOTT ROY</td>
+            <td class="amount">$51,670.00</td>
+        </tr>
+        <tr>
+            <td>ROUCK, KERRY BRIAN</td>
+            <td class="amount">$51,670.00</td>
+        </tr>
+        <tr>
+            <td>LYNCH, MICHAEL DEAN</td>
+            <td class="amount">$51,619.00</td>
+        </tr>
+        <tr>
+            <td>SHEPPARD, SEAN J</td>
+            <td class="amount">$51,526.00</td>
+        </tr>
+        <tr>
+            <td>LAMONT, DEREK JAMES</td>
+            <td class="amount">$51,525.00</td>
+        </tr>
+        <tr>
+            <td>GIROUARD, LINDA CHRISTINE</td>
+            <td class="amount">$51,444.00</td>
+        </tr>
+        <tr>
+            <td>QUESNELLE, RAYMOND PATRICK</td>
+            <td class="amount">$51,400.00</td>
+        </tr>
+        <tr>
+            <td>DAHLMAN, ROBERT</td>
+            <td class="amount">$51,400.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, DENNIS WILLIAM</td>
+            <td class="amount">$51,400.00</td>
+        </tr>
+        <tr>
+            <td>BEAUCHESNE, STEVEN</td>
+            <td class="amount">$51,328.00</td>
+        </tr>
+        <tr>
+            <td>SOUTHERN, DAVID WAYNE</td>
+            <td class="amount">$51,088.00</td>
+        </tr>
+        <tr>
+            <td>BISANZ, RICHARD DONALD</td>
+            <td class="amount">$51,025.00</td>
+        </tr>
+        <tr>
+            <td>COPPERTHWAITE, MICHAEL</td>
+            <td class="amount">$51,000.00</td>
+        </tr>
+        <tr>
+            <td>HANSON, ROBERT GORDON, ESTATE OF</td>
+            <td class="amount">$51,000.00</td>
+        </tr>
+        <tr>
+            <td>STEWART, KENNETH ROBERT</td>
+            <td class="amount">$50,498.00</td>
+        </tr>
+        <tr>
+            <td>WALE, CHARLES SCOT</td>
+            <td class="amount">$50,254.00</td>
+        </tr>
+        <tr>
+            <td>OSTROPOLSKI, STANISLAW</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>ABEY, KELLY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>HOLOSKO, TIMOTHY WILLIAM</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>VAN HERD, BARBARA</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>PIMENTEL, ARMENIO</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>PLOURDE, COME ROSARIO</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CECH, WENDY ANNE</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>GILL, JAGDISH SINGH</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>FINES, ROBERT GORDON</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>RANA, SUKHDEV SINGH</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SYMONDS, PAUL ROBERT</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KECK, ERIC FRED</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KWASNYCIA, MITCHELL LEE</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KLASSEN, PETER</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>HOWDEN, JAMES GREENING</td>
+            <td class="amount">$49,945.00</td>
+        </tr>
+        <tr>
+            <td>WOODARD, IAN</td>
+            <td class="amount">$49,898.00</td>
+        </tr>
+        <tr>
+            <td>GREGSON, TRAVIS</td>
+            <td class="amount">$49,898.00</td>
+        </tr>
+        <tr>
+            <td>ALLEN, REGINALD WILLIAM</td>
+            <td class="amount">$49,683.00</td>
+        </tr>
+        <tr>
+            <td>POWAR, KEWAL S</td>
+            <td class="amount">$49,683.00</td>
+        </tr>
+        <tr>
+            <td>MOORE, DARREN ARTHUR</td>
+            <td class="amount">$49,613.00</td>
+        </tr>
+        <tr>
+            <td>THOMSON, DARREN MICHAEL</td>
+            <td class="amount">$49,613.00</td>
+        </tr>
+        <tr>
+            <td>THISTLETHWAITE, RONALD</td>
+            <td class="amount">$49,613.00</td>
+        </tr>
+        <tr>
+            <td>MARTIN, GLEN</td>
+            <td class="amount">$49,500.00</td>
+        </tr>
+        <tr>
+            <td>FORBES, CHRISTOPHER ALEXANDER</td>
+            <td class="amount">$49,500.00</td>
+        </tr>
+        <tr>
+            <td>LAJEUNESSE, ANDRE</td>
+            <td class="amount">$49,500.00</td>
+        </tr>
+        <tr>
+            <td>PARHAR, CHARANJIT SINGH</td>
+            <td class="amount">$49,248.00</td>
+        </tr>
+        <tr>
+            <td>COX, DERRICK JOHN</td>
+            <td class="amount">$49,248.00</td>
+        </tr>
+        <tr>
+            <td>MARCHAND, RICHARD</td>
+            <td class="amount">$49,150.00</td>
+        </tr>
+        <tr>
+            <td>HOLLOWAY, ANGELA JOAN</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>STEPHENS, ROBERT SAMUEL</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>BRETT, RHONDA JEAN</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>RASMUSSEN, TODD CAMERON</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>PINDER, DONALD</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>GIESBRECHT, GORDON</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>BARRY, TODD ANDREW</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>RYAN, ANTHONY JOHN</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>MARCHBANK, BRIAN DEAN</td>
+            <td class="amount">$48,939.00</td>
+        </tr>
+        <tr>
+            <td>WALKER, WILLIAM ROBERT</td>
+            <td class="amount">$48,859.00</td>
+        </tr>
+        <tr>
+            <td>PARSONS, ERIC ALAN</td>
+            <td class="amount">$48,842.00</td>
+        </tr>
+        <tr>
+            <td>PARSONS, LYLE LAWRENCE</td>
+            <td class="amount">$48,800.00</td>
+        </tr>
+        <tr>
+            <td>BUTT, BYRON WALTER</td>
+            <td class="amount">$48,800.00</td>
+        </tr>
+        <tr>
+            <td>RAVNBORG, JAMES M</td>
+            <td class="amount">$48,800.00</td>
+        </tr>
+        <tr>
+            <td>SIMPSON, ANNETTE ELAINE</td>
+            <td class="amount">$48,790.00</td>
+        </tr>
+        <tr>
+            <td>JEROME, DAVID TODD</td>
+            <td class="amount">$48,615.00</td>
+        </tr>
+        <tr>
+            <td>CAHILL, KEITH</td>
+            <td class="amount">$48,500.00</td>
+        </tr>
+        <tr>
+            <td>JEFFRIES, ELDWIN DENNIS</td>
+            <td class="amount">$48,500.00</td>
+        </tr>
+        <tr>
+            <td>HOULE, KEVIN DONALD</td>
+            <td class="amount">$48,500.00</td>
+        </tr>
+        <tr>
+            <td>NINATTI, NORMAN EDWARD</td>
+            <td class="amount">$48,500.00</td>
+        </tr>
+        <tr>
+            <td>OLENDER, RONALD KEVIN</td>
+            <td class="amount">$48,500.00</td>
+        </tr>
+        <tr>
+            <td>SAULSGIVER, KEVIN SAMUEL</td>
+            <td class="amount">$48,429.00</td>
+        </tr>
+        <tr>
+            <td>POZDNIKOFF, TED PHILIP</td>
+            <td class="amount">$48,303.00</td>
+        </tr>
+        <tr>
+            <td>KRATCHMER, ANDREW</td>
+            <td class="amount">$48,235.00</td>
+        </tr>
+        <tr>
+            <td>MAGRATH, BOB</td>
+            <td class="amount">$48,229.00</td>
+        </tr>
+        <tr>
+            <td>DALZIEL, JOHN EDWARD</td>
+            <td class="amount">$48,229.00</td>
+        </tr>
+        <tr>
+            <td>OLIVA, BRIAN WAYNE</td>
+            <td class="amount">$48,229.00</td>
+        </tr>
+        <tr>
+            <td>MACLACHLAN, CLIFFORD MARK</td>
+            <td class="amount">$48,181.00</td>
+        </tr>
+        <tr>
+            <td>BROOK, REBECCA LYNN</td>
+            <td class="amount">$48,160.00</td>
+        </tr>
+        <tr>
+            <td>ALTON, RONALD</td>
+            <td class="amount">$48,118.00</td>
+        </tr>
+        <tr>
+            <td>CHAMBERS, LEE VERNON</td>
+            <td class="amount">$48,118.00</td>
+        </tr>
+        <tr>
+            <td>FREITAS, JOSE ERNESTO</td>
+            <td class="amount">$48,022.00</td>
+        </tr>
+        <tr>
+            <td>SPENST, DOUGLAS FRANK</td>
+            <td class="amount">$48,010.00</td>
+        </tr>
+        <tr>
+            <td>JACKSON, DAVID LANE</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>WATT, GLENN HAMILTON</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>COTE, YVES ARTHUR</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>PILLA, DARREN LEO</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>CROTEAU, STEVEN LEIGH</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>MILLAR, STEPHEN DONALD</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>CROTEAU, ANITA LOUISE MARIE</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>CHERNENKOFF, PHILIP</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>STALKER, GLEN ANDREW</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>KNOWLER, DOUGLAS JAMES</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>STOUSHNOW, AARON FREDRICK</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>WALLIS, KEITH MICHAEL</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>BREEN, TERRY MICHAEL</td>
+            <td class="amount">$47,938.00</td>
+        </tr>
+        <tr>
+            <td>WALLACE, IAN</td>
+            <td class="amount">$47,907.00</td>
+        </tr>
+        <tr>
+            <td>NEUFELD, ANDREW WILLIAM</td>
+            <td class="amount">$47,859.00</td>
+        </tr>
+        <tr>
+            <td>LUOMALA, JEROME ROBERT</td>
+            <td class="amount">$47,859.00</td>
+        </tr>
+        <tr>
+            <td>SABBARWAL, SARBJIT SINGH</td>
+            <td class="amount">$47,846.00</td>
+        </tr>
+        <tr>
+            <td>WIGMORE, WILLIAM EARL</td>
+            <td class="amount">$47,611.00</td>
+        </tr>
+        <tr>
+            <td>EGAN, STEPHEN WILLIAM</td>
+            <td class="amount">$47,600.00</td>
+        </tr>
+        <tr>
+            <td>DICKINSON, GARY JAMES</td>
+            <td class="amount">$47,600.00</td>
+        </tr>
+        <tr>
+            <td>SVENSSON, LARS AKE</td>
+            <td class="amount">$47,600.00</td>
+        </tr>
+        <tr>
+            <td>HARMATI, LESLIE RICHARD</td>
+            <td class="amount">$47,600.00</td>
+        </tr>
+        <tr>
+            <td>GARDEN, DONELLY RICHARD</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>HALL, SCOTT</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHMIT, KEVIN GERARD</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>SAWTELL, RONALD</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>BLACK, SHAYNE</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>SKAKUN, BRIAN</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, BRADLEY SEAN</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>HOGH, CHRISTOPHER ROBERT</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>BROESSLER, MICHAEL RICHARD</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>HURRIE, CHRISTOPHER MALCOLM</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>GOMES, FRANCISCO</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>IRVING, THOMAS SCOTT</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>BELL, BRADLEY</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>MILLER, KERRY CLARKE</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>GAAL, MICHAEL</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>GALE, JODY</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>EASTHOM, MICHAEL EARLE</td>
+            <td class="amount">$47,371.00</td>
+        </tr>
+        <tr>
+            <td>JOHNSON, BRIAN</td>
+            <td class="amount">$46,670.00</td>
+        </tr>
+        <tr>
+            <td>KORTE, DAPHNE FRANCES</td>
+            <td class="amount">$46,661.00</td>
+        </tr>
+        <tr>
+            <td>ANDRUCHOW, BRUCE</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>FUSON, MICHAEL HOWARD</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>ROSE, ROBERSON WILLIAM</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>GONCALVES, JOE TONY RAPOSO</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>BIRKEDAL, BRENT</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>SCHOFIELD, GLEN PRENELL</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>PARR, RUSSEL WILLIAM</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>O'LEARY, MICHAEL JOSEPH</td>
+            <td class="amount">$45,899.00</td>
+        </tr>
+        <tr>
+            <td>HUGHSON, MICHAEL ANDREW</td>
+            <td class="amount">$45,577.00</td>
+        </tr>
+        <tr>
+            <td>BRAGG, MICHAEL PHILIP</td>
+            <td class="amount">$45,500.00</td>
+        </tr>
+        <tr>
+            <td>ROGERS, GEOFFREY BRENT</td>
+            <td class="amount">$45,500.00</td>
+        </tr>
+        <tr>
+            <td>AMONSON, KENNETH ARNOLD</td>
+            <td class="amount">$45,294.00</td>
+        </tr>
+        <tr>
+            <td>PARK, MICHAEL</td>
+            <td class="amount">$45,254.00</td>
+        </tr>
+        <tr>
+            <td>EGLI, DANIEL</td>
+            <td class="amount">$45,254.00</td>
+        </tr>
+        <tr>
+            <td>PATENAUDE, RONNIE MARC</td>
+            <td class="amount">$45,254.00</td>
+        </tr>
+        <tr>
+            <td>DAVIS, RICHARD ALAN</td>
+            <td class="amount">$45,253.00</td>
+        </tr>
+        <tr>
+            <td>MILLER, KIMBERLY</td>
+            <td class="amount">$45,107.00</td>
+        </tr>
+        <tr>
+            <td>PORTER, JASON MILES</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>ANDERSON, DUANE HARRY RALPH</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>LAPLANTE, MICHEL A</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>RAPOSO, ROBERTO TAVARES</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>ORR, HAL CHRISTOPHER</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>TURCOTTE, ROCKY JARMAIN JOSEPH</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>JONES, MICHAEL ROBERT</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>KING, PERRY DAVID</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>VANVEEN, ROBERT MARTIN</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>WESLEY, STEVEN JOSEPH</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>HUNDAL, KAKA DAVINDER SINGH</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>INFANTI, LORIS</td>
+            <td class="amount">$44,944.00</td>
+        </tr>
+        <tr>
+            <td>DAY, DALE RICHARD</td>
+            <td class="amount">$44,936.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, DUNCAN CALDER</td>
+            <td class="amount">$44,739.00</td>
+        </tr>
+        <tr>
+            <td>KITTLE, RANDY ROBERT</td>
+            <td class="amount">$44,712.00</td>
+        </tr>
+        <tr>
+            <td>CHASSE, GRANT PHILLIP</td>
+            <td class="amount">$44,606.00</td>
+        </tr>
+        <tr>
+            <td>CRANTZ, JUNE MARIE SHEPHERD</td>
+            <td class="amount">$44,510.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL, KENNETH NORMAN</td>
+            <td class="amount">$44,505.00</td>
+        </tr>
+        <tr>
+            <td>BROOK, RONALD</td>
+            <td class="amount">$44,500.00</td>
+        </tr>
+        <tr>
+            <td>HEMMINGSEN, TERRENCE EDWARD VICTOR</td>
+            <td class="amount">$44,500.00</td>
+        </tr>
+        <tr>
+            <td>CASSIDY, MARVIN</td>
+            <td class="amount">$44,440.00</td>
+        </tr>
+        <tr>
+            <td>MACLEAN, ANDREW DONALD RODERICK</td>
+            <td class="amount">$44,358.00</td>
+        </tr>
+        <tr>
+            <td>WIELER, TERRIE DALE</td>
+            <td class="amount">$44,091.00</td>
+        </tr>
+        <tr>
+            <td>GIESELMAN, PAUL ANTHONY</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>WERK, FRANKLIN DALE</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>DUNCAN, GORDAN DAVID</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>MAHONEY, COLIN</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>SIAW, KIMBERLIN GAE</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>REID, WAYNE</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL, KIM ELAINE</td>
+            <td class="amount">$43,858.00</td>
+        </tr>
+        <tr>
+            <td>ZALAY, LAURAL ANNE</td>
+            <td class="amount">$43,800.00</td>
+        </tr>
+        <tr>
+            <td>HALE, DOREEN</td>
+            <td class="amount">$43,800.00</td>
+        </tr>
+        <tr>
+            <td>FINDLAY, LAWRENCE</td>
+            <td class="amount">$43,746.00</td>
+        </tr>
+        <tr>
+            <td>ORIECUIA, MAURICE TERENCE</td>
+            <td class="amount">$43,648.00</td>
+        </tr>
+        <tr>
+            <td>RETHMEIER, PATRICK</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>TRIPPLE, JACKSON WILLIAM</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>COURT, DAVID JOHN</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>MARUTT, SHAYNE WILFRED FRANZ</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>MARCEAU, BRIAN CECIL</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>PALMER, GREGORY</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>CHOW, ROLAND HONG</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>ARMES, TREVOR JOHN</td>
+            <td class="amount">$43,499.00</td>
+        </tr>
+        <tr>
+            <td>TURNER, KARL ERIC</td>
+            <td class="amount">$43,426.00</td>
+        </tr>
+        <tr>
+            <td>ARZAGA, SIMEON GARCIA</td>
+            <td class="amount">$43,394.00</td>
+        </tr>
+        <tr>
+            <td>ENNS, RONALD JAMES</td>
+            <td class="amount">$43,352.00</td>
+        </tr>
+        <tr>
+            <td>KRAJNYAK, JOHN RAYMOND</td>
+            <td class="amount">$43,339.00</td>
+        </tr>
+        <tr>
+            <td>CLARK, BRETT DAVID</td>
+            <td class="amount">$43,229.00</td>
+        </tr>
+        <tr>
+            <td>GISBORNE, DALE H</td>
+            <td class="amount">$43,229.00</td>
+        </tr>
+        <tr>
+            <td>MICKLEBOROUGH, LINDSAY CRAIG</td>
+            <td class="amount">$43,229.00</td>
+        </tr>
+        <tr>
+            <td>WESTFALL, DWAYNE B</td>
+            <td class="amount">$43,229.00</td>
+        </tr>
+        <tr>
+            <td>WADDEN, BRIAN VINCENT</td>
+            <td class="amount">$43,168.00</td>
+        </tr>
+        <tr>
+            <td>BALSILLIE, BRIAN WAYNE</td>
+            <td class="amount">$43,118.00</td>
+        </tr>
+        <tr>
+            <td>TARASOFF, WILLIAM</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>JOHNSON, KELLY ALBERT</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>FERGUSON, BEVERLY ANN</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>WARD, TERRY ALLAN</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, RUSSELL CHARLES</td>
+            <td class="amount">$42,907.00</td>
+        </tr>
+        <tr>
+            <td>LILLY, RANJIT</td>
+            <td class="amount">$42,846.00</td>
+        </tr>
+        <tr>
+            <td>BALCOMBE, IAN GEORGE</td>
+            <td class="amount">$42,747.00</td>
+        </tr>
+        <tr>
+            <td>BARBER, DEAN DONALD</td>
+            <td class="amount">$42,680.00</td>
+        </tr>
+        <tr>
+            <td>AUGER, DONALD DOUGLAS</td>
+            <td class="amount">$42,645.00</td>
+        </tr>
+        <tr>
+            <td>KOENIG, DWAYNE</td>
+            <td class="amount">$42,600.00</td>
+        </tr>
+        <tr>
+            <td>MARTINS, MANUEL COSTA</td>
+            <td class="amount">$42,518.00</td>
+        </tr>
+        <tr>
+            <td>WENGEMAYR, MICHAEL</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>ZIEMER, TIMOTHY ROY</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>GRATTAN, ALBERT WILLIAM</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>HANKE, STEVEN BRUNO</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>DOLL, LOREN ROBERT</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>HAYNE, DANIEL STUART</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN, ANDREW</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>ALLEN, GLENN</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>TOMASINO, GINO FRANCO</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>WATSON, KEITH</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>ATKINSON, WILLIAM LESLIE</td>
+            <td class="amount">$42,398.00</td>
+        </tr>
+        <tr>
+            <td>FINDLAY, ARTHENA SUZANNE</td>
+            <td class="amount">$42,106.00</td>
+        </tr>
+        <tr>
+            <td>HRECHKA, JAY STEPHEN</td>
+            <td class="amount">$41,854.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS, GLEN ROGER</td>
+            <td class="amount">$41,766.00</td>
+        </tr>
+        <tr>
+            <td>SCHULZ, ROBERT GEORGE</td>
+            <td class="amount">$41,727.00</td>
+        </tr>
+        <tr>
+            <td>IANNONE, JAMES</td>
+            <td class="amount">$41,707.00</td>
+        </tr>
+        <tr>
+            <td>BRACKENBURY, RUSSELL LLYOD</td>
+            <td class="amount">$41,670.00</td>
+        </tr>
+        <tr>
+            <td>ZEYHA, MICHAEL WAYNE</td>
+            <td class="amount">$41,670.00</td>
+        </tr>
+        <tr>
+            <td>LIVINGSTONE, BRIAN</td>
+            <td class="amount">$41,634.00</td>
+        </tr>
+        <tr>
+            <td>BLAIN, ARNOLD FRANKLIN</td>
+            <td class="amount">$41,526.00</td>
+        </tr>
+        <tr>
+            <td>GREEN, JAMES WILLIAM</td>
+            <td class="amount">$41,526.00</td>
+        </tr>
+        <tr>
+            <td>CIMBARO, JOHNNY MARK</td>
+            <td class="amount">$41,519.00</td>
+        </tr>
+        <tr>
+            <td>BURKE, DAVID HENRY</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>TURATUS, HERBERT FRITZ HORST</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>KARSTEN, BRIAN KENNETH</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>VIGNEAUX, RENAUD HENRI</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>MATSCHKE, LYLE</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>DONDALE, ROYCE</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>PITT, STEVE JOHN</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>CHRISP, TODD THOMAS LOUIE</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>SCHLOSSER, KENNETH WENDEL</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>GAINER, DALIS CALVIN</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>FURLONG, THOMAS</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>MCINTOSH, BROCK HENRY</td>
+            <td class="amount">$41,400.00</td>
+        </tr>
+        <tr>
+            <td>BASSETT, FRANK JAMES</td>
+            <td class="amount">$41,314.00</td>
+        </tr>
+        <tr>
+            <td>SCHNEPF, BRIAN ALLEN</td>
+            <td class="amount">$41,262.00</td>
+        </tr>
+        <tr>
+            <td>WYSS, LORENZ</td>
+            <td class="amount">$41,149.00</td>
+        </tr>
+        <tr>
+            <td>ANDERSEN, CHRISTEN DAVID</td>
+            <td class="amount">$40,450.00</td>
+        </tr>
+        <tr>
+            <td>HOFLIN, GARY JOHN</td>
+            <td class="amount">$40,254.00</td>
+        </tr>
+        <tr>
+            <td>BRENNAN, PATRICK THOMAS</td>
+            <td class="amount">$40,253.00</td>
+        </tr>
+        <tr>
+            <td>WEBER, BRENT CHARLES</td>
+            <td class="amount">$40,253.00</td>
+        </tr>
+        <tr>
+            <td>WATSON, MICHAEL CHARLES</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>MORIN, DAVID WILLIAM</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>MCINTYRE, RONALD CHARLES</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>HANKINS, WAYNE LYLE</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>RANA, JASWANT SINGH</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>PATON, RICHARD</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>GEORGE, ARNOLD RUSSELL (ARNIE)</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>OLLECH, DAVID</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>REITER, MARK FREDERICK</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>ERIKSSON, GUNNAR ALF</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>KUNTSI, DAVID</td>
+            <td class="amount">$39,805.00</td>
+        </tr>
+        <tr>
+            <td>FEIERABEND, DONNA THERESA</td>
+            <td class="amount">$39,731.00</td>
+        </tr>
+        <tr>
+            <td>BASSETT, RHONDA DIANE</td>
+            <td class="amount">$39,683.00</td>
+        </tr>
+        <tr>
+            <td>EGER, HARTMUT</td>
+            <td class="amount">$39,565.00</td>
+        </tr>
+        <tr>
+            <td>ALLEN, SCOTT</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>DHAK, GURINDER</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>LANGE, JONNY</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>STUBBS, ROBERT</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>HILL, BRIAN</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>KAINTH, NIRMAL SINGH</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>BONNAR, LARRY</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>LIM, WILLIAM ALLAN</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>GROENENDYK, JAMES</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>BEBEAU, GARY</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>BEAULIEU, NOEL EDGAR JOSEPH</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>VAN DEN BROEK, GARY KENNETH</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>LOYD, EILEEN</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>EISERT, JAMES ALLAN</td>
+            <td class="amount">$39,424.00</td>
+        </tr>
+        <tr>
+            <td>HIGGS, ANDREW A</td>
+            <td class="amount">$39,059.00</td>
+        </tr>
+        <tr>
+            <td>LANDRY, KARL</td>
+            <td class="amount">$39,000.00</td>
+        </tr>
+        <tr>
+            <td>BANKS, JEFFREY</td>
+            <td class="amount">$39,000.00</td>
+        </tr>
+        <tr>
+            <td>LARSON, JAMES TREVOR</td>
+            <td class="amount">$38,800.00</td>
+        </tr>
+        <tr>
+            <td>AHLSTROM, ROBERT GORDON</td>
+            <td class="amount">$38,800.00</td>
+        </tr>
+        <tr>
+            <td>READ, STEPHEN PAUL</td>
+            <td class="amount">$38,800.00</td>
+        </tr>
+        <tr>
+            <td>WEBER, JESSE MARCEL</td>
+            <td class="amount">$38,800.00</td>
+        </tr>
+        <tr>
+            <td>MORRISON, DONALD ROSS</td>
+            <td class="amount">$38,784.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTS, ROBBIE</td>
+            <td class="amount">$38,592.00</td>
+        </tr>
+        <tr>
+            <td>COOPER, ROBERT CLAY</td>
+            <td class="amount">$38,509.00</td>
+        </tr>
+        <tr>
+            <td>GEIGER, MATTHEW CRAIG</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>PITTS, THOMAS BRENT</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>LUNDBERG, BRIAN F</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>CUNNINGHAM, TERESA LYNN</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>DAVIS, LARRY</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>SIMONS, BRIAN</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>HAMELIN, BRENT WAYNE</td>
+            <td class="amount">$38,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHUK, AUDREY PATRICIA</td>
+            <td class="amount">$38,499.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE, LORICK CHARLES MAX</td>
+            <td class="amount">$38,492.00</td>
+        </tr>
+        <tr>
+            <td>PHAM, TAM THANH</td>
+            <td class="amount">$38,303.00</td>
+        </tr>
+        <tr>
+            <td>RUSSELL, KERRY GRANT</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>ORR, RUSSEL</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>DELCOURT, ALLAN GEORGE</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>FORSCH, ANDREAS</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>MAHONEY, RANDALL</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>EVANS, NATHAN JOHN</td>
+            <td class="amount">$38,229.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTSON, GEOFFREY JOHN</td>
+            <td class="amount">$38,000.00</td>
+        </tr>
+        <tr>
+            <td>RIGBY, EDWARD ALLEN</td>
+            <td class="amount">$38,000.00</td>
+        </tr>
+        <tr>
+            <td>GIGNAC, BRUCE RODNEY</td>
+            <td class="amount">$38,000.00</td>
+        </tr>
+        <tr>
+            <td>LEE, RICHARD</td>
+            <td class="amount">$37,747.00</td>
+        </tr>
+        <tr>
+            <td>CANNON, JAMES</td>
+            <td class="amount">$37,747.00</td>
+        </tr>
+        <tr>
+            <td>KRISMAN, TAMARA LYNNE</td>
+            <td class="amount">$37,632.00</td>
+        </tr>
+        <tr>
+            <td>TURGEON, JOSEPH</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>FREMMERLID, ROGER ANTHONY</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>CHAPMAN, JAMES PAUL</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>PORUCHNY, MARK</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>FEHLER, ROBERT</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>HOLOWKA, PARIS KEVIN ANTHONY</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>CAIN, KIM ALAN</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>TODD, MARK LLOYD</td>
+            <td class="amount">$37,421.00</td>
+        </tr>
+        <tr>
+            <td>RASMUSSEN, GLEN</td>
+            <td class="amount">$37,144.00</td>
+        </tr>
+        <tr>
+            <td>DONG, MAH DANIEL</td>
+            <td class="amount">$37,082.00</td>
+        </tr>
+        <tr>
+            <td>BLOOMFIELD, BEATRICE ROBYNNE</td>
+            <td class="amount">$36,884.00</td>
+        </tr>
+        <tr>
+            <td>CHAMBERS, DARREN</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>KNELLER, DAVID WILLIAM</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>HOLDEN, DOUGLAS ALLEN JOSEPH</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>TRUANT, JOHN DOUGLAS</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>GASKELL, EDWARD</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>WASILIEFF, CHRISTINE TERESA</td>
+            <td class="amount">$36,670.00</td>
+        </tr>
+        <tr>
+            <td>FULLER, MICHAEL</td>
+            <td class="amount">$36,661.00</td>
+        </tr>
+        <tr>
+            <td>BEAN, GERALD THOMAS</td>
+            <td class="amount">$36,634.00</td>
+        </tr>
+        <tr>
+            <td>LINDENTHALER, CATHEY LYNNE</td>
+            <td class="amount">$36,561.00</td>
+        </tr>
+        <tr>
+            <td>HUG, LORENZ</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>LECERF, VERNON JOSEPH</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>LOWE, TERANCE</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>SHERMAN, STEVEN</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>SLONSKI, RUSSELL</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>ORR, KENNETH DAVID MILLIGAN</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>EUVERMAN, BRUCE FRANCIS</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>TANNER, WILLIAM ANTHONY</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>RUCKER, FREDERICK DEAN</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>SCOFIELD, IVAN LARRY</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>DIROCCO, MARIO</td>
+            <td class="amount">$36,251.00</td>
+        </tr>
+        <tr>
+            <td>BOWMAN, JOHN MATHEW</td>
+            <td class="amount">$36,094.00</td>
+        </tr>
+        <tr>
+            <td>HIMMELSPACH, JESSE JAMES</td>
+            <td class="amount">$36,054.00</td>
+        </tr>
+        <tr>
+            <td>LOWLEY, STANLEY TEDDY</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>POTVIN, CURTIS</td>
+            <td class="amount">$35,973.00</td>
+        </tr>
+        <tr>
+            <td>DEMPSTER, ALLAN ROBERT</td>
+            <td class="amount">$35,899.00</td>
+        </tr>
+        <tr>
+            <td>JOHNSON, KENNETH MARTIN</td>
+            <td class="amount">$35,770.00</td>
+        </tr>
+        <tr>
+            <td>ROWBOTHAM, KENNETH WILLIAM</td>
+            <td class="amount">$35,632.00</td>
+        </tr>
+        <tr>
+            <td>SEIDEL, BENNY FRITZ</td>
+            <td class="amount">$35,600.00</td>
+        </tr>
+        <tr>
+            <td>JACOBSEN, LYLE</td>
+            <td class="amount">$35,564.00</td>
+        </tr>
+        <tr>
+            <td>ESO, BRIAN GORDON</td>
+            <td class="amount">$35,500.00</td>
+        </tr>
+        <tr>
+            <td>BICKERTON, DAVID EDWARD LEE</td>
+            <td class="amount">$35,500.00</td>
+        </tr>
+        <tr>
+            <td>MOREY, WILLIAM DOUGLAS</td>
+            <td class="amount">$35,500.00</td>
+        </tr>
+        <tr>
+            <td>JONES, RICHARD L</td>
+            <td class="amount">$35,500.00</td>
+        </tr>
+        <tr>
+            <td>SERHAN, DANIEL SHAYNE</td>
+            <td class="amount">$35,253.00</td>
+        </tr>
+        <tr>
+            <td>GLAVES, RONALD MALCOLM</td>
+            <td class="amount">$35,224.00</td>
+        </tr>
+        <tr>
+            <td>BRADLEY, THOMAS</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>NUGENT, DARREN VINCENT</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>KAHLON, AVTAR</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BURKE, WILLIAM</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHLUETER, CHRISTINA LORRAINE</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>ERLANDSON, KELVIN EDWARD</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>LA BOUNTY, CLIFFORD MARTIN</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>HAKANSON, STEVEN RUSSELL</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>LOPUSHINSKY, SHANNON NADINE</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>HARDER, JIMMY NEIL</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BRENSRUD, DAVID ALAN</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BRAATEN, LEO BRENT</td>
+            <td class="amount">$34,934.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, KENNETH MARK</td>
+            <td class="amount">$34,861.00</td>
+        </tr>
+        <tr>
+            <td>SOMCIO, KISMENIO MORALES</td>
+            <td class="amount">$34,565.00</td>
+        </tr>
+        <tr>
+            <td>RODRIGUES, DENISE LORRAINE</td>
+            <td class="amount">$34,510.00</td>
+        </tr>
+        <tr>
+            <td>MCMURDO, ALAN WILLIAM</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>GELTON, MARTHA</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>SANDHU, JASMINEDER</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>OLIVEIRA, JANDIRA</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>CAMBPELL, ALEC</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>CHETIEN, MICHEL</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>PUREWAL, JASBIR</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>CLAYTON, PHILIP</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>JENSEN, PETER ALFRED</td>
+            <td class="amount">$34,500.00</td>
+        </tr>
+        <tr>
+            <td>CHINN, WILLIAM MICHAEL</td>
+            <td class="amount">$34,280.00</td>
+        </tr>
+        <tr>
+            <td>CRANTZ, ALLEN PHILIP OLAF</td>
+            <td class="amount">$34,107.00</td>
+        </tr>
+        <tr>
+            <td>REID, LORNE</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>CABLE, WILLIAM</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>LION, ROBERT EDWARD</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>BOOKER, DARRELL THOMAS</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>GUILLET, EDWARD MAURICE</td>
+            <td class="amount">$33,960.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS, CLARENCE</td>
+            <td class="amount">$33,800.00</td>
+        </tr>
+        <tr>
+            <td>HUGHES, ROBERT WILLIAM</td>
+            <td class="amount">$33,800.00</td>
+        </tr>
+        <tr>
+            <td>HAWKINS, JOSEPH</td>
+            <td class="amount">$33,746.00</td>
+        </tr>
+        <tr>
+            <td>PETERS, BRENDON DEAN</td>
+            <td class="amount">$33,509.00</td>
+        </tr>
+        <tr>
+            <td>MACDONALD, KERRY</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>VANDERLEE, ANTHONY PETER</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>DAIGNAULT, EDWARD JOHN</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>BUXTON, ELAINE OLIVE</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>WHITE, BRENT HOWARD</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, PAUL BRADLEY</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>HUBER, DAVID W</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>OLSON, WALTER DANIEL</td>
+            <td class="amount">$33,365.00</td>
+        </tr>
+        <tr>
+            <td>REAVLEY, TODD ROLAND</td>
+            <td class="amount">$33,229.00</td>
+        </tr>
+        <tr>
+            <td>TYMOS, DOUGLAS LORNE</td>
+            <td class="amount">$33,229.00</td>
+        </tr>
+        <tr>
+            <td>MARTIN, RANDOLOPH</td>
+            <td class="amount">$33,229.00</td>
+        </tr>
+        <tr>
+            <td>SMALL, IAN FRASER</td>
+            <td class="amount">$33,118.00</td>
+        </tr>
+        <tr>
+            <td>JORDE, KEVIN</td>
+            <td class="amount">$33,022.00</td>
+        </tr>
+        <tr>
+            <td>MORRIS, LISA JEAN</td>
+            <td class="amount">$32,878.00</td>
+        </tr>
+        <tr>
+            <td>PEPIN, JOSEPH GUY MAURICE</td>
+            <td class="amount">$32,794.00</td>
+        </tr>
+        <tr>
+            <td>HAINSTOCK, RICHARD JOHN</td>
+            <td class="amount">$32,592.00</td>
+        </tr>
+        <tr>
+            <td>UNDERHILL, DANIEL ALAN</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>WALL, RAYMOND</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>BAZOWSKY, MILES</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>JOHANSEN, ROCKY</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>KRISTENSEN, HELBAK PETER</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>HORROCKS, LANCE RODNEY</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>SOULIOTIS, MICHAEL PANAGIOTIS</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>STANOWSKI, GLENN</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>ALM, GORDON</td>
+            <td class="amount">$32,500.00</td>
+        </tr>
+        <tr>
+            <td>DHAK, SUKHWINDER SINGH</td>
+            <td class="amount">$32,437.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTS, GORDON JAMES</td>
+            <td class="amount">$32,144.00</td>
+        </tr>
+        <tr>
+            <td>EDMAND, MURRAY WALLACE</td>
+            <td class="amount">$31,850.00</td>
+        </tr>
+        <tr>
+            <td>RICHTER, RICKEY EDWARD</td>
+            <td class="amount">$31,743.00</td>
+        </tr>
+        <tr>
+            <td>KASTOR, DANIEL RALPH</td>
+            <td class="amount">$31,743.00</td>
+        </tr>
+        <tr>
+            <td>MOORE, PATRICK MICHAEL</td>
+            <td class="amount">$31,740.00</td>
+        </tr>
+        <tr>
+            <td>FRASER, SIDNEY JAY</td>
+            <td class="amount">$31,736.00</td>
+        </tr>
+        <tr>
+            <td>DUNLOP, MARK FRED</td>
+            <td class="amount">$31,675.00</td>
+        </tr>
+        <tr>
+            <td>SORO, ANTONIO</td>
+            <td class="amount">$31,670.00</td>
+        </tr>
+        <tr>
+            <td>HEBERT, JOHN ALRIC</td>
+            <td class="amount">$31,670.00</td>
+        </tr>
+        <tr>
+            <td>STEARNS, DAVID JOHN FREDERICK</td>
+            <td class="amount">$31,605.00</td>
+        </tr>
+        <tr>
+            <td>POWELL, JOHN ARNOLD</td>
+            <td class="amount">$31,519.00</td>
+        </tr>
+        <tr>
+            <td>KOLOSKY, JOHN</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>ELLINGSON, JAMES WYNFIELD</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>HAY, BARBARA ANNE</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>LOVELL, PATRICK JAY</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>JANJUA, BUTA SINGH</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>EUVERMAN, WILLIAM</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>MAJOR, JOAN</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>FRASER, DAVID SINGLETON</td>
+            <td class="amount">$31,328.00</td>
+        </tr>
+        <tr>
+            <td>RORVIK, JOHN RANDALL</td>
+            <td class="amount">$31,100.00</td>
+        </tr>
+        <tr>
+            <td>BLAKE, COLIN</td>
+            <td class="amount">$30,928.00</td>
+        </tr>
+        <tr>
+            <td>POLNY, LANCE</td>
+            <td class="amount">$30,675.00</td>
+        </tr>
+        <tr>
+            <td>PRENTICE, DOUGLAS SINCLAIR</td>
+            <td class="amount">$30,632.00</td>
+        </tr>
+        <tr>
+            <td>ANTHONY, KIM</td>
+            <td class="amount">$30,571.00</td>
+        </tr>
+        <tr>
+            <td>BIBBY, CHERYL DIANE</td>
+            <td class="amount">$30,500.00</td>
+        </tr>
+        <tr>
+            <td>MCMULLEN, DON</td>
+            <td class="amount">$30,487.00</td>
+        </tr>
+        <tr>
+            <td>VANDELAAR, KENNETH</td>
+            <td class="amount">$30,254.00</td>
+        </tr>
+        <tr>
+            <td>VAN LEEUWEN, TIMOTHY</td>
+            <td class="amount">$30,254.00</td>
+        </tr>
+        <tr>
+            <td>SANDERS, DOUGLAS JAMES</td>
+            <td class="amount">$30,253.00</td>
+        </tr>
+        <tr>
+            <td>VAN BARNEVELD, DICK</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>LIEUWEN, ROBERT</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PORTER, JAMES LEE</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>WHEATON, JAMES DONALD</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>BOLA, HARMINDER SINGH</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PARMAR, RAMESH KUMAR</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PHAM, CHI THANH</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>FOTHERGILL, DENNIS PHILLIP</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ELLISON, WAYNE ALEXANDER</td>
+            <td class="amount">$29,898.00</td>
+        </tr>
+        <tr>
+            <td>SIPPONEN, TIMO PETER</td>
+            <td class="amount">$29,861.00</td>
+        </tr>
+        <tr>
+            <td>DOWLING, MICHAEL EDWARD</td>
+            <td class="amount">$29,861.00</td>
+        </tr>
+        <tr>
+            <td>WOODS, TERRANCE</td>
+            <td class="amount">$29,805.00</td>
+        </tr>
+        <tr>
+            <td>LAMBERT, PIERRE</td>
+            <td class="amount">$29,683.00</td>
+        </tr>
+        <tr>
+            <td>ABRAMZIK, THOMAS MICHAEL</td>
+            <td class="amount">$29,683.00</td>
+        </tr>
+        <tr>
+            <td>PARHAR, SHAMSHER SINGH</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>BACHMEIER, MICHAEL JOSEPH</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>ZOET, JOHANUS PETRUS</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>BAINS, NOAH GULBERG</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>MARCELLUS, BRUCE HENRY</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>KROPNINSKI, LUC VICTOR</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>MASSOP, ROY WILLIAM LEONARD</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>NEDJELSKI, BRUCE RANKIN</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>MANN, BALDEV</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>MOROZOFF, WAYNE</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTS, SHARON</td>
+            <td class="amount">$29,366.00</td>
+        </tr>
+        <tr>
+            <td>TOWNSEND, MARTIN RAY</td>
+            <td class="amount">$29,358.00</td>
+        </tr>
+        <tr>
+            <td>KINGSLEY, COLIN RUSSEL</td>
+            <td class="amount">$29,134.00</td>
+        </tr>
+        <tr>
+            <td>PERKULL, DALE ROLAND</td>
+            <td class="amount">$29,053.00</td>
+        </tr>
+        <tr>
+            <td>HUTT, GREGORY</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>GILLILAND, ROBERT BLAINE</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>TUYTTENS, RICHARD</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>ANDRES, DAVID P</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>GINTER, KENNETH P</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>ROBERTS, RICHARD WILLIAM</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>SORELL, CLARENCE DOUGLAS</td>
+            <td class="amount">$28,960.00</td>
+        </tr>
+        <tr>
+            <td>VANDELAAR, DAVID</td>
+            <td class="amount">$28,842.00</td>
+        </tr>
+        <tr>
+            <td>GRAHAM, LANCE ARNOLD</td>
+            <td class="amount">$28,842.00</td>
+        </tr>
+        <tr>
+            <td>THON, RICHARD BRUCE</td>
+            <td class="amount">$28,800.00</td>
+        </tr>
+        <tr>
+            <td>LOUREIRO, HENRIQUE MANUEL</td>
+            <td class="amount">$28,800.00</td>
+        </tr>
+        <tr>
+            <td>BRYAN, GERARD AMBROSE</td>
+            <td class="amount">$28,800.00</td>
+        </tr>
+        <tr>
+            <td>VAN DOK, HENDRIKES</td>
+            <td class="amount">$28,500.00</td>
+        </tr>
+        <tr>
+            <td>ROBINSON, HOWARD</td>
+            <td class="amount">$28,500.00</td>
+        </tr>
+        <tr>
+            <td>TENORIO, EDUARDO BARUNDI</td>
+            <td class="amount">$28,500.00</td>
+        </tr>
+        <tr>
+            <td>GARSIDE, JAMES COLINS</td>
+            <td class="amount">$28,500.00</td>
+        </tr>
+        <tr>
+            <td>GAIGA, LORIS</td>
+            <td class="amount">$28,500.00</td>
+        </tr>
+        <tr>
+            <td>COURTORIELLE, MELVIN JOHN</td>
+            <td class="amount">$28,410.00</td>
+        </tr>
+        <tr>
+            <td>CRAWFORD, BRADLEY STEPHEN</td>
+            <td class="amount">$28,365.00</td>
+        </tr>
+        <tr>
+            <td>WRIGHT–COOPER, KATHARINE LANA</td>
+            <td class="amount">$28,285.00</td>
+        </tr>
+        <tr>
+            <td>GRAY, GORDON ALEXANDER</td>
+            <td class="amount">$28,275.00</td>
+        </tr>
+        <tr>
+            <td>STOREY, ALEXANDER JOSEPH</td>
+            <td class="amount">$28,229.00</td>
+        </tr>
+        <tr>
+            <td>BALDWIN, WALTER EVAN</td>
+            <td class="amount">$28,229.00</td>
+        </tr>
+        <tr>
+            <td>MCLEAN, COLIN BRUCE</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>JOHN, MARLENE GAIL</td>
+            <td class="amount">$27,945.00</td>
+        </tr>
+        <tr>
+            <td>WEST, DONALD FREDERICK</td>
+            <td class="amount">$27,908.00</td>
+        </tr>
+        <tr>
+            <td>GAIRDNER, KENNETH PATRICK</td>
+            <td class="amount">$27,747.00</td>
+        </tr>
+        <tr>
+            <td>PEETERS, DONALD</td>
+            <td class="amount">$27,600.00</td>
+        </tr>
+        <tr>
+            <td>BEATON, ARCHIE BRENT</td>
+            <td class="amount">$27,600.00</td>
+        </tr>
+        <tr>
+            <td>MARTENS, WILLIAM</td>
+            <td class="amount">$27,555.00</td>
+        </tr>
+        <tr>
+            <td>BRIN, DENIS FRANCOIS JOSEPH</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>MITCHELL, RICHARD THOMAS</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>HARDONK, RYAN</td>
+            <td class="amount">$27,144.00</td>
+        </tr>
+        <tr>
+            <td>BRAUNHOFFEN, RICHARD</td>
+            <td class="amount">$27,144.00</td>
+        </tr>
+        <tr>
+            <td>ALBERS, ROBERT</td>
+            <td class="amount">$27,120.00</td>
+        </tr>
+        <tr>
+            <td>WILKERSON, ANDY KEN</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>KOLABABA, BRADLEY ALEXANDER</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>ENDRIZZI, ALDO</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>RIDGEWAY, RANDOLPH CHARLES</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>JUBINVILLE, JOSEPH GEORGES</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>SORENSON, GLEN N</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>MARSH, KENNETH MURRAY BERNHARD</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>BRUNETTI, OLINDO</td>
+            <td class="amount">$26,670.00</td>
+        </tr>
+        <tr>
+            <td>METZNER, CHARLES WILLIAM</td>
+            <td class="amount">$26,634.00</td>
+        </tr>
+        <tr>
+            <td>BETTS, ROY ALAN</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>LAPONDER, LARRY JOHN</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>ASSELSTINE, HOWARD BLAKE</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>WATSON, BARTLET ROY</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>FRANKLIN, ALLEN CHARLES</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>EWALD, GREGORY STEWART</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>MCLANE, DANIEL WILLIAM MOSES</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>SCHNEIDER, DONALD ANTON</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>ROUSE, GARY JOSEPH</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>ODLUM BROWN LIMITED</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>RAWLEK, RITCHIE</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>BRANCO, LUIS RAMOS</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS, DALE</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>HENRICKSON, KEVIN JOHN</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>VIGEANT, CYRIL PATRICK</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>KLASSEN, JAMES</td>
+            <td class="amount">$26,400.00</td>
+        </tr>
+        <tr>
+            <td>DULAY, PARMJIT SINGH</td>
+            <td class="amount">$26,328.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS, ALAN EDWARD</td>
+            <td class="amount">$26,328.00</td>
+        </tr>
+        <tr>
+            <td>BHATHAL, JASWINDER</td>
+            <td class="amount">$26,328.00</td>
+        </tr>
+        <tr>
+            <td>WOESTENBURG, BERNARD WILLIAM</td>
+            <td class="amount">$26,328.00</td>
+        </tr>
+        <tr>
+            <td>ZERR, MARCUS MAXWELL</td>
+            <td class="amount">$26,037.00</td>
+        </tr>
+        <tr>
+            <td>HOTTE, WAYNE ALLEN</td>
+            <td class="amount">$26,014.00</td>
+        </tr>
+        <tr>
+            <td>BARBACUTA, RADU</td>
+            <td class="amount">$25,899.00</td>
+        </tr>
+        <tr>
+            <td>NAETH, REGGLYN</td>
+            <td class="amount">$25,254.00</td>
+        </tr>
+        <tr>
+            <td>MORTENSON, BLAKE GUNNAR</td>
+            <td class="amount">$25,254.00</td>
+        </tr>
+        <tr>
+            <td>ARRUDA, JOSE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>AURINGER, JAMES P</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>POWELL, WILLIAM FORBES BLAIR</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>LOZINSKI, GERTRUDE LYNN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BAILEY, RUSSELL LEE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>PORTER, TIMOTHY ALLAN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BEETLESTONE, MARK</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ZAK, JOHN ROGER</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WALBERG, WAYNE EDGAR</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>VIVEIROS, DANIEL MORRIZ</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DOWSE, ALEXANDER</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MAZIER, DONALD</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HAMEL, JOSEPH HENRI PAUL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HALLBERG, LYLE NORMAN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GREEN, DONNA ELAINE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HAASJES, BERT</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DE MEDEIROS, JOSE LUIS</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DEMEDEIROS, JOSE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>FOTHERGILL, DAVID ARTHUR</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL, LAWRENCE EARL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>NORMAN, ROBERT CRAIG</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MAKELA, VEIKKO ILMARI</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KRIEGER, LYNN CECILIA</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GILL, KULDIP SINGH</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SIHOTA, NIRMAL SINGH</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HIMECH, EARL STEPHEN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMAS, BRUCE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MOGG, ROGER</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MODAHL, ALFRED ROY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GOGAG, DENNIS LEONARD</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BOTELHO, JACINTO</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BODO, EDWARD JOSEPH</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DHILLON, AVTAR SINGH</td>
+            <td class="amount">$24,500.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA LAW INSTITUTE</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

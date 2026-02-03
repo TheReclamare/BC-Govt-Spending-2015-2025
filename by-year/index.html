@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>By Year - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Browse spending data by fiscal year</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html" class="active">By Year</a><a href="../by-ministry/index.html">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; By Year
+        </div>
+        
+        <div class="card">
+            <h2>Select a Fiscal Year</h2>
+            <div class="year-grid">
+                
+        <a href="fye2015.html" class="year-link">
+            <h3>FYE 2015</h3>
+            <div class="amount">$38.23B</div>
+            <div class="count">11,070 recipients</div>
+        </a>
+        
+        <a href="fye2016.html" class="year-link">
+            <h3>FYE 2016</h3>
+            <div class="amount">$39.48B</div>
+            <div class="count">11,192 recipients</div>
+        </a>
+        
+        <a href="fye2017.html" class="year-link">
+            <h3>FYE 2017</h3>
+            <div class="amount">$42.76B</div>
+            <div class="count">11,516 recipients</div>
+        </a>
+        
+        <a href="fye2018.html" class="year-link">
+            <h3>FYE 2018</h3>
+            <div class="amount">$44.33B</div>
+            <div class="count">12,123 recipients</div>
+        </a>
+        
+        <a href="fye2019.html" class="year-link">
+            <h3>FYE 2019</h3>
+            <div class="amount">$46.56B</div>
+            <div class="count">12,540 recipients</div>
+        </a>
+        
+        <a href="fye2020.html" class="year-link">
+            <h3>FYE 2020</h3>
+            <div class="amount">$51.13B</div>
+            <div class="count">12,793 recipients</div>
+        </a>
+        
+        <a href="fye2021.html" class="year-link">
+            <h3>FYE 2021</h3>
+            <div class="amount">$59.75B</div>
+            <div class="count">15,434 recipients</div>
+        </a>
+        
+        <a href="fye2022.html" class="year-link">
+            <h3>FYE 2022</h3>
+            <div class="amount">$60.18B</div>
+            <div class="count">21,200 recipients</div>
+        </a>
+        
+        <a href="fye2023.html" class="year-link">
+            <h3>FYE 2023</h3>
+            <div class="amount">$62.55B</div>
+            <div class="count">15,227 recipients</div>
+        </a>
+        
+        <a href="fye2024.html" class="year-link">
+            <h3>FYE 2024</h3>
+            <div class="amount">$76.97B</div>
+            <div class="count">17,619 recipients</div>
+        </a>
+        
+        <a href="fye2025.html" class="year-link">
+            <h3>FYE 2025</h3>
+            <div class="amount">$81.88B</div>
+            <div class="count">17,599 recipients</div>
+        </a>
+        
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+</body>
+</html>

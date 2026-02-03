@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigenous Relations and Reconciliation - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Indigenous Relations and Reconciliation</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Indigenous Relations and Reconciliation
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$4.52B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">518</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Indigenous Relations and Reconciliation</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>NEW RELATIONSHIP TRUST</td>
+            <td class="amount">$400,112,000.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL SOCIETY</td>
+            <td class="amount">$371,960,166.00</td>
+        </tr>
+        <tr>
+            <td>BC FIRST NATIONS GAMING REVENUE SHARING LIMITED PARTNERSHIP</td>
+            <td class="amount">$268,846,791.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER–SEKANI TRIBAL COUNCIL</td>
+            <td class="amount">$233,054,608.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$124,763,732.00</td>
+        </tr>
+        <tr>
+            <td>GOWLING WLG (CANADA) LLP</td>
+            <td class="amount">$108,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MCLEOD LAKE INDIAN BAND</td>
+            <td class="amount">$106,022,426.00</td>
+        </tr>
+        <tr>
+            <td>CHESLATTA COMMUNITY TRUST</td>
+            <td class="amount">$103,000,000.00</td>
+        </tr>
+        <tr>
+            <td>TSILHQOT'IN NATIONAL GOVERNMENT</td>
+            <td class="amount">$93,705,830.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON FIRST NATION</td>
+            <td class="amount">$88,425,315.00</td>
+        </tr>
+        <tr>
+            <td>BLUEBERRY RIVER FIRST NATIONS</td>
+            <td class="amount">$79,939,227.00</td>
+        </tr>
+        <tr>
+            <td>FIRST PEOPLES' HERITAGE, LANGUAGE AND CULTURE COUNCIL</td>
+            <td class="amount">$77,453,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION</td>
+            <td class="amount">$76,688,600.00</td>
+        </tr>
+        <tr>
+            <td>HALFWAY RIVER FIRST NATION</td>
+            <td class="amount">$72,033,004.00</td>
+        </tr>
+        <tr>
+            <td>RATCLIFF LLP, IN TRUST</td>
+            <td class="amount">$65,000,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST MOBERLY FIRST NATIONS</td>
+            <td class="amount">$64,647,394.00</td>
+        </tr>
+        <tr>
+            <td>SHISHALH NATION</td>
+            <td class="amount">$59,908,665.00</td>
+        </tr>
+        <tr>
+            <td>NLAKA'PAMUX LEGACY TRUST (2013)</td>
+            <td class="amount">$58,936,899.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN NATION ALLIANCE</td>
+            <td class="amount">$57,792,381.00</td>
+        </tr>
+        <tr>
+            <td>PROPHET RIVER FIRST NATION</td>
+            <td class="amount">$54,526,775.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP NATION TRIBAL COUNCIL SOCIETY</td>
+            <td class="amount">$53,712,381.00</td>
+        </tr>
+        <tr>
+            <td>SECHELT INDIAN BAND</td>
+            <td class="amount">$52,550,763.00</td>
+        </tr>
+        <tr>
+            <td>DOIG RIVER FIRST NATION</td>
+            <td class="amount">$52,314,023.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE BAND</td>
+            <td class="amount">$50,807,213.00</td>
+        </tr>
+        <tr>
+            <td>SECRETARIAT OF THE HAIDA NATION</td>
+            <td class="amount">$49,492,712.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN CENTRAL GOVERNMENT</td>
+            <td class="amount">$38,153,774.00</td>
+        </tr>
+        <tr>
+            <td>NLAKA'PAMUX NATION TRIBAL COUNCIL</td>
+            <td class="amount">$36,879,042.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ASSOCIATION OF ABORIGINAL FRIENDSHIP CENTRES</td>
+            <td class="amount">$31,814,847.00</td>
+        </tr>
+        <tr>
+            <td>LHEIDLI T'ENNEH BAND</td>
+            <td class="amount">$31,326,559.00</td>
+        </tr>
+        <tr>
+            <td>RATCLIFF & COMPANY LLP</td>
+            <td class="amount">$28,700,000.00</td>
+        </tr>
+        <tr>
+            <td>FARRIS LLP, IN TRUST</td>
+            <td class="amount">$28,644,600.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH NATION</td>
+            <td class="amount">$28,544,263.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK TRIBAL COUNCIL</td>
+            <td class="amount">$28,541,328.00</td>
+        </tr>
+        <tr>
+            <td>FIRST PEOPLES' CULTURAL FOUNDATION</td>
+            <td class="amount">$27,000,000.00</td>
+        </tr>
+        <tr>
+            <td>K'OMOKS FIRST NATION</td>
+            <td class="amount">$26,980,729.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AZDLI WHUT'EN</td>
+            <td class="amount">$25,743,654.00</td>
+        </tr>
+        <tr>
+            <td>LOWER NICOLA INDIAN BAND</td>
+            <td class="amount">$25,195,590.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN, KASKA, TLINGIT – 3 NATIONS SOCIETY</td>
+            <td class="amount">$24,204,400.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN FIRST NATION</td>
+            <td class="amount">$23,900,510.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN TRIBES</td>
+            <td class="amount">$23,682,697.00</td>
+        </tr>
+        <tr>
+            <td>KITSUMKALUM FIRST NATION</td>
+            <td class="amount">$23,200,610.00</td>
+        </tr>
+        <tr>
+            <td>GREAT BEAR INITIATIVE SOCIETY</td>
+            <td class="amount">$22,478,160.00</td>
+        </tr>
+        <tr>
+            <td>B C TREATY COMMISSION</td>
+            <td class="amount">$21,491,546.00</td>
+        </tr>
+        <tr>
+            <td>GITXAALA NATION</td>
+            <td class="amount">$19,338,482.00</td>
+        </tr>
+        <tr>
+            <td>HUU–AY–AHT FIRST NATIONS</td>
+            <td class="amount">$19,314,366.00</td>
+        </tr>
+        <tr>
+            <td>SIMPCW FIRST NATION</td>
+            <td class="amount">$18,535,627.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS FIRST NATION</td>
+            <td class="amount">$18,316,830.00</td>
+        </tr>
+        <tr>
+            <td>GITANYOW HEREDITARY CHIEFS</td>
+            <td class="amount">$17,107,903.00</td>
+        </tr>
+        <tr>
+            <td>FARRIS, VAUGHAN, WILLS & MURPHY LLP, IN TRUST FOR GITXAALA NATION</td>
+            <td class="amount">$16,539,600.00</td>
+        </tr>
+        <tr>
+            <td>QWELMINTE SECWEPEMC</td>
+            <td class="amount">$16,325,000.00</td>
+        </tr>
+        <tr>
+            <td>SODA CREEK INDIAN BAND</td>
+            <td class="amount">$15,381,136.00</td>
+        </tr>
+        <tr>
+            <td>CALLISON & HANNA BARRISTERS & SOLICITORS</td>
+            <td class="amount">$15,000,000.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES</td>
+            <td class="amount">$14,328,526.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A LISIMS GOVERNMENT</td>
+            <td class="amount">$13,927,561.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA TREATY COMMISSION</td>
+            <td class="amount">$13,914,225.00</td>
+        </tr>
+        <tr>
+            <td>NAMGIS FIRST NATION</td>
+            <td class="amount">$13,700,703.00</td>
+        </tr>
+        <tr>
+            <td>THE CAPE MUDGE INDIAN BAND</td>
+            <td class="amount">$13,687,126.00</td>
+        </tr>
+        <tr>
+            <td>WITSET FIRST NATION</td>
+            <td class="amount">$13,684,315.00</td>
+        </tr>
+        <tr>
+            <td>TSLEIL–WAUTUTH NATION</td>
+            <td class="amount">$13,512,892.00</td>
+        </tr>
+        <tr>
+            <td>TK'EMLUPS TE SECWEPEMC</td>
+            <td class="amount">$13,512,007.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS LAKE INDIAN BAND</td>
+            <td class="amount">$13,274,927.00</td>
+        </tr>
+        <tr>
+            <td>DELOITTE WEALTH MANAGEMENT SERVICES LLP</td>
+            <td class="amount">$13,249,560.00</td>
+        </tr>
+        <tr>
+            <td>DOIG RIVER BAND</td>
+            <td class="amount">$12,912,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSEMBLY OF FIRST NATIONS</td>
+            <td class="amount">$12,760,866.00</td>
+        </tr>
+        <tr>
+            <td>JOHNS SOUTHWARD GLAZIER WALTON MARGETTS LLP, IN TRUST</td>
+            <td class="amount">$12,674,250.00</td>
+        </tr>
+        <tr>
+            <td>WUIKINUXV FIRST NATION</td>
+            <td class="amount">$12,605,569.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER SEKANI FIRST NATION SOCIETY</td>
+            <td class="amount">$12,305,798.00</td>
+        </tr>
+        <tr>
+            <td>SKIN TYEE NATION</td>
+            <td class="amount">$12,302,588.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN INDIAN BAND</td>
+            <td class="amount">$12,252,731.00</td>
+        </tr>
+        <tr>
+            <td>LHTAKO DENE NATION</td>
+            <td class="amount">$12,101,169.00</td>
+        </tr>
+        <tr>
+            <td>FORT WARE INDIAN BAND (KWADACHA BAND)</td>
+            <td class="amount">$11,751,243.00</td>
+        </tr>
+        <tr>
+            <td>WOODWARD & CO. LAWYERS LLP, IN TRUST</td>
+            <td class="amount">$11,570,000.00</td>
+        </tr>
+        <tr>
+            <td>TSESHAHT FIRST NATION</td>
+            <td class="amount">$11,535,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$10,931,791.00</td>
+        </tr>
+        <tr>
+            <td>CHESLATTA CARRIER NATION</td>
+            <td class="amount">$10,380,460.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A NATION</td>
+            <td class="amount">$10,305,215.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP INDIAN BAND</td>
+            <td class="amount">$10,182,724.00</td>
+        </tr>
+        <tr>
+            <td>TLA'AMIN NATION</td>
+            <td class="amount">$10,132,442.00</td>
+        </tr>
+        <tr>
+            <td>WEI WAI KUM–KWIAKAH TREATY SOCIETY</td>
+            <td class="amount">$10,130,120.00</td>
+        </tr>
+        <tr>
+            <td>UPPER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$10,117,074.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC LIMITED PARTNERSHIP</td>
+            <td class="amount">$10,089,250.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP INDIAN BAND</td>
+            <td class="amount">$9,854,632.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS BAND COUNCIL</td>
+            <td class="amount">$9,741,832.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE RUPERT</td>
+            <td class="amount">$9,500,000.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO SERVICE AGENCY SOCIETY</td>
+            <td class="amount">$9,450,000.00</td>
+        </tr>
+        <tr>
+            <td>KITSUMKALUM INDIAN BAND</td>
+            <td class="amount">$9,076,693.00</td>
+        </tr>
+        <tr>
+            <td>METIS PROVINCIAL COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$8,719,199.00</td>
+        </tr>
+        <tr>
+            <td>WET'SUWET'EN TREATY OFFICE SOCIETY</td>
+            <td class="amount">$8,658,900.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT NATION</td>
+            <td class="amount">$8,557,915.00</td>
+        </tr>
+        <tr>
+            <td>GITGA'AT FIRST NATION</td>
+            <td class="amount">$8,403,964.00</td>
+        </tr>
+        <tr>
+            <td>WESTBANK FIRST NATION</td>
+            <td class="amount">$8,339,718.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS SUMMIT SOCIETY</td>
+            <td class="amount">$7,800,072.00</td>
+        </tr>
+        <tr>
+            <td>NANWAKOLAS COUNCIL SOCIETY</td>
+            <td class="amount">$7,715,000.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW</td>
+            <td class="amount">$7,560,808.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK BAND COUNCIL</td>
+            <td class="amount">$7,538,573.00</td>
+        </tr>
+        <tr>
+            <td>SKEETCHESTN INDIAN BAND</td>
+            <td class="amount">$7,486,847.00</td>
+        </tr>
+        <tr>
+            <td>OSOYOOS INDIAN BAND ADMINISTRATION PROGRAMS</td>
+            <td class="amount">$7,446,781.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRST NATION</td>
+            <td class="amount">$7,424,361.00</td>
+        </tr>
+        <tr>
+            <td>NESKONLITH INDIAN BAND</td>
+            <td class="amount">$7,184,822.00</td>
+        </tr>
+        <tr>
+            <td>WET'SUWET'EN FIRST NATION</td>
+            <td class="amount">$6,993,421.00</td>
+        </tr>
+        <tr>
+            <td>DAYLU DENA COUNCIL</td>
+            <td class="amount">$6,932,624.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER INDIAN BAND</td>
+            <td class="amount">$6,772,739.00</td>
+        </tr>
+        <tr>
+            <td>HOMALCO INDIAN BAND</td>
+            <td class="amount">$6,677,193.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION</td>
+            <td class="amount">$6,586,457.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT TRIBE</td>
+            <td class="amount">$6,497,975.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON INDIAN BAND</td>
+            <td class="amount">$6,479,254.00</td>
+        </tr>
+        <tr>
+            <td>YEKOOCHE FIRST NATION</td>
+            <td class="amount">$6,357,590.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA FIRST NATION</td>
+            <td class="amount">$6,260,515.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA NATION</td>
+            <td class="amount">$6,254,672.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGAT'TEM FIRST NATION</td>
+            <td class="amount">$6,238,774.00</td>
+        </tr>
+        <tr>
+            <td>KLUSKUS MANAGEMENT HOLDINGS LTD.</td>
+            <td class="amount">$6,185,440.00</td>
+        </tr>
+        <tr>
+            <td>GITXSAN TREATY SOCIETY</td>
+            <td class="amount">$6,113,875.00</td>
+        </tr>
+        <tr>
+            <td>A.T. RANA PROFESSIONAL CORPORATION, IN TRUST</td>
+            <td class="amount">$6,000,000.00</td>
+        </tr>
+        <tr>
+            <td>TLOWITSIS TRIBE</td>
+            <td class="amount">$5,872,159.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE FIRST NATION</td>
+            <td class="amount">$5,781,024.00</td>
+        </tr>
+        <tr>
+            <td>TS'ELXWEYEQW TRIBE LIMITED PARTNERSHIP</td>
+            <td class="amount">$5,772,856.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO FIRST NATION</td>
+            <td class="amount">$5,749,868.00</td>
+        </tr>
+        <tr>
+            <td>LAXYIP MANAGEMENT OFFICE SOCIETY</td>
+            <td class="amount">$5,700,646.00</td>
+        </tr>
+        <tr>
+            <td>DGW LAW CORPORATION IN TRUST</td>
+            <td class="amount">$5,665,000.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE BAND</td>
+            <td class="amount">$5,537,328.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE INDIAN BAND</td>
+            <td class="amount">$5,490,995.00</td>
+        </tr>
+        <tr>
+            <td>STIKEMAN ELLIOTT LLP IN TRUST</td>
+            <td class="amount">$5,456,053.00</td>
+        </tr>
+        <tr>
+            <td>DITIDAHT FIRST NATION</td>
+            <td class="amount">$5,416,253.00</td>
+        </tr>
+        <tr>
+            <td>UNION OF BC INDIAN CHIEFS</td>
+            <td class="amount">$5,405,516.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT BAND</td>
+            <td class="amount">$5,214,046.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP BAND</td>
+            <td class="amount">$5,188,874.00</td>
+        </tr>
+        <tr>
+            <td>LYACKSON FIRST NATION</td>
+            <td class="amount">$4,775,896.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO INDIAN BAND</td>
+            <td class="amount">$4,735,427.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS BAND</td>
+            <td class="amount">$4,687,792.00</td>
+        </tr>
+        <tr>
+            <td>BINCHE KEYOH BU SOCIETY</td>
+            <td class="amount">$4,619,191.00</td>
+        </tr>
+        <tr>
+            <td>KWIKWETLEM FIRST NATION</td>
+            <td class="amount">$4,595,795.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS INDIAN BAND</td>
+            <td class="amount">$4,585,723.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO INDIAN BAND</td>
+            <td class="amount">$4,559,511.00</td>
+        </tr>
+        <tr>
+            <td>CAMP FIORANTE MATTHEWS MOGERMAN LLP IN TRUST</td>
+            <td class="amount">$4,550,000.00</td>
+        </tr>
+        <tr>
+            <td>PACHEEDAHT FIRST NATION</td>
+            <td class="amount">$4,489,589.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$4,322,001.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW FIRST NATION</td>
+            <td class="amount">$4,242,707.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES DEVELOPMENT CORPORATION</td>
+            <td class="amount">$4,171,955.00</td>
+        </tr>
+        <tr>
+            <td>ESK'ETEMC FIRST NATION</td>
+            <td class="amount">$4,157,230.00</td>
+        </tr>
+        <tr>
+            <td>NEE TAHI–BUHN BAND</td>
+            <td class="amount">$4,145,640.00</td>
+        </tr>
+        <tr>
+            <td>SOUTHERN DAKELH NATION ALLIANCE SOCIETY</td>
+            <td class="amount">$4,120,000.00</td>
+        </tr>
+        <tr>
+            <td>COAST SALISH DEVELOPMENT CORPORATION</td>
+            <td class="amount">$4,050,000.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN, KASKA, TLINGIT – 3N SOCIETY</td>
+            <td class="amount">$3,900,000.00</td>
+        </tr>
+        <tr>
+            <td>NICOMEN INDIAN BAND</td>
+            <td class="amount">$3,803,140.00</td>
+        </tr>
+        <tr>
+            <td>HIGH BAR FIRST NATION</td>
+            <td class="amount">$3,590,255.00</td>
+        </tr>
+        <tr>
+            <td>HUPACASATH FIRST NATION</td>
+            <td class="amount">$3,531,557.00</td>
+        </tr>
+        <tr>
+            <td>ALL NATIONS TRUST COMPANY</td>
+            <td class="amount">$3,523,800.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS FISHERIES SOCIETY</td>
+            <td class="amount">$3,486,600.00</td>
+        </tr>
+        <tr>
+            <td>COOK'S FERRY INDIAN BAND</td>
+            <td class="amount">$3,480,010.00</td>
+        </tr>
+        <tr>
+            <td>SHACKAN INDIAN BAND</td>
+            <td class="amount">$3,460,509.00</td>
+        </tr>
+        <tr>
+            <td>KOFFMAN KALEF LLP IN TRUST</td>
+            <td class="amount">$3,246,437.00</td>
+        </tr>
+        <tr>
+            <td>TLOWITSIS–MUMTAGILA FIRST NATION</td>
+            <td class="amount">$3,235,508.00</td>
+        </tr>
+        <tr>
+            <td>TAKU RIVER TLINGIT FIRST NATION</td>
+            <td class="amount">$3,231,142.00</td>
+        </tr>
+        <tr>
+            <td>MCLEOD LAKE INDIAN BAND (2017) EDUCATION TRUST</td>
+            <td class="amount">$3,200,000.00</td>
+        </tr>
+        <tr>
+            <td>BC OIL AND GAS COMMISSION</td>
+            <td class="amount">$3,175,000.00</td>
+        </tr>
+        <tr>
+            <td>STELLAT'EN FIRST NATION</td>
+            <td class="amount">$3,086,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAWWASSEN FIRST NATION</td>
+            <td class="amount">$3,018,169.00</td>
+        </tr>
+        <tr>
+            <td>TSQ'ESCEN' FIRST NATION</td>
+            <td class="amount">$3,010,234.00</td>
+        </tr>
+        <tr>
+            <td>COLDWATER INDIAN BAND</td>
+            <td class="amount">$3,010,000.00</td>
+        </tr>
+        <tr>
+            <td>QWELMINTE SECWEPEMC GOVERNMENT TO GOVERNMENT</td>
+            <td class="amount">$3,007,227.00</td>
+        </tr>
+        <tr>
+            <td>DGW LAW CORPORATION</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMP FIORANTE MATTHEWS MORGERMAN</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>NOOAITCH INDIAN BAND</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MILLER, MICHAEL A</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>THE QUATSINO INDIAN BAND</td>
+            <td class="amount">$2,957,534.00</td>
+        </tr>
+        <tr>
+            <td>KANAKA BAR INDIAN BAND</td>
+            <td class="amount">$2,915,170.00</td>
+        </tr>
+        <tr>
+            <td>THE FIRST NATIONS OF THE MAA NULTH TREATY SOCIETY</td>
+            <td class="amount">$2,905,000.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO NATION</td>
+            <td class="amount">$2,825,000.00</td>
+        </tr>
+        <tr>
+            <td>MANDELL PINDER LLP, IN TRUST</td>
+            <td class="amount">$2,818,500.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO FIRST NATION</td>
+            <td class="amount">$2,781,769.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE FIRST NATION</td>
+            <td class="amount">$2,767,812.00</td>
+        </tr>
+        <tr>
+            <td>C. D. WILSON LAW CORPORATION IN TRUST</td>
+            <td class="amount">$2,749,000.00</td>
+        </tr>
+        <tr>
+            <td>MOOSE HIDE CAMPAIGN DEVELOPMENT SOCIETY</td>
+            <td class="amount">$2,727,500.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC SHUSWAP NATION</td>
+            <td class="amount">$2,640,000.00</td>
+        </tr>
+        <tr>
+            <td>SAIK'UZ FIRST NATION</td>
+            <td class="amount">$2,574,500.00</td>
+        </tr>
+        <tr>
+            <td>SNUNEYMUXW FIRST NATION</td>
+            <td class="amount">$2,542,491.00</td>
+        </tr>
+        <tr>
+            <td>TLA–O–QUI–AHT FIRST NATION</td>
+            <td class="amount">$2,529,006.00</td>
+        </tr>
+        <tr>
+            <td>QUATSINO FIRST NATION</td>
+            <td class="amount">$2,501,836.00</td>
+        </tr>
+        <tr>
+            <td>T'IT'Q'ET ADMINISTRATION</td>
+            <td class="amount">$2,500,106.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SHUSWAP TRIBAL COUNCIL SOCIETY</td>
+            <td class="amount">$2,500,000.00</td>
+        </tr>
+        <tr>
+            <td>UCHUCKLESAHT TRIBE GOVERNMENT</td>
+            <td class="amount">$2,454,901.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA BAND COUNCIL</td>
+            <td class="amount">$2,418,750.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AZDLI INDIAN BAND #614</td>
+            <td class="amount">$2,326,066.00</td>
+        </tr>
+        <tr>
+            <td>SUMAS FIRST NATION</td>
+            <td class="amount">$2,324,826.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE NECHAKO ABORIGINAL EMPLOYMENT AND TRAINING ASSOCIATION</td>
+            <td class="amount">$2,308,752.00</td>
+        </tr>
+        <tr>
+            <td>HESQUIAHT FIRST NATION</td>
+            <td class="amount">$2,277,629.00</td>
+        </tr>
+        <tr>
+            <td>KA:'YU:'K'T'H'/CHE:K'TLES7ET'H' FIRST NATIONS</td>
+            <td class="amount">$2,241,442.00</td>
+        </tr>
+        <tr>
+            <td>DOUGLAS FIRST NATION</td>
+            <td class="amount">$2,202,710.00</td>
+        </tr>
+        <tr>
+            <td>CAPE MUDGE INDIAN BAND</td>
+            <td class="amount">$2,202,516.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT CURRIE INDIAN BAND</td>
+            <td class="amount">$2,184,183.00</td>
+        </tr>
+        <tr>
+            <td>TOQUAHT FIRST NATION</td>
+            <td class="amount">$2,171,749.00</td>
+        </tr>
+        <tr>
+            <td>WHISPERING PINES/CLINTON INDIAN BAND</td>
+            <td class="amount">$2,115,728.00</td>
+        </tr>
+        <tr>
+            <td>BC OIL AND GAS RESEARCH AND INNOVATION SOCIETY</td>
+            <td class="amount">$2,109,000.00</td>
+        </tr>
+        <tr>
+            <td>OLIVER & CO., IN TRUST</td>
+            <td class="amount">$2,100,000.00</td>
+        </tr>
+        <tr>
+            <td>MAMALILIKULLA–QWE–'QWA'SOT'EM BAND</td>
+            <td class="amount">$2,098,510.00</td>
+        </tr>
+        <tr>
+            <td>TL'AZT'EN NATION</td>
+            <td class="amount">$2,010,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER BAND OFFICE</td>
+            <td class="amount">$1,996,213.00</td>
+        </tr>
+        <tr>
+            <td>YUU–TLUTH–AHT FIRST NATION (UCLUELET FIRST NATION)</td>
+            <td class="amount">$1,986,148.00</td>
+        </tr>
+        <tr>
+            <td>KASKA DENA COUNCIL</td>
+            <td class="amount">$1,949,500.00</td>
+        </tr>
+        <tr>
+            <td>BEECHER BAY FIRST NATION</td>
+            <td class="amount">$1,925,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS HEALTH AUTHORITY</td>
+            <td class="amount">$1,908,318.00</td>
+        </tr>
+        <tr>
+            <td>MANDELL PINDER LLP</td>
+            <td class="amount">$1,869,975.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAHT FIRST NATION</td>
+            <td class="amount">$1,837,031.00</td>
+        </tr>
+        <tr>
+            <td>NADLEH WHUT'EN INDIAN BAND</td>
+            <td class="amount">$1,821,000.00</td>
+        </tr>
+        <tr>
+            <td>GITXAALA FIRST NATION</td>
+            <td class="amount">$1,819,000.00</td>
+        </tr>
+        <tr>
+            <td>KA:'YU:'K'T'H'/CHE:K:TLES7ET'H' FIRST NATIONS</td>
+            <td class="amount">$1,800,149.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE INDIAN BAND</td>
+            <td class="amount">$1,795,508.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS BUSINESS DEVELOPMENT LTD.</td>
+            <td class="amount">$1,784,068.00</td>
+        </tr>
+        <tr>
+            <td>CHEMAINUS FIRST NATION</td>
+            <td class="amount">$1,728,447.00</td>
+        </tr>
+        <tr>
+            <td>CHAWATHIL FIRST NATION</td>
+            <td class="amount">$1,716,236.00</td>
+        </tr>
+        <tr>
+            <td>LEQ'A:MEL FIRST NATION</td>
+            <td class="amount">$1,704,301.00</td>
+        </tr>
+        <tr>
+            <td>NEE TAHI BUHN INDIAN BAND</td>
+            <td class="amount">$1,676,056.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION COUNCIL</td>
+            <td class="amount">$1,635,356.00</td>
+        </tr>
+        <tr>
+            <td>XATS'ULL FIRST NATION</td>
+            <td class="amount">$1,627,872.00</td>
+        </tr>
+        <tr>
+            <td>METIS NATION BRITISH COLUMBIA</td>
+            <td class="amount">$1,600,000.00</td>
+        </tr>
+        <tr>
+            <td>GITANYOW HUWILP SOCIETY</td>
+            <td class="amount">$1,556,073.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA NATIVE FRIENDSHIP CENTRE</td>
+            <td class="amount">$1,530,000.00</td>
+        </tr>
+        <tr>
+            <td>RATCLIFF & COMPANY LLP IN TRUST</td>
+            <td class="amount">$1,500,000.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE INDIAN BAND</td>
+            <td class="amount">$1,480,249.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT FIRST NATION</td>
+            <td class="amount">$1,477,100.00</td>
+        </tr>
+        <tr>
+            <td>SKATIN NATIONS</td>
+            <td class="amount">$1,472,053.00</td>
+        </tr>
+        <tr>
+            <td>PENELAKUT TRIBE</td>
+            <td class="amount">$1,471,427.00</td>
+        </tr>
+        <tr>
+            <td>WE WAI KAI NATION</td>
+            <td class="amount">$1,450,200.00</td>
+        </tr>
+        <tr>
+            <td>GWAWAENUK TRIBE</td>
+            <td class="amount">$1,414,645.00</td>
+        </tr>
+        <tr>
+            <td>XAXLI'P FIRST NATION</td>
+            <td class="amount">$1,400,947.00</td>
+        </tr>
+        <tr>
+            <td>MAAQUTUSIIS HAHOULTHEE STEWARDSHIP SOCIETY</td>
+            <td class="amount">$1,400,000.00</td>
+        </tr>
+        <tr>
+            <td>TSARTLIP FIRST NATION</td>
+            <td class="amount">$1,380,000.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK NATION</td>
+            <td class="amount">$1,334,654.00</td>
+        </tr>
+        <tr>
+            <td>RECONCILING WAYS OF KNOWING STEWARDSHIP SOCIETY</td>
+            <td class="amount">$1,319,000.00</td>
+        </tr>
+        <tr>
+            <td>SAMAHQUAM INDIAN BAND</td>
+            <td class="amount">$1,312,373.00</td>
+        </tr>
+        <tr>
+            <td>NIKANESE WAH TZEE STEWARDSHIP SOCIETY</td>
+            <td class="amount">$1,300,000.00</td>
+        </tr>
+        <tr>
+            <td>METRO VANCOUVER ABORIGINAL EXECUTIVE COUNCIL</td>
+            <td class="amount">$1,287,000.00</td>
+        </tr>
+        <tr>
+            <td>SHXW'OW'HAMEL FIRST NATION</td>
+            <td class="amount">$1,265,739.00</td>
+        </tr>
+        <tr>
+            <td>TS'KW'AYLAXW FIRST NATION</td>
+            <td class="amount">$1,253,619.00</td>
+        </tr>
+        <tr>
+            <td>KITASOO BAND COUNCIL</td>
+            <td class="amount">$1,243,753.00</td>
+        </tr>
+        <tr>
+            <td>NADLEH WHUT'EN BAND</td>
+            <td class="amount">$1,230,000.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL BAND COUNCIL</td>
+            <td class="amount">$1,228,370.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGET'TEM FIRST NATION</td>
+            <td class="amount">$1,226,756.00</td>
+        </tr>
+        <tr>
+            <td>KITASOO DEVELOPMENT CORPORATION</td>
+            <td class="amount">$1,177,123.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE NATION</td>
+            <td class="amount">$1,175,386.00</td>
+        </tr>
+        <tr>
+            <td>HALALT FIRST NATION</td>
+            <td class="amount">$1,167,980.00</td>
+        </tr>
+        <tr>
+            <td>TOQUAHT NATION</td>
+            <td class="amount">$1,155,419.00</td>
+        </tr>
+        <tr>
+            <td>SECWEPEMC RECONCILIATION FRAMEWORK AGREEMENT IN TRUST</td>
+            <td class="amount">$1,150,000.00</td>
+        </tr>
+        <tr>
+            <td>QUATSINO BAND COUNCIL</td>
+            <td class="amount">$1,115,579.00</td>
+        </tr>
+        <tr>
+            <td>SIMGIGET'M GITWANGAK SOCIETY</td>
+            <td class="amount">$1,099,549.00</td>
+        </tr>
+        <tr>
+            <td>MATSQUI FIRST NATION</td>
+            <td class="amount">$1,091,049.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$1,077,185.00</td>
+        </tr>
+        <tr>
+            <td>DEASE RIVER FIRST NATION</td>
+            <td class="amount">$1,076,143.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND BAND</td>
+            <td class="amount">$1,068,651.00</td>
+        </tr>
+        <tr>
+            <td>ASHCROFT INDIAN BAND</td>
+            <td class="amount">$1,047,757.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA BAND</td>
+            <td class="amount">$1,028,376.00</td>
+        </tr>
+        <tr>
+            <td>ESDILAGH FIRST NATION</td>
+            <td class="amount">$1,022,461.00</td>
+        </tr>
+        <tr>
+            <td>SISKA INDIAN BAND</td>
+            <td class="amount">$1,018,122.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH FIRST NATION</td>
+            <td class="amount">$1,014,247.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE INDIAN BAND</td>
+            <td class="amount">$1,010,921.00</td>
+        </tr>
+        <tr>
+            <td>WOODWARD & CO. LAWYERS LLP IN TRUST</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BINCHE WHUT'EN NATION</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER KOOTENAY INDIAN BAND</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>LEQ'A:MEL MATHEXWI SEMA:TH SOCIETY</td>
+            <td class="amount">$995,000.00</td>
+        </tr>
+        <tr>
+            <td>KATZIE FIRST NATION</td>
+            <td class="amount">$980,028.00</td>
+        </tr>
+        <tr>
+            <td>BOSTON BAR FIRST NATION</td>
+            <td class="amount">$971,533.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN FIRST NATION</td>
+            <td class="amount">$962,342.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$935,016.00</td>
+        </tr>
+        <tr>
+            <td>SLIAMMON FIRST NATION</td>
+            <td class="amount">$902,220.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND FIRST NATION</td>
+            <td class="amount">$890,717.00</td>
+        </tr>
+        <tr>
+            <td>KLUSKUS INDIAN BAND</td>
+            <td class="amount">$889,536.00</td>
+        </tr>
+        <tr>
+            <td>NORTHEAST ABORIGINAL BUSINESS CENTRE SOCIETY</td>
+            <td class="amount">$881,272.00</td>
+        </tr>
+        <tr>
+            <td>GITXSAN DEVELOPMENT CORPORATION</td>
+            <td class="amount">$876,100.00</td>
+        </tr>
+        <tr>
+            <td>N'QUATQUA BAND</td>
+            <td class="amount">$875,594.00</td>
+        </tr>
+        <tr>
+            <td>KWIKWASUT'INUXW HAXWA'MIS FIRST NATION</td>
+            <td class="amount">$874,339.00</td>
+        </tr>
+        <tr>
+            <td>ESQUIMALT NATION</td>
+            <td class="amount">$863,000.00</td>
+        </tr>
+        <tr>
+            <td>PENELAKUT FIRST NATION</td>
+            <td class="amount">$850,406.00</td>
+        </tr>
+        <tr>
+            <td>SAMAHQUAM FIRST NATION</td>
+            <td class="amount">$848,400.00</td>
+        </tr>
+        <tr>
+            <td>WUIKINUXV NATION</td>
+            <td class="amount">$845,000.00</td>
+        </tr>
+        <tr>
+            <td>NICOLA VALLEY INSTITUTE OF TECHNOLOGY</td>
+            <td class="amount">$844,332.00</td>
+        </tr>
+        <tr>
+            <td>YALE FIRST NATION</td>
+            <td class="amount">$837,286.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA DEVELOPMENT CORPORATION</td>
+            <td class="amount">$829,171.00</td>
+        </tr>
+        <tr>
+            <td>SK'ATSIN RESOURCES LIMITED LIABILITY PARTNERSHIP</td>
+            <td class="amount">$820,840.00</td>
+        </tr>
+        <tr>
+            <td>WE WAI KAI TREATY SOCIETY</td>
+            <td class="amount">$795,000.00</td>
+        </tr>
+        <tr>
+            <td>UCLUELET FIRST NATION</td>
+            <td class="amount">$776,715.00</td>
+        </tr>
+        <tr>
+            <td>SKAWAHLOOK FIRST NATION</td>
+            <td class="amount">$756,865.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE ABORIGINAL BUSINESS DEVELOPMENT ASSOCIATION</td>
+            <td class="amount">$751,799.00</td>
+        </tr>
+        <tr>
+            <td>ALEXANDRIA INDIAN BAND</td>
+            <td class="amount">$734,825.00</td>
+        </tr>
+        <tr>
+            <td>KWICKSUTAINEUK/AH'KWAW'AH'MISH FIRST NATION</td>
+            <td class="amount">$731,312.00</td>
+        </tr>
+        <tr>
+            <td>COUNCIL OF THE HAIDA NATION</td>
+            <td class="amount">$730,000.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGAT'TEM CANOE/DOG CREEK INDIAN BAND</td>
+            <td class="amount">$707,004.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS INDIAN BAND</td>
+            <td class="amount">$705,622.00</td>
+        </tr>
+        <tr>
+            <td>MICHAEL A. MILLER, BARRISTER & SOLICITOR, IN TRUST</td>
+            <td class="amount">$685,457.00</td>
+        </tr>
+        <tr>
+            <td>MORICETOWN BAND COUNCIL</td>
+            <td class="amount">$679,825.00</td>
+        </tr>
+        <tr>
+            <td>TLA–O–QUI–AHT FIRST NATIONS</td>
+            <td class="amount">$676,114.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND UNIVERSITY</td>
+            <td class="amount">$665,716.00</td>
+        </tr>
+        <tr>
+            <td>XENI GWET'IN FIRST NATIONS GOVERNMENT</td>
+            <td class="amount">$661,607.00</td>
+        </tr>
+        <tr>
+            <td>SKATIN NATION</td>
+            <td class="amount">$661,220.00</td>
+        </tr>
+        <tr>
+            <td>KYAH WIGET EDUCATION SOCIETY</td>
+            <td class="amount">$637,000.00</td>
+        </tr>
+        <tr>
+            <td>DA'NAXDA'XW/AWAETLALA FIRST NATION</td>
+            <td class="amount">$627,995.00</td>
+        </tr>
+        <tr>
+            <td>TS'IL KAZ KOH</td>
+            <td class="amount">$624,000.00</td>
+        </tr>
+        <tr>
+            <td>HAIDA NATION</td>
+            <td class="amount">$600,000.00</td>
+        </tr>
+        <tr>
+            <td>TESLIN TLINGIT COUNCIL</td>
+            <td class="amount">$600,000.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE BAND COUNCIL</td>
+            <td class="amount">$599,745.00</td>
+        </tr>
+        <tr>
+            <td>STZ'UMINUS FIRST NATION</td>
+            <td class="amount">$594,921.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS MAJOR PROJECTS COALITION SOCIETY</td>
+            <td class="amount">$590,400.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS FIRST NATION</td>
+            <td class="amount">$590,000.00</td>
+        </tr>
+        <tr>
+            <td>KATZIE INDIAN BAND</td>
+            <td class="amount">$567,056.00</td>
+        </tr>
+        <tr>
+            <td>PETERS BAND</td>
+            <td class="amount">$551,173.00</td>
+        </tr>
+        <tr>
+            <td>SCOWLITZ FIRST NATION</td>
+            <td class="amount">$540,117.00</td>
+        </tr>
+        <tr>
+            <td>TSAL'ALH</td>
+            <td class="amount">$536,667.00</td>
+        </tr>
+        <tr>
+            <td>QUALICUM FIRST NATION</td>
+            <td class="amount">$534,541.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA NATION</td>
+            <td class="amount">$530,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION FORESTRY SERVICES LIMITED PARTNERSHIP</td>
+            <td class="amount">$525,000.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT INDIAN BAND</td>
+            <td class="amount">$520,399.00</td>
+        </tr>
+        <tr>
+            <td>WSANEC LEADERSHIP COUNCIL SOCIETY</td>
+            <td class="amount">$520,000.00</td>
+        </tr>
+        <tr>
+            <td>MALAHAT FIRST NATION</td>
+            <td class="amount">$517,216.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$515,000.00</td>
+        </tr>
+        <tr>
+            <td>BC FIRST NATIONS FORESTRY COUNCIL</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>LYTTON FIRST NATION</td>
+            <td class="amount">$499,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKES DISTRICT ABORIGINAL TRAINING TO EMPLOYMENT SOCIETY</td>
+            <td class="amount">$495,400.00</td>
+        </tr>
+        <tr>
+            <td>CLARKE LAKE GEOTHERMAL GP LTD.</td>
+            <td class="amount">$485,000.00</td>
+        </tr>
+        <tr>
+            <td>AQAM COMMUNITY ENTERPRISES</td>
+            <td class="amount">$475,000.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO TRIBAL COUNCIL</td>
+            <td class="amount">$475,000.00</td>
+        </tr>
+        <tr>
+            <td>CHAWATHIL INDIAN BAND</td>
+            <td class="amount">$470,054.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL FIRST NATION</td>
+            <td class="amount">$469,493.00</td>
+        </tr>
+        <tr>
+            <td>CHEAM FIRST NATION</td>
+            <td class="amount">$461,041.00</td>
+        </tr>
+        <tr>
+            <td>POPKUM INDIAN BAND</td>
+            <td class="amount">$458,572.00</td>
+        </tr>
+        <tr>
+            <td>DZAWADA'ENUXW FIRST NATION</td>
+            <td class="amount">$455,000.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES FIRST NATION</td>
+            <td class="amount">$438,967.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS DEVELOPMENT CORPORATION</td>
+            <td class="amount">$425,000.00</td>
+        </tr>
+        <tr>
+            <td>NANOOSE FIRST NATION</td>
+            <td class="amount">$421,344.00</td>
+        </tr>
+        <tr>
+            <td>BURNS LAKE BAND</td>
+            <td class="amount">$415,000.00</td>
+        </tr>
+        <tr>
+            <td>YINKA DENE ECONOMIC DEVELOPMENT GENERAL PARTNER INC.</td>
+            <td class="amount">$409,050.00</td>
+        </tr>
+        <tr>
+            <td>SKIDEGATE BAND COUNCIL</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'ELXWEYEQW FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>STIKEMAN ELLIOTT LLP</td>
+            <td class="amount">$395,535.00</td>
+        </tr>
+        <tr>
+            <td>WEISER, NICK H. M. IN TRUST</td>
+            <td class="amount">$381,310.00</td>
+        </tr>
+        <tr>
+            <td>LAICH–KWIL–TACH TREATY SOCIETY</td>
+            <td class="amount">$372,000.00</td>
+        </tr>
+        <tr>
+            <td>PETERS INDIAN BAND</td>
+            <td class="amount">$369,044.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATION LNG ALLIANCE SOCIETY</td>
+            <td class="amount">$361,000.00</td>
+        </tr>
+        <tr>
+            <td>URBAN NATIVE YOUTH ASSOCIATION</td>
+            <td class="amount">$350,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE COWICHAN FIRST NATION</td>
+            <td class="amount">$329,492.00</td>
+        </tr>
+        <tr>
+            <td>TLATLASIKWALA NATION</td>
+            <td class="amount">$324,665.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$319,000.00</td>
+        </tr>
+        <tr>
+            <td>UCHUCKLESAHT TRIBE</td>
+            <td class="amount">$308,936.00</td>
+        </tr>
+        <tr>
+            <td>LHEIDLI T'ENNEH FIRST NATION</td>
+            <td class="amount">$304,705.00</td>
+        </tr>
+        <tr>
+            <td>BC FIRST NATIONS ENERGY AND MINING COUNCIL</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>SCW'EXMX TRIBAL COUNCIL</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC TE SECWEPEMC NATION</td>
+            <td class="amount">$275,000.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT FIRST NATION</td>
+            <td class="amount">$268,637.00</td>
+        </tr>
+        <tr>
+            <td>NIKIHK MANAGEMENT AND COMMUNITY DEVELOPMENT SOCIETY</td>
+            <td class="amount">$260,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'ELXWEYEQW TRIBE MANAGEMENT LTD.</td>
+            <td class="amount">$255,987.00</td>
+        </tr>
+        <tr>
+            <td>NUCHATLAHT FIRST NATION</td>
+            <td class="amount">$252,595.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAHT ADMINISTRATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CARCROSS/TAGISH FIRST NATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CITXW NLAKA'PAMUX ASSEMBLY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH NATION COUNCIL</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>OFFICE OF THE WET'SUWET'EN</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ACHIEVEMENT FOUNDATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>TL'ETINQOX–T'IN GOVERNMENT</td>
+            <td class="amount">$249,700.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT FIRST NATION</td>
+            <td class="amount">$247,877.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW COUNCIL</td>
+            <td class="amount">$245,600.00</td>
+        </tr>
+        <tr>
+            <td>UNION OF BRITISH COLUMBIA MUNICIPALITIES</td>
+            <td class="amount">$245,000.00</td>
+        </tr>
+        <tr>
+            <td>SCIA'NEW FIRST NATION</td>
+            <td class="amount">$245,000.00</td>
+        </tr>
+        <tr>
+            <td>OLD MASSETT VILLAGE COUNCIL</td>
+            <td class="amount">$242,500.00</td>
+        </tr>
+        <tr>
+            <td>SQ'EWLETS FIRST NATION</td>
+            <td class="amount">$240,936.00</td>
+        </tr>
+        <tr>
+            <td>KITASOO–XAI'XAIS INDIAN BAND</td>
+            <td class="amount">$235,000.00</td>
+        </tr>
+        <tr>
+            <td>TSEYCUM FIRST NATION</td>
+            <td class="amount">$225,000.00</td>
+        </tr>
+        <tr>
+            <td>PETERS FIRST NATION</td>
+            <td class="amount">$222,662.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA LAKE FIRST NATION</td>
+            <td class="amount">$220,000.00</td>
+        </tr>
+        <tr>
+            <td>SONGHEES NATION</td>
+            <td class="amount">$210,000.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE RESORT LIMITED PARTNERSHIP</td>
+            <td class="amount">$203,876.00</td>
+        </tr>
+        <tr>
+            <td>UNION BAR INDIAN BAND</td>
+            <td class="amount">$202,571.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW NATION</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>MAMALILIKULLA FIRST NATION</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ABBOTSFORD</td>
+            <td class="amount">$190,000.00</td>
+        </tr>
+        <tr>
+            <td>UNION BAR FIRST NATION</td>
+            <td class="amount">$184,452.00</td>
+        </tr>
+        <tr>
+            <td>KWAW–KWAW–APILT FIRST NATION</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>UCWALMICW ALL NATIONS SERVICES SOCIETY</td>
+            <td class="amount">$172,550.00</td>
+        </tr>
+        <tr>
+            <td>CLEAN ENERGY BC</td>
+            <td class="amount">$172,500.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS ENERGY AND MINING SOCIETY</td>
+            <td class="amount">$167,747.00</td>
+        </tr>
+        <tr>
+            <td>YINKA DENE ECONOMIC DEVELOPMENT LIMITED PARTNERSHIP</td>
+            <td class="amount">$164,960.00</td>
+        </tr>
+        <tr>
+            <td>SONGHEES FIRST NATION</td>
+            <td class="amount">$160,000.00</td>
+        </tr>
+        <tr>
+            <td>KWAW KWAW APILT FIRST NATION</td>
+            <td class="amount">$159,206.00</td>
+        </tr>
+        <tr>
+            <td>FOUR DIRECTIONS MANAGEMENT SERVICES LTD.</td>
+            <td class="amount">$157,346.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE NATION</td>
+            <td class="amount">$154,811.00</td>
+        </tr>
+        <tr>
+            <td>BRIDGE RIVER INDIAN BAND</td>
+            <td class="amount">$152,988.00</td>
+        </tr>
+        <tr>
+            <td>JOHNSON, HARMONY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA STEWARDSHIP SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>TL'ETINQOX–T'IN GOVERNMENT OFFICE</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>CLEAN ENERGY ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>TLATLASIKWALA FIRST NATION</td>
+            <td class="amount">$141,095.00</td>
+        </tr>
+        <tr>
+            <td>HIYAM TA SKWXWU7MESH HOUSING SOCIETY</td>
+            <td class="amount">$135,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ELDERS COMMUNICATION CENTER SOCIETY</td>
+            <td class="amount">$130,000.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL</td>
+            <td class="amount">$129,000.00</td>
+        </tr>
+        <tr>
+            <td>N'QUATQUA FIRST NATIONS</td>
+            <td class="amount">$128,760.00</td>
+        </tr>
+        <tr>
+            <td>THE DENA KAYEH INSTITUTE</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>YUNESIT'IN GOVERNMENT</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH INDIAN BAND 4</td>
+            <td class="amount">$123,423.00</td>
+        </tr>
+        <tr>
+            <td>SEMIAHMOO FIRST NATION</td>
+            <td class="amount">$121,250.00</td>
+        </tr>
+        <tr>
+            <td>TS'UUBAA–ASATX</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>BCCA PROGRAM DELIVERY INC.</td>
+            <td class="amount">$105,000.00</td>
+        </tr>
+        <tr>
+            <td>DEASE RIVER BAND COUNCIL</td>
+            <td class="amount">$102,847.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC TE SECWEPEMC</td>
+            <td class="amount">$102,500.00</td>
+        </tr>
+        <tr>
+            <td>ST'AT'IMC GOVERNMENT SERVICES</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK FIRST NATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>K&K FORESTRY OPERATIONS LTD.</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER CHILCOTIN TRIBAL COUNCIL</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND INDIAN BAND</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>POPKUM FIRST NATION</td>
+            <td class="amount">$97,517.00</td>
+        </tr>
+        <tr>
+            <td>LIARD FIRST NATION</td>
+            <td class="amount">$95,000.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON COMMUNITY LITERACY SOCIETY</td>
+            <td class="amount">$94,330.00</td>
+        </tr>
+        <tr>
+            <td>RECONCILIATION CANADA – A NEW WAY FORWARD SOCIETY</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>NAUT'SA MAWT TRIBAL COUNCIL</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>LHOOSK'UZ DENE NATION</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>MCKENZIE, DAVIS PAUL</td>
+            <td class="amount">$81,122.00</td>
+        </tr>
+        <tr>
+            <td>NEW RELATIONSHIP TRUST FOUNDATION</td>
+            <td class="amount">$80,790.00</td>
+        </tr>
+        <tr>
+            <td>BC METIS FEDERATION SOCIETY</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>TLOWITSIS FIRST NATION</td>
+            <td class="amount">$77,705.00</td>
+        </tr>
+        <tr>
+            <td>BELIEVECO:PARTNERS LTD.</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>OSOYOOS INDIAN BAND</td>
+            <td class="amount">$74,348.00</td>
+        </tr>
+        <tr>
+            <td>KWIAKAH FIRST NATION</td>
+            <td class="amount">$73,163.00</td>
+        </tr>
+        <tr>
+            <td>TOOSEY INDIAN BAND</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>SKUPPAH INDIAN BAND</td>
+            <td class="amount">$66,362.00</td>
+        </tr>
+        <tr>
+            <td>NUCHATLAHT TRIBE</td>
+            <td class="amount">$61,109.00</td>
+        </tr>
+        <tr>
+            <td>NUU–CHAH–NULTH TRIBAL COUNCIL</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>TIDES CANADA INITIATIVES SOCIETY</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>NUU–CHAH–NULTH ECONOMIC DEVELOPMENT CORPORATION</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>T'IT'Q'ET NATION</td>
+            <td class="amount">$58,261.00</td>
+        </tr>
+        <tr>
+            <td>SCOWLITZ INDIAN BAND</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL PEOPLES TELEVISION NETWORK INCORPORATED</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH COAST–SKEENA FIRST NATIONS STEWARDSHIP SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>TOBACCO PLAINS INDIAN BAND</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAWOUT FIRST NATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>ALEXIS CREEK FIRST NATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>GORDON NEIGHBOURHOOD HOUSE</td>
+            <td class="amount">$49,800.00</td>
+        </tr>
+        <tr>
+            <td>FRASER REGION ABORIGINAL FRIENDSHIP CENTRE ASSOCIATION</td>
+            <td class="amount">$45,977.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SOCIETY FOR DOMESTIC PEACE</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>TILLICUM LELUM ABORIGINAL SOCIETY</td>
+            <td class="amount">$44,420.00</td>
+        </tr>
+        <tr>
+            <td>WEST CHILCOTIN FOREST PRODUCTS LTD.</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>SQEWQEL DEVELOPMENT CORPORATION</td>
+            <td class="amount">$42,500.00</td>
+        </tr>
+        <tr>
+            <td>MAA–NULTH TREATY SOCIETY</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT CAPITAL ASSETS LIMITED PARTNERSHIP</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>DZE L K'ANT FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>TSARTLIP INDIAN BAND</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN BAND COUNCIL</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>COOK, RANDE</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>THE DOWNTOWN EASTSIDE WOMEN'S CENTRE ASSOCIATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'UUBAA–ASATX FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>MALAHAT BAND COUNCIL</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SETON LAKE INDIAN BAND</td>
+            <td class="amount">$34,913.00</td>
+        </tr>
+        <tr>
+            <td>DISABILITY ALLIANCE BC SOCIETY</td>
+            <td class="amount">$34,843.00</td>
+        </tr>
+        <tr>
+            <td>WACHIAY FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>WACEYA METIS SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>WEI WAI KUM FIRST NATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SHUSWAP TREATY SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE METIS COMMUNITY ASSOCIATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PHS COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THE TSETSAUT CONSULTATION SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>STALEW ARTS AND CULTURAL SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER FRASER VALLEY ABORIGINAL SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>METIS NATION POWELL RIVER ASSOCIATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL WOMEN'S ORGANIZING NETWORK SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PEERS VICTORIA RESOURCES SOCIETY</td>
+            <td class="amount">$29,301.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY METIS ASSOCIATION</td>
+            <td class="amount">$28,700.00</td>
+        </tr>
+        <tr>
+            <td>KNOWLEDGING ALL NATIONS AND DEVELOPING UNITY SOCIETY</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>ROCKY MOUNTAIN METIS ASSOCIATION</td>
+            <td class="amount">$27,250.00</td>
+        </tr>
+        <tr>
+            <td>THE DOLLYWOOD FOUNDATION OF CANADA</td>
+            <td class="amount">$25,895.00</td>
+        </tr>
+        <tr>
+            <td>KYUQUOT/CHICLESAHT FIRST NATIONS</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER VENTURE FOR DIVERSITY SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL MOTHER CENTRE SOCIETY</td>
+            <td class="amount">$24,000.00</td>
+        </tr>
+        <tr>
+            <td>OASIS SOCIETY FOR THE SPIRITUAL HEALTH OF VICTORIA</td>
+            <td class="amount">$22,500.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KITIMAT–STIKINE</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>RED FOX HEALTHY LIVING SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>PORT ALBERNI FRIENDSHIP CENTER</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA NATIONS</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>LAXGALTS'AP VILLAGE GOVERNMENT</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE NATIVE FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FORT ST. JOHN</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$19,825.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS TECHNOLOGY COUNCIL</td>
+            <td class="amount">$18,250.00</td>
+        </tr>
+        <tr>
+            <td>SCW'EXMX CHILD AND FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$16,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH OKANAGAN FRIENDSHIP CENTER SOCIETY</td>
+            <td class="amount">$14,730.00</td>
+        </tr>
+        <tr>
+            <td>AYAS MEN MEN CHILD & FAMILY SERVICES</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>WARRIORS AGAINST VIOLENCE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>W.A.V.A.W./R.C.C.: WOMEN AGAINST VIOLENCE AGAINST WOMEN/RAPE CRISIS CENTRE</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>XAAY DAGA DLAANG SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH CARIBOO METIS ASSOCIATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP LAKE INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO ABORIGINAL CENTRE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>FIREWEED COLLECTIVE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SOUTHERN STL'ATL'IMX HEALTH SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH OKANAGAN WOMEN IN NEED SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A NATION, AS REPRESENTED BY THE CHIEF EXECUTIVE OFFICER OF NISGA'A LISIMS</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>GITLAXT'AAMIKS VILLAGE GOVERNMENT</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>INDIAN RESIDENTIAL SCHOOL SURVIVORS SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>HOPE & AREA TRANSITION SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JOHN WOMEN'S RESOURCE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>KIKINO METIS CHILDREN & FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>HOMALCO NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SACRED WOLF FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JOHN METIS SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY ABORIGINAL CHILDREN AND FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>YEQOX NILIN JUSTICE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>MISSION FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>NEC NATIVE EDUCATION COLLEGE</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>DITIDAHT COMMUNITY SCHOOL</td>
+            <td class="amount">$9,500.00</td>
+        </tr>
+        <tr>
+            <td>KYUQUOT FIRST NATION</td>
+            <td class="amount">$9,250.00</td>
+        </tr>
+        <tr>
+            <td>AQ'AM</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>AKISQNUK FIRST NATION</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ABORIGINAL CHILD AND FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$7,600.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON CREEK LITERACY SOCIETY</td>
+            <td class="amount">$7,500.00</td>
+        </tr>
+        <tr>
+            <td>UPPER NICOLA INDIAN BAND</td>
+            <td class="amount">$7,000.00</td>
+        </tr>
+        <tr>
+            <td>SUPPORT NETWORK FOR INDIGENOUS WOMEN AND WOMEN OF COLOUR</td>
+            <td class="amount">$6,900.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ABORIGINAL FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$5,985.00</td>
+        </tr>
+        <tr>
+            <td>KI–LOW–NA FRIENDSHIP SOCIETY</td>
+            <td class="amount">$4,746.00</td>
+        </tr>
+        <tr>
+            <td>SPIRIT OF THE CHILDREN SOCIETY</td>
+            <td class="amount">$3,000.00</td>
+        </tr>
+        <tr>
+            <td>REVENUE REFUNDS</td>
+            <td class="amount">$2,671.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL COALITION TO END HOMELESSNESS SOCIETY</td>
+            <td class="amount">$1,000.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

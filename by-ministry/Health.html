@@ -1,0 +1,3148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Health</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Health
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$267.37B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">643</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Health</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>FRASER HEALTH AUTHORITY</td>
+            <td class="amount">$46,162,964,696.00</td>
+        </tr>
+        <tr>
+            <td>MEDICAL SERVICES PLAN CLAIMS</td>
+            <td class="amount">$45,980,548,917.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER COASTAL HEALTH AUTHORITY</td>
+            <td class="amount">$42,642,185,141.00</td>
+        </tr>
+        <tr>
+            <td>PROVINCIAL HEALTH SERVICES AUTHORITY</td>
+            <td class="amount">$35,852,660,540.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND HEALTH AUTHORITY</td>
+            <td class="amount">$29,445,326,067.00</td>
+        </tr>
+        <tr>
+            <td>INTERIOR HEALTH AUTHORITY</td>
+            <td class="amount">$26,537,121,726.00</td>
+        </tr>
+        <tr>
+            <td>PHARMACARE</td>
+            <td class="amount">$16,501,790,261.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN HEALTH AUTHORITY</td>
+            <td class="amount">$10,424,076,982.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN BLOOD SERVICES</td>
+            <td class="amount">$2,238,669,359.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,813,296,886.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF DOCTORS OF BC</td>
+            <td class="amount">$1,489,796,759.00</td>
+        </tr>
+        <tr>
+            <td>LIFELABS BC LP</td>
+            <td class="amount">$1,331,955,275.00</td>
+        </tr>
+        <tr>
+            <td>GOVERNMENT OF ALBERTA</td>
+            <td class="amount">$597,881,840.00</td>
+        </tr>
+        <tr>
+            <td>CONTRIBUTORY PROFESSIONAL RETIREMENT SAVINGS PLAN</td>
+            <td class="amount">$597,655,192.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS HEALTH AUTHORITY</td>
+            <td class="amount">$588,921,696.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA MEDICAL ASSOCIATION (CANADIAN MEDICAL ASSOCIATION – B.C. DIV)</td>
+            <td class="amount">$492,916,705.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MEDICAL PROTECTIVE ASSOCIATION (CMPA) REBATE PROGRAM</td>
+            <td class="amount">$432,389,000.00</td>
+        </tr>
+        <tr>
+            <td>HEALTH EMPLOYERS ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$374,804,643.00</td>
+        </tr>
+        <tr>
+            <td>ALBERTA HEALTH CARE INSURANCE PLAN</td>
+            <td class="amount">$282,176,922.00</td>
+        </tr>
+        <tr>
+            <td>MICHAEL SMITH FOUNDATION FOR HEALTH RESEARCH</td>
+            <td class="amount">$247,571,464.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA NURSES' UNION</td>
+            <td class="amount">$227,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF ONTARIO</td>
+            <td class="amount">$222,112,867.00</td>
+        </tr>
+        <tr>
+            <td>PHYSICIANS' CONTINUING MEDICAL EDUCATION FUND</td>
+            <td class="amount">$183,291,435.00</td>
+        </tr>
+        <tr>
+            <td>BC CANCER FOUNDATION</td>
+            <td class="amount">$169,000,000.00</td>
+        </tr>
+        <tr>
+            <td>GENOME BRITISH COLUMBIA</td>
+            <td class="amount">$124,000,000.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY OF THE LOWER MAINLAND</td>
+            <td class="amount">$102,935,000.00</td>
+        </tr>
+        <tr>
+            <td>SUN LIFE OF CANADA</td>
+            <td class="amount">$99,996,373.00</td>
+        </tr>
+        <tr>
+            <td>RURAL COORDINATION CENTRE OF BC</td>
+            <td class="amount">$87,888,219.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDENCE HEALTH CARE SOCIETY</td>
+            <td class="amount">$79,629,339.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY BRITISH COLUMBIA</td>
+            <td class="amount">$78,784,264.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MENTAL HEALTH ASSOCIATION, B.C. DIVISION</td>
+            <td class="amount">$73,134,721.00</td>
+        </tr>
+        <tr>
+            <td>GENOME B C</td>
+            <td class="amount">$54,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA MEDICAL ASSOCIATION–MATERNITY BENEFIT PROGRAM</td>
+            <td class="amount">$52,681,894.00</td>
+        </tr>
+        <tr>
+            <td>B.C. CARE PROVIDERS ASSOCIATION</td>
+            <td class="amount">$48,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF SASKATCHEWAN</td>
+            <td class="amount">$40,995,227.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$33,161,536.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN CANCER SOCIETY – SOCIETE CANADIENNE DU CANCER</td>
+            <td class="amount">$32,675,000.00</td>
+        </tr>
+        <tr>
+            <td>MIDWIVES' ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$32,550,698.00</td>
+        </tr>
+        <tr>
+            <td>MANITOBA HEALTH SERVICE COMMISSION</td>
+            <td class="amount">$31,821,807.00</td>
+        </tr>
+        <tr>
+            <td>THE GOVERNMENT OF YUKON</td>
+            <td class="amount">$30,442,978.00</td>
+        </tr>
+        <tr>
+            <td>SEATTLE CANCER CARE ALLIANCE</td>
+            <td class="amount">$29,412,890.00</td>
+        </tr>
+        <tr>
+            <td>LE MINISTRE DES FINANCES DU QUEBEC</td>
+            <td class="amount">$28,822,721.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A VALLEY HEALTH AUTHORITY</td>
+            <td class="amount">$28,446,422.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN RED CROSS SOCIETY</td>
+            <td class="amount">$27,634,919.00</td>
+        </tr>
+        <tr>
+            <td>HEALTH SCIENCES ASSOCIATION OF BC</td>
+            <td class="amount">$26,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN INSTITUTE FOR HEALTH INFORMATION</td>
+            <td class="amount">$24,655,144.00</td>
+        </tr>
+        <tr>
+            <td>INSTITUTE FOR HEALTH SYSTEM TRANSFORMATION AND SUSTAINABILITY</td>
+            <td class="amount">$23,850,000.00</td>
+        </tr>
+        <tr>
+            <td>ALZHEIMER SOCIETY OF B.C.</td>
+            <td class="amount">$23,590,000.00</td>
+        </tr>
+        <tr>
+            <td>BC CLINICAL AND SUPPORT SERVICES SOCIETY</td>
+            <td class="amount">$22,809,810.00</td>
+        </tr>
+        <tr>
+            <td>HOSPITAL EMPLOYEES UNION LOCAL180</td>
+            <td class="amount">$22,000,000.00</td>
+        </tr>
+        <tr>
+            <td>ST. PAUL'S FOUNDATION OF VANCOUVER</td>
+            <td class="amount">$21,800,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA LUNG ASSOCIATION</td>
+            <td class="amount">$21,237,586.00</td>
+        </tr>
+        <tr>
+            <td>FRED HUTCHINSON CANCER CENTER</td>
+            <td class="amount">$20,788,226.00</td>
+        </tr>
+        <tr>
+            <td>BC ASSOCIATION OF FARMERS' MARKETS</td>
+            <td class="amount">$20,572,000.00</td>
+        </tr>
+        <tr>
+            <td>HOMEWOOD HEALTH CENTRE</td>
+            <td class="amount">$20,218,165.00</td>
+        </tr>
+        <tr>
+            <td>BCGEU – B.C. GENERAL EMPLOYEES' UNION</td>
+            <td class="amount">$20,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF NOVA SCOTIA</td>
+            <td class="amount">$18,829,692.00</td>
+        </tr>
+        <tr>
+            <td>LUCILE PACKARD CHILDREN'S HOSP</td>
+            <td class="amount">$18,586,050.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA AGRICULTURE IN THE CLASSROOM FOUNDATION</td>
+            <td class="amount">$18,450,000.00</td>
+        </tr>
+        <tr>
+            <td>INSPIREHEALTH SOCIETY</td>
+            <td class="amount">$18,258,563.00</td>
+        </tr>
+        <tr>
+            <td>GENZYME CANADA</td>
+            <td class="amount">$18,177,231.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDENCE HEALTH CARE</td>
+            <td class="amount">$17,219,599.00</td>
+        </tr>
+        <tr>
+            <td>ST. PAUL'S HOSPITAL FOUNDATION OF VANCOUVER</td>
+            <td class="amount">$16,500,000.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$16,022,250.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSOCIATION OF COMMUNITY HEALTH CENTRES</td>
+            <td class="amount">$15,595,804.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF NURSES AND NURSE PRACTITIONERS OF BC</td>
+            <td class="amount">$14,886,606.00</td>
+        </tr>
+        <tr>
+            <td>CANUCK PLACE CHILDREN'S HOSPICE</td>
+            <td class="amount">$14,815,000.00</td>
+        </tr>
+        <tr>
+            <td>PALADIN LABS INC</td>
+            <td class="amount">$14,712,553.00</td>
+        </tr>
+        <tr>
+            <td>NORTH WEST COMPANY LP</td>
+            <td class="amount">$14,395,763.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN BLOOD AGENCY</td>
+            <td class="amount">$14,023,271.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL HOUSING MANAGEMENT ASSOCIATION</td>
+            <td class="amount">$13,995,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN AGENCY FOR DRUGS & TECHNOLOGIES IN HEALTH</td>
+            <td class="amount">$13,838,994.00</td>
+        </tr>
+        <tr>
+            <td>BC ASSOCIATION OF COMMUNITY RESPONSE NETWORKS</td>
+            <td class="amount">$13,692,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLINGWOOD NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$13,539,243.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ACADEMIC HEALTH SCIENCE NETWORK SOCIETY</td>
+            <td class="amount">$13,517,000.00</td>
+        </tr>
+        <tr>
+            <td>ALBERTA HEALTH SERVICES</td>
+            <td class="amount">$13,489,793.00</td>
+        </tr>
+        <tr>
+            <td>PRAXIS SPINAL CORD INSTITUTE</td>
+            <td class="amount">$13,300,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR DRUG RESEARCH & DEVELOPMENT</td>
+            <td class="amount">$13,000,000.00</td>
+        </tr>
+        <tr>
+            <td>INNOMAR STRATEGIES INC.</td>
+            <td class="amount">$12,794,674.00</td>
+        </tr>
+        <tr>
+            <td>THE YMCA OF GREATER VANCOUVER</td>
+            <td class="amount">$12,500,000.00</td>
+        </tr>
+        <tr>
+            <td>MEDICAL SERVICES PLAN</td>
+            <td class="amount">$12,473,893.00</td>
+        </tr>
+        <tr>
+            <td>TRIUMF</td>
+            <td class="amount">$12,250,000.00</td>
+        </tr>
+        <tr>
+            <td>PHYSICIAN HEALTH PROGRAM SOCIETY OF B C</td>
+            <td class="amount">$11,800,000.00</td>
+        </tr>
+        <tr>
+            <td>CERES TERMINALS CANADA ULC</td>
+            <td class="amount">$11,625,972.00</td>
+        </tr>
+        <tr>
+            <td>ANN & ROBERT H LURIE CHILDRENS HOSPITAL OF CHICAGO</td>
+            <td class="amount">$11,539,050.00</td>
+        </tr>
+        <tr>
+            <td>BCCDC FOUNDATION FOR POPULATION AND PUBLIC HEALTH</td>
+            <td class="amount">$11,500,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF NEW BRUNSWICK</td>
+            <td class="amount">$11,267,094.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ASSOCIATION OF ABORIGINAL FRIENDSHIP CENTRES</td>
+            <td class="amount">$10,744,250.00</td>
+        </tr>
+        <tr>
+            <td>VGH & UBC HOSPITAL FOUNDATION</td>
+            <td class="amount">$10,476,000.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC HEALTH ASSOCIATION OF B C</td>
+            <td class="amount">$10,200,000.00</td>
+        </tr>
+        <tr>
+            <td>FOOD BANKS BRITISH COLUMBIA</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN INSTITUTE FOR ADVANCED RESEARCH</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>RICK HANSEN INSTITUTE</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>HOPE AIR</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>THE TERRY FOX FOUNDATION</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>RICK HANSEN FOUNDATION</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>9018344 CANADA SOCIETY</td>
+            <td class="amount">$9,918,552.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY OF BRITISH COLUMBIA</td>
+            <td class="amount">$9,836,000.00</td>
+        </tr>
+        <tr>
+            <td>SEATTLE PROCURE MANAGEMENT, LLC</td>
+            <td class="amount">$9,733,586.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JOHN FAMILY PRACTICE ASSOCIATES</td>
+            <td class="amount">$9,374,607.00</td>
+        </tr>
+        <tr>
+            <td>BELLWOOD HEALTH SERVICES INC</td>
+            <td class="amount">$9,335,400.00</td>
+        </tr>
+        <tr>
+            <td>PAIN BC SOCIETY</td>
+            <td class="amount">$9,223,171.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$9,025,935.00</td>
+        </tr>
+        <tr>
+            <td>2014 BRAIN INJURY ALLIANCE SOCIETY</td>
+            <td class="amount">$9,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSOCIATION OF OPTOMETRISTS</td>
+            <td class="amount">$8,989,661.00</td>
+        </tr>
+        <tr>
+            <td>UBC FACULTY OF PHARMACEUTICAL SCIENCES</td>
+            <td class="amount">$8,900,000.00</td>
+        </tr>
+        <tr>
+            <td>VFA CANADA CORPORATION</td>
+            <td class="amount">$8,739,847.00</td>
+        </tr>
+        <tr>
+            <td>WOODLANDS EX–GRATIA PAYMENTS</td>
+            <td class="amount">$8,020,789.00</td>
+        </tr>
+        <tr>
+            <td>PROVINCE OF ONTARIO</td>
+            <td class="amount">$7,995,063.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA COLLEGE OF NURSES AND MIDWIVES</td>
+            <td class="amount">$7,613,324.00</td>
+        </tr>
+        <tr>
+            <td>ALZHEIMER RESEARCH FOUNDATION OF B.C.</td>
+            <td class="amount">$7,540,000.00</td>
+        </tr>
+        <tr>
+            <td>NOVA SCOTIA MEDICAL SERVICES INSURANCE</td>
+            <td class="amount">$7,320,689.00</td>
+        </tr>
+        <tr>
+            <td>NEWFOUNDLAND EXCHEQUER ACCOUNT</td>
+            <td class="amount">$7,180,800.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC DESTINATION SERVICES INC.</td>
+            <td class="amount">$7,083,741.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR TECHNOLOGY ADOPTION FOR AGING IN BC</td>
+            <td class="amount">$7,000,000.00</td>
+        </tr>
+        <tr>
+            <td>ARTHRITIS RESEARCH CENTRE OF CANADA</td>
+            <td class="amount">$7,000,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF PHYSICIANS & SURGEONS OF B C</td>
+            <td class="amount">$6,928,372.00</td>
+        </tr>
+        <tr>
+            <td>METIS NATION BRITISH COLUMBIA</td>
+            <td class="amount">$6,809,375.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MEN'S HEALTH FOUNDATION</td>
+            <td class="amount">$6,750,000.00</td>
+        </tr>
+        <tr>
+            <td>BROWNSTEIN & CRANE SURGICAL SERVICES</td>
+            <td class="amount">$6,730,179.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR COLLABORATION, MOTIVATION AND INNOVATION SOCIETY</td>
+            <td class="amount">$6,625,791.00</td>
+        </tr>
+        <tr>
+            <td>CHILDHOOD OBESITY FOUNDATION</td>
+            <td class="amount">$6,000,000.00</td>
+        </tr>
+        <tr>
+            <td>MCKESSON CANADA CORPORATION</td>
+            <td class="amount">$5,971,057.00</td>
+        </tr>
+        <tr>
+            <td>NORTH PEACE PRIMARY CARE CLINIC</td>
+            <td class="amount">$5,940,178.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA PHARMACY ASSOCIATION</td>
+            <td class="amount">$5,902,468.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA'S CHILDREN'S HOSPITAL FOUNDATION</td>
+            <td class="amount">$5,625,000.00</td>
+        </tr>
+        <tr>
+            <td>NURSES AND NURSE PRACTITIONERS OF BC</td>
+            <td class="amount">$5,526,254.00</td>
+        </tr>
+        <tr>
+            <td>BC HEALTH CARE OCCUPATIONAL HEALTH AND SAFETY SOCIETY</td>
+            <td class="amount">$5,517,190.00</td>
+        </tr>
+        <tr>
+            <td>ACTIVE AGING SOCIETY</td>
+            <td class="amount">$5,500,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NEW VISTA SOCIETY</td>
+            <td class="amount">$5,500,000.00</td>
+        </tr>
+        <tr>
+            <td>SEATTLE CHILDRENS HOSPITAL</td>
+            <td class="amount">$5,231,623.00</td>
+        </tr>
+        <tr>
+            <td>HEART AND STROKE FOUNDATION OF CANADA</td>
+            <td class="amount">$5,225,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF OCCUPATIONAL THERAPISTS OF B C</td>
+            <td class="amount">$5,178,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY ACTION INITIATIVE SOCIETY OF BC</td>
+            <td class="amount">$5,156,550.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF PHARMACISTS OF B C</td>
+            <td class="amount">$5,124,770.00</td>
+        </tr>
+        <tr>
+            <td>AMYOTROPHIC LATERAL SCLEROSIS SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$5,120,000.00</td>
+        </tr>
+        <tr>
+            <td>REGISTERED NURSES FOUNDATION OF B.C.</td>
+            <td class="amount">$5,000,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN NATIONAL INSTITUTE FOR THE BLIND</td>
+            <td class="amount">$5,000,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY HEALTH NETWORK</td>
+            <td class="amount">$4,929,112.00</td>
+        </tr>
+        <tr>
+            <td>FACILITIES BARGAINING ASSOCIATION</td>
+            <td class="amount">$4,750,000.00</td>
+        </tr>
+        <tr>
+            <td>ISPARC SPORT, PHYSICAL ACTIVITY & RECREATION SOCIETY</td>
+            <td class="amount">$4,715,000.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY CAREGIVERS SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$4,583,109.00</td>
+        </tr>
+        <tr>
+            <td>UW PHYSICIANS</td>
+            <td class="amount">$4,571,983.00</td>
+        </tr>
+        <tr>
+            <td>BC HEALTH REGULATORS SOCIETY</td>
+            <td class="amount">$4,500,000.00</td>
+        </tr>
+        <tr>
+            <td>GENEDX INC</td>
+            <td class="amount">$4,478,738.00</td>
+        </tr>
+        <tr>
+            <td>INTERCULTURAL ONLINE HEALTH NETWORK (ICON)</td>
+            <td class="amount">$4,272,610.00</td>
+        </tr>
+        <tr>
+            <td>SHOPPERS DRUG MART</td>
+            <td class="amount">$4,253,619.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CENTRE FOR DISEASE CONTROL AND PREVENTION SOCIETY BRANCH</td>
+            <td class="amount">$4,235,940.00</td>
+        </tr>
+        <tr>
+            <td>METIS PROVINCIAL COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$4,129,400.00</td>
+        </tr>
+        <tr>
+            <td>BC ALLIANCE FOR HEALTHY LIVING SOCIETY</td>
+            <td class="amount">$4,000,000.00</td>
+        </tr>
+        <tr>
+            <td>DASH DIRECTORATE OF AGENCIES FOR SCHOOL HEALTH BRITISH COLUMBIA ASSOCIATION</td>
+            <td class="amount">$3,914,601.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC GUARDIAN AND TRUSTEE OF BRITISH COLUMBIA</td>
+            <td class="amount">$3,863,730.00</td>
+        </tr>
+        <tr>
+            <td>B C WOMEN'S HOSPITAL & HEALTH CENTRE</td>
+            <td class="amount">$3,850,000.00</td>
+        </tr>
+        <tr>
+            <td>GOVERNMENT OF THE NORTHWEST TERRITORIES</td>
+            <td class="amount">$3,818,014.00</td>
+        </tr>
+        <tr>
+            <td>MASS GENERAL HOSPITAL</td>
+            <td class="amount">$3,792,711.00</td>
+        </tr>
+        <tr>
+            <td>BC WOMEN'S HEALTH FOUNDATION</td>
+            <td class="amount">$3,730,000.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL SOCIETY</td>
+            <td class="amount">$3,675,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA DENTAL ASSOCIATION</td>
+            <td class="amount">$3,637,714.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN PATHOLOGY GROUP</td>
+            <td class="amount">$3,576,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY LIVING BRITISH COLUMBIA</td>
+            <td class="amount">$3,490,247.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF WASHINGTON MEDICAL CENTRE</td>
+            <td class="amount">$3,438,544.00</td>
+        </tr>
+        <tr>
+            <td>AIR CANADA</td>
+            <td class="amount">$3,082,704.00</td>
+        </tr>
+        <tr>
+            <td>SENIORS FIRST BC SOCIETY</td>
+            <td class="amount">$3,045,000.00</td>
+        </tr>
+        <tr>
+            <td>THE ARTHRITIS SOCIETY</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>PARTICIPACTION</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SCHIZOPHRENIA SOCIETY</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR MOBILITY AND HEALTH SOCIETY</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>INNERCHANGE FOUNDATION</td>
+            <td class="amount">$3,000,000.00</td>
+        </tr>
+        <tr>
+            <td>KINGHAVEN PEARDONVILLE HOUSE SOCIETY</td>
+            <td class="amount">$2,965,000.00</td>
+        </tr>
+        <tr>
+            <td>DOCTORS OF BC</td>
+            <td class="amount">$2,920,025.00</td>
+        </tr>
+        <tr>
+            <td>IMPACT BC</td>
+            <td class="amount">$2,914,552.00</td>
+        </tr>
+        <tr>
+            <td>OPTIONS FOR SEXUAL HEALTH</td>
+            <td class="amount">$2,908,899.00</td>
+        </tr>
+        <tr>
+            <td>THE SEATTLE PROTON CENTER</td>
+            <td class="amount">$2,899,027.00</td>
+        </tr>
+        <tr>
+            <td>UNION OF BRITISH COLUMBIA MUNICIPALITIES</td>
+            <td class="amount">$2,875,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MENTAL HEALTH ASSOCIATION</td>
+            <td class="amount">$2,708,333.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD HOSPICE SOCIETY</td>
+            <td class="amount">$2,500,000.00</td>
+        </tr>
+        <tr>
+            <td>MICHAEL CUCCIONE FOUNDATION</td>
+            <td class="amount">$2,500,000.00</td>
+        </tr>
+        <tr>
+            <td>HEALTH PEI</td>
+            <td class="amount">$2,418,715.00</td>
+        </tr>
+        <tr>
+            <td>BOSTON CHILDREN'S HOSPITAL</td>
+            <td class="amount">$2,319,807.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR ADDICTION AND MENTAL HEALTH</td>
+            <td class="amount">$2,233,913.00</td>
+        </tr>
+        <tr>
+            <td>PACIFICA TREATMENT CENTRE SOCIETY</td>
+            <td class="amount">$2,200,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NORTH WEST COMPANY LP</td>
+            <td class="amount">$2,122,670.00</td>
+        </tr>
+        <tr>
+            <td>211 BRITISH COLUMBIA SERVICES SOCIETY</td>
+            <td class="amount">$2,081,246.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST MEDICAL IMAGING INC.</td>
+            <td class="amount">$2,055,594.00</td>
+        </tr>
+        <tr>
+            <td>RICHARD M. DELANEY & ASSOCIATES INC.</td>
+            <td class="amount">$2,003,407.00</td>
+        </tr>
+        <tr>
+            <td>ROGERS MEMORIAL HOSPITAL</td>
+            <td class="amount">$2,000,351.00</td>
+        </tr>
+        <tr>
+            <td>TURNING POINT RECOVERY SOCIETY</td>
+            <td class="amount">$2,000,000.00</td>
+        </tr>
+        <tr>
+            <td>NEW RELATIONSHIP TRUST</td>
+            <td class="amount">$2,000,000.00</td>
+        </tr>
+        <tr>
+            <td>NIKKEI SENIORS HEALTH CARE AND HOUSING SOCIETY</td>
+            <td class="amount">$2,000,000.00</td>
+        </tr>
+        <tr>
+            <td>PHARMASCIENCE INC.</td>
+            <td class="amount">$1,927,500.00</td>
+        </tr>
+        <tr>
+            <td>MID–MAIN COMMUNITY HEALTH CENTRE</td>
+            <td class="amount">$1,900,000.00</td>
+        </tr>
+        <tr>
+            <td>ABC MEDICAL CLINIC</td>
+            <td class="amount">$1,869,111.00</td>
+        </tr>
+        <tr>
+            <td>THE MENTAL HEALTH AND CLIMATE CHANGE ALLIANCE</td>
+            <td class="amount">$1,853,347.00</td>
+        </tr>
+        <tr>
+            <td>MCKESSON SPECIALTY PRESCRIPTION SERVICES</td>
+            <td class="amount">$1,834,560.00</td>
+        </tr>
+        <tr>
+            <td>MAYO CLINIC ROCHESTER</td>
+            <td class="amount">$1,823,996.00</td>
+        </tr>
+        <tr>
+            <td>THE MCLEAN HOSPITAL</td>
+            <td class="amount">$1,794,470.00</td>
+        </tr>
+        <tr>
+            <td>THE OTTAWA HOSPITAL</td>
+            <td class="amount">$1,765,094.00</td>
+        </tr>
+        <tr>
+            <td>DAN'S LEGACY FOUNDATION</td>
+            <td class="amount">$1,730,000.00</td>
+        </tr>
+        <tr>
+            <td>CEDARS–SINAI MEDICAL CENTER</td>
+            <td class="amount">$1,717,871.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF PHARMACISTS OF B.C.</td>
+            <td class="amount">$1,715,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF REGISTERED NURSES OF B C</td>
+            <td class="amount">$1,711,257.00</td>
+        </tr>
+        <tr>
+            <td>MEDICAL NEUROGENETICS, LLC</td>
+            <td class="amount">$1,666,399.00</td>
+        </tr>
+        <tr>
+            <td>BUSINESS COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,631,712.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$1,600,000.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA PARAMEDIC ACADEMY LTD</td>
+            <td class="amount">$1,600,000.00</td>
+        </tr>
+        <tr>
+            <td>B&M TAX & ACCOUNTING SERVICES LTD</td>
+            <td class="amount">$1,577,311.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE INSTITUTE OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,550,986.00</td>
+        </tr>
+        <tr>
+            <td>CARERX BURNABY</td>
+            <td class="amount">$1,511,395.00</td>
+        </tr>
+        <tr>
+            <td>B.C. WATER & WASTE ASSOCIATION</td>
+            <td class="amount">$1,503,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER FOUNDATION</td>
+            <td class="amount">$1,500,000.00</td>
+        </tr>
+        <tr>
+            <td>CHIEF JOE MATHIAS BRITISH COLUMBIA ABORIGINAL SCHOLARSHIP FUND</td>
+            <td class="amount">$1,500,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN INSTITUTE FOR THE DEAF AND HARD OF HEARING</td>
+            <td class="amount">$1,500,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC NATIONAL EXHIBITION</td>
+            <td class="amount">$1,444,824.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY CHILD DEVELOPMENT ASSOCIATION</td>
+            <td class="amount">$1,415,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER AIRPORT AUTHORITY</td>
+            <td class="amount">$1,412,790.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER JUNIOR HOCKEY LIMITED PARTNERSHIP</td>
+            <td class="amount">$1,407,784.00</td>
+        </tr>
+        <tr>
+            <td>SPORT FOR LIFE SOCIETY</td>
+            <td class="amount">$1,400,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN BASKETBALL VENTURES L.P.</td>
+            <td class="amount">$1,394,832.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY CAREGIVERS NETWORK SOCIETY</td>
+            <td class="amount">$1,387,967.00</td>
+        </tr>
+        <tr>
+            <td>ST. JUDE CHILDREN'S RESEARCH HOSPITAL</td>
+            <td class="amount">$1,353,371.00</td>
+        </tr>
+        <tr>
+            <td>ACTELION PHARMACEUTICALS CANADA INC.</td>
+            <td class="amount">$1,348,191.00</td>
+        </tr>
+        <tr>
+            <td>WESTJET</td>
+            <td class="amount">$1,327,493.00</td>
+        </tr>
+        <tr>
+            <td>ENVIRONMENTAL OPERATORS CERTIFICATION PROGRAM</td>
+            <td class="amount">$1,298,000.00</td>
+        </tr>
+        <tr>
+            <td>KIDNEY FOUNDATION OF CANADA–BC AND YUKON BRANCH</td>
+            <td class="amount">$1,285,000.00</td>
+        </tr>
+        <tr>
+            <td>NEWFOUNDLAND MEDICAL CARE COMMISSION</td>
+            <td class="amount">$1,274,951.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ARENA LIMITED PARTNERSHIP</td>
+            <td class="amount">$1,273,886.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF PITTSBURGH MEDICAL CENTER</td>
+            <td class="amount">$1,263,979.00</td>
+        </tr>
+        <tr>
+            <td>MEDSTAR GEORGETOWN UNIVERSITY HOSPITAL</td>
+            <td class="amount">$1,214,090.00</td>
+        </tr>
+        <tr>
+            <td>ST. JOHN AMBULANCE</td>
+            <td class="amount">$1,170,000.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND SEXUAL HEALTH SOCIETY</td>
+            <td class="amount">$1,074,000.00</td>
+        </tr>
+        <tr>
+            <td>ALBERTA HEALTH SERVICES – CANCER CARE</td>
+            <td class="amount">$1,067,569.00</td>
+        </tr>
+        <tr>
+            <td>H LEE MOFFITT CANCER CENTER</td>
+            <td class="amount">$1,063,689.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT SINAI HOSPITAL</td>
+            <td class="amount">$1,028,226.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN ISLAND HEALTH CENTRE FOUNDATION</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CHILDHOOD HEALTHY LIVING FOUNDATION</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>NIDUS PERSONAL PLANNING RESOURCE CENTRE ASSOCIATION</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA NEW HOPE RECOVERY SOCIETY</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>HONOUR HOUSE SOCIETY</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>LOMA LINDA UNIVERSITY MED CTR</td>
+            <td class="amount">$973,178.00</td>
+        </tr>
+        <tr>
+            <td>THE ASSOCIATION OF PROFESSIONAL ENGINEERS & GEOSCIENTISTS OF THE PROVINCE OF B C</td>
+            <td class="amount">$960,000.00</td>
+        </tr>
+        <tr>
+            <td>IMPERIAL DISTRIBUTORS CANADA INC.</td>
+            <td class="amount">$933,435.00</td>
+        </tr>
+        <tr>
+            <td>KOHL & FRISCH LIMITED</td>
+            <td class="amount">$920,843.00</td>
+        </tr>
+        <tr>
+            <td>REM TEK ENTERPRISES LTD.</td>
+            <td class="amount">$891,164.00</td>
+        </tr>
+        <tr>
+            <td>WICKSTROM, WENDY, DR, ET AL</td>
+            <td class="amount">$887,028.00</td>
+        </tr>
+        <tr>
+            <td>UNITY HEALTH TORONTO</td>
+            <td class="amount">$875,000.00</td>
+        </tr>
+        <tr>
+            <td>DR. JANET A. EVANS MEDICAL CORPORATION</td>
+            <td class="amount">$873,916.00</td>
+        </tr>
+        <tr>
+            <td>ALL WOMENS HEALTH NORTH</td>
+            <td class="amount">$853,083.00</td>
+        </tr>
+        <tr>
+            <td>CAPRI MEDICAL CENTRE INC.</td>
+            <td class="amount">$817,086.00</td>
+        </tr>
+        <tr>
+            <td>SENIORS SERVICES SOCIETY OF BC</td>
+            <td class="amount">$809,000.00</td>
+        </tr>
+        <tr>
+            <td>B C HEALTHY LIVING ALLIANCE</td>
+            <td class="amount">$800,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$782,000.00</td>
+        </tr>
+        <tr>
+            <td>RX PHARMACY SOLUTIONS</td>
+            <td class="amount">$766,236.00</td>
+        </tr>
+        <tr>
+            <td>MEDRAY IMAGING MEDICAL CORPORATION</td>
+            <td class="amount">$754,046.00</td>
+        </tr>
+        <tr>
+            <td>HEART AND STROKE FOUNDATION OF B.C. AND YUKON</td>
+            <td class="amount">$750,000.00</td>
+        </tr>
+        <tr>
+            <td>JACK NATHAN FUNCTIONAL HEALTH INC</td>
+            <td class="amount">$735,875.00</td>
+        </tr>
+        <tr>
+            <td>VALLEY MEDICAL IMAGING</td>
+            <td class="amount">$733,539.00</td>
+        </tr>
+        <tr>
+            <td>M. D. ANDERSON CANCER CENTER</td>
+            <td class="amount">$728,928.00</td>
+        </tr>
+        <tr>
+            <td>SUNNYBROOK HEALTH SCIENCES CENTRE</td>
+            <td class="amount">$727,960.00</td>
+        </tr>
+        <tr>
+            <td>CGI INFORMATION SYSTEMS AND MANAGEMENT CONSULTANTS INC.</td>
+            <td class="amount">$725,335.00</td>
+        </tr>
+        <tr>
+            <td>PREVENTION GENETICS LLC</td>
+            <td class="amount">$721,371.00</td>
+        </tr>
+        <tr>
+            <td>MASSACHUSETTS GENERAL HOSPITAL</td>
+            <td class="amount">$693,767.00</td>
+        </tr>
+        <tr>
+            <td>THE HOSPITAL FOR SICK CHILDREN</td>
+            <td class="amount">$692,306.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR SENIORS INFORMATION BC INTERIOR SOCIETY</td>
+            <td class="amount">$680,000.00</td>
+        </tr>
+        <tr>
+            <td>GREIG ASSOCIATES X–RAY, ULTRASOUND AND MAMMOGRAPHY INC.</td>
+            <td class="amount">$665,293.00</td>
+        </tr>
+        <tr>
+            <td>CARERX KELOWNA</td>
+            <td class="amount">$647,353.00</td>
+        </tr>
+        <tr>
+            <td>NIMETZ, GENE</td>
+            <td class="amount">$647,039.00</td>
+        </tr>
+        <tr>
+            <td>WALLGATE HOLDINGS INC.</td>
+            <td class="amount">$628,874.00</td>
+        </tr>
+        <tr>
+            <td>VAN DER ROSS, RICHARD, DR</td>
+            <td class="amount">$606,766.00</td>
+        </tr>
+        <tr>
+            <td>ENVIRONMENTAL OPERATORS CERTIFICATION PROGRAM SOCIETY</td>
+            <td class="amount">$600,000.00</td>
+        </tr>
+        <tr>
+            <td>OREGON HEALTH & SCIENCE UNIVERSITY</td>
+            <td class="amount">$599,869.00</td>
+        </tr>
+        <tr>
+            <td>ST VINCENT MEDICAL CENTER</td>
+            <td class="amount">$597,648.00</td>
+        </tr>
+        <tr>
+            <td>DEPARTMENT OF HEALTH & SOCIAL SERVICES</td>
+            <td class="amount">$591,347.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDENCE HEALTH CARE RESEARCH INSTITUTE</td>
+            <td class="amount">$553,815.00</td>
+        </tr>
+        <tr>
+            <td>TRAFALGAR RESIDENCE INC.</td>
+            <td class="amount">$550,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH SHORE MEDICAL IMAGING INC.</td>
+            <td class="amount">$543,143.00</td>
+        </tr>
+        <tr>
+            <td>BLUEPRINT GENETICS OY</td>
+            <td class="amount">$540,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC POST PARTUM SUPPORT SOCIETY</td>
+            <td class="amount">$534,400.00</td>
+        </tr>
+        <tr>
+            <td>LOOKING GLASS FOUNDATION FOR EATING DISORDERS</td>
+            <td class="amount">$530,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIPHARM WHOLESALE DRUGS LTD.</td>
+            <td class="amount">$529,043.00</td>
+        </tr>
+        <tr>
+            <td>LOUIS A. WEISS MEMORIAL</td>
+            <td class="amount">$517,804.00</td>
+        </tr>
+        <tr>
+            <td>MASSACHUSETTS GENERAL PHYSICIANS ORGANIZATION</td>
+            <td class="amount">$512,028.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER SEKANI FAMILY SERVICES A BRANCH SOC OF THE CARRIER SEKANI TRIBAL COUNCIL</td>
+            <td class="amount">$510,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR ADDICTIONS RESEARCH OF BC</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>RURAL AND REMOTE DIVISION OF FAMILY PRACTICE SOCIETY</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO TRAVELLERS LODGE SOCIETY</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF PHYSICAL THERAPISTS OF BRITISH COLUMBIA</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>THE WATARI RESEARCH ASSOCIATION</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>MEMORIAL SLOAN–KETTERING CANCER CENTER</td>
+            <td class="amount">$495,621.00</td>
+        </tr>
+        <tr>
+            <td>YARROW INTERGENERATIONAL SOCIETY FOR JUSTICE</td>
+            <td class="amount">$475,000.00</td>
+        </tr>
+        <tr>
+            <td>RESIDENT DOCTORS OF BC</td>
+            <td class="amount">$462,744.00</td>
+        </tr>
+        <tr>
+            <td>MAYO CLINIC ARIZONA</td>
+            <td class="amount">$444,355.00</td>
+        </tr>
+        <tr>
+            <td>COVENANT HEALTH</td>
+            <td class="amount">$443,188.00</td>
+        </tr>
+        <tr>
+            <td>KIDS BRAIN HEALTH NETWORK</td>
+            <td class="amount">$437,000.00</td>
+        </tr>
+        <tr>
+            <td>POSITIVE LIVING SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$420,000.00</td>
+        </tr>
+        <tr>
+            <td>B C ASSOCIATION OF OPTOMETRISTS</td>
+            <td class="amount">$413,467.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS, ROBERT D, DR</td>
+            <td class="amount">$401,625.00</td>
+        </tr>
+        <tr>
+            <td>HEALTHCARE BENEFIT TRUST</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>SHORELINE MEDICAL SOCIETY</td>
+            <td class="amount">$393,524.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA MEDICAL IMAGING LTD.</td>
+            <td class="amount">$389,834.00</td>
+        </tr>
+        <tr>
+            <td>MAYO CLINIC</td>
+            <td class="amount">$388,104.00</td>
+        </tr>
+        <tr>
+            <td>SASKATCHEWAN POLYTECHNIC SCHOOL OF NURSING</td>
+            <td class="amount">$377,179.00</td>
+        </tr>
+        <tr>
+            <td>CONNECTIVE TISSUE GENE TESTS</td>
+            <td class="amount">$374,963.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY TRANSITION SOCIETY</td>
+            <td class="amount">$370,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND MEN'S THERAPY CENTRE SOCIETY</td>
+            <td class="amount">$367,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF MIDWIVES OF BRITISH COLUMBIA</td>
+            <td class="amount">$360,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN ALLIANCE OF PHYSIOTHERAPY REGULATORS</td>
+            <td class="amount">$357,882.00</td>
+        </tr>
+        <tr>
+            <td>GASTROINTESTINAL SOCIETY</td>
+            <td class="amount">$350,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CHILDREN'S INSTITUTE</td>
+            <td class="amount">$348,594.00</td>
+        </tr>
+        <tr>
+            <td>MONTE NIDO VISTA</td>
+            <td class="amount">$348,463.00</td>
+        </tr>
+        <tr>
+            <td>RADICURA MANAGEMENT CORP.</td>
+            <td class="amount">$340,313.00</td>
+        </tr>
+        <tr>
+            <td>THERAPATH LLC</td>
+            <td class="amount">$336,795.00</td>
+        </tr>
+        <tr>
+            <td>VENTURE ACADEMY ONTARIO INC.</td>
+            <td class="amount">$333,946.00</td>
+        </tr>
+        <tr>
+            <td>ASK WELLNESS SOCIETY</td>
+            <td class="amount">$325,000.00</td>
+        </tr>
+        <tr>
+            <td>LAWRENCE P. WIEBE M.D. INC.</td>
+            <td class="amount">$321,540.00</td>
+        </tr>
+        <tr>
+            <td>BC HEALTHY COMMUNITIES</td>
+            <td class="amount">$320,000.00</td>
+        </tr>
+        <tr>
+            <td>UBC–CPD</td>
+            <td class="amount">$310,000.00</td>
+        </tr>
+        <tr>
+            <td>ANGEL FLIGHT EAST KOOTENAY ASSOCIATION</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>B. C. MUNICIPAL SAFETY ASSOCIATION</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>INDEPENDENT LONG–TERM CARE COUNCILS ASSOCIATION OF BC</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>GOVERNMENT OF NUNAVUT</td>
+            <td class="amount">$297,897.00</td>
+        </tr>
+        <tr>
+            <td>MD ANDERSON CANCER CENTER</td>
+            <td class="amount">$296,180.00</td>
+        </tr>
+        <tr>
+            <td>NORWEST ADVANCED ORTHOPAEDICS</td>
+            <td class="amount">$294,501.00</td>
+        </tr>
+        <tr>
+            <td>BAYLOR MIRACA GENETICS LABORATORY</td>
+            <td class="amount">$291,138.00</td>
+        </tr>
+        <tr>
+            <td>ST. JOHN SOCIETY (BRITISH COLUMBIA AND YUKON)</td>
+            <td class="amount">$288,640.00</td>
+        </tr>
+        <tr>
+            <td>DR. LINDA JEAN WARREN CO. LTD.</td>
+            <td class="amount">$282,022.00</td>
+        </tr>
+        <tr>
+            <td>B.C. HOSPICE/PALLIATIVE CARE ASSOCIATION</td>
+            <td class="amount">$280,000.00</td>
+        </tr>
+        <tr>
+            <td>ATIRA WOMEN'S RESOURCE SOCIETY</td>
+            <td class="amount">$275,200.00</td>
+        </tr>
+        <tr>
+            <td>AET PARAMEDIC ACADEMY INC.</td>
+            <td class="amount">$272,000.00</td>
+        </tr>
+        <tr>
+            <td>HODGE, JANICE HILDA</td>
+            <td class="amount">$271,886.00</td>
+        </tr>
+        <tr>
+            <td>REVUE DRUG EVALUATION GROUP INC</td>
+            <td class="amount">$270,100.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF B C RESEARCH INSTITUTE</td>
+            <td class="amount">$270,000.00</td>
+        </tr>
+        <tr>
+            <td>STANFORD HOSPITAL AND CLINICS</td>
+            <td class="amount">$265,434.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY OUTREACH PHARMACY</td>
+            <td class="amount">$260,031.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRST NATION</td>
+            <td class="amount">$255,000.00</td>
+        </tr>
+        <tr>
+            <td>LIVING POSITIVE RESOURCE CENTRE, OKANAGAN</td>
+            <td class="amount">$252,000.00</td>
+        </tr>
+        <tr>
+            <td>DAVID FOSTER FOUNDATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>JEUXF C VICTORIA 2020</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>TERRY FOX CENTRE</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>SHRINERS OF BRITISH COLUMBIA & YUKON CHILD SERVICES SOCIETY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CENTRE FOR CHILD DEVELOPMENT OF THE LOWER MAINLAND</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH OKANAGAN NEUROLOGICAL ASSOCIATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NANAIMO</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>COVENANT HOUSE VANCOUVER</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>SANTE CENTER FOR HEALING</td>
+            <td class="amount">$247,116.00</td>
+        </tr>
+        <tr>
+            <td>OHSU</td>
+            <td class="amount">$237,615.00</td>
+        </tr>
+        <tr>
+            <td>CINCINNATI CHILDREN'S HOSPITAL MEDICAL CENTER</td>
+            <td class="amount">$235,263.00</td>
+        </tr>
+        <tr>
+            <td>BLUEPRINT GENETICS CANADA INC.</td>
+            <td class="amount">$235,192.00</td>
+        </tr>
+        <tr>
+            <td>J. PAUL NICKERSON, M.D. INC.</td>
+            <td class="amount">$235,000.00</td>
+        </tr>
+        <tr>
+            <td>ATHENA DIAGNOSTICS INC</td>
+            <td class="amount">$234,966.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND DEAF AND HARD OF HEARING CENTRE ASSOCIATION</td>
+            <td class="amount">$230,910.00</td>
+        </tr>
+        <tr>
+            <td>GAMMA WHOLESALE DRUGS LIMITED</td>
+            <td class="amount">$223,557.00</td>
+        </tr>
+        <tr>
+            <td>CHI ST. LUKE'S BAYLOR COLLEGE</td>
+            <td class="amount">$221,119.00</td>
+        </tr>
+        <tr>
+            <td>SHELBOURNE MEDICAL CLINIC INC.</td>
+            <td class="amount">$221,063.00</td>
+        </tr>
+        <tr>
+            <td>WESTMINSTER HOUSE SOCIETY</td>
+            <td class="amount">$221,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF PRINCE EDWARD ISLAND</td>
+            <td class="amount">$219,659.00</td>
+        </tr>
+        <tr>
+            <td>MONDANI, ALBERTO</td>
+            <td class="amount">$219,178.00</td>
+        </tr>
+        <tr>
+            <td>THE CHILDREN'S HOSPITAL OF PHILADELPHIA</td>
+            <td class="amount">$214,272.00</td>
+        </tr>
+        <tr>
+            <td>INDIANA UNIVERSITY HEALTH PROTON THERAPY CENTER</td>
+            <td class="amount">$210,209.00</td>
+        </tr>
+        <tr>
+            <td>WEST SAANICH MEDICAL CLINIC</td>
+            <td class="amount">$209,050.00</td>
+        </tr>
+        <tr>
+            <td>UBC DEPARTMENT OF PATHOLOGY & LABORATORY MEDICINE</td>
+            <td class="amount">$207,419.00</td>
+        </tr>
+        <tr>
+            <td>S.U.C.C.E.S.S. (A/K/A UNITED CHINESE COMMUNITY ENRICHMENT SERVICES SOCIETY)</td>
+            <td class="amount">$206,000.00</td>
+        </tr>
+        <tr>
+            <td>ESQUIMALT MEDICAL CLINIC</td>
+            <td class="amount">$204,433.00</td>
+        </tr>
+        <tr>
+            <td>MADRONA IMAGING INC.</td>
+            <td class="amount">$203,173.00</td>
+        </tr>
+        <tr>
+            <td>PARKINSON WELLNESS PROJECTS</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA NATIVE FRIENDSHIP CENTRE</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>S.U.C.C.E.S.S. AFFORDABLE HOUSING SOCIETY</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>DELTA GYMNASTICS SOCIETY</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>THRIVE SOCIAL SERVICES SOCIETY</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>M HEALTH FAIRVIEW</td>
+            <td class="amount">$196,664.00</td>
+        </tr>
+        <tr>
+            <td>THE MCCREARY CENTRE SOCIETY</td>
+            <td class="amount">$196,000.00</td>
+        </tr>
+        <tr>
+            <td>NEXUS BC COMMUNITY RESOURCE CENTRE SOCIETY</td>
+            <td class="amount">$195,000.00</td>
+        </tr>
+        <tr>
+            <td>BOULDER ABORTION CLINIC</td>
+            <td class="amount">$192,949.00</td>
+        </tr>
+        <tr>
+            <td>BEACH AVENUE MEDICAL CLINIC</td>
+            <td class="amount">$189,165.00</td>
+        </tr>
+        <tr>
+            <td>AMBRY GENETICS</td>
+            <td class="amount">$188,549.00</td>
+        </tr>
+        <tr>
+            <td>HARBORVIEW MEDICAL CENTER</td>
+            <td class="amount">$187,431.00</td>
+        </tr>
+        <tr>
+            <td>THE UNIVERSITY OF CHICAGO MEDICINE</td>
+            <td class="amount">$186,463.00</td>
+        </tr>
+        <tr>
+            <td>VERNON RADIOLOGICAL ASSOCIATES CORP.</td>
+            <td class="amount">$183,584.00</td>
+        </tr>
+        <tr>
+            <td>CHU DE QUEBEC</td>
+            <td class="amount">$181,481.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF MANITOBA</td>
+            <td class="amount">$179,561.00</td>
+        </tr>
+        <tr>
+            <td>LPCH MEDICAL GROUP</td>
+            <td class="amount">$177,087.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO REGION JOHN HOWARD SOCIETY</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND UNIVERSITY</td>
+            <td class="amount">$172,500.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL ROADS UNIVERSITY</td>
+            <td class="amount">$172,500.00</td>
+        </tr>
+        <tr>
+            <td>ALBERTA HOSPITAL EDMONTON SITE</td>
+            <td class="amount">$170,772.00</td>
+        </tr>
+        <tr>
+            <td>LA SOCIETE RESO SANTE COLOMBIE–BRITANNIQUE</td>
+            <td class="amount">$169,000.00</td>
+        </tr>
+        <tr>
+            <td>COSCO SENIORS' HEALTH AND WELLNESS INSTITUTE SOCIETY</td>
+            <td class="amount">$166,000.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND ADDICTION SERVICES SOCIETY</td>
+            <td class="amount">$165,000.00</td>
+        </tr>
+        <tr>
+            <td>HOMEWOOD DU PLATEAU</td>
+            <td class="amount">$161,967.00</td>
+        </tr>
+        <tr>
+            <td>TEXAS CHILDRENS HOSPITAL</td>
+            <td class="amount">$161,043.00</td>
+        </tr>
+        <tr>
+            <td>CIRP CONSTRUCTION INDUSTRY REHABILITATION PLAN INC.</td>
+            <td class="amount">$160,000.00</td>
+        </tr>
+        <tr>
+            <td>CYSTIC FIBROSIS CANADA</td>
+            <td class="amount">$160,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF MIDWIVES OF B C</td>
+            <td class="amount">$160,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF WASHINGTON</td>
+            <td class="amount">$157,853.00</td>
+        </tr>
+        <tr>
+            <td>MOMS STOP THE HARM SOCIETY</td>
+            <td class="amount">$153,000.00</td>
+        </tr>
+        <tr>
+            <td>CHU DE QUEBEC– UNIVERSITE LAVAL</td>
+            <td class="amount">$151,081.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER FRIENDS FOR LIFE SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>DR. L. OLIVIA TSENG INC.</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>HEALTH ARTS SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>PAUL JACKSON CLUB LTD.</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>JAMES BAY HEALTH AND COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>SJCRH PHYSICIAN</td>
+            <td class="amount">$149,857.00</td>
+        </tr>
+        <tr>
+            <td>BABAK AZIZZADEH M.D.</td>
+            <td class="amount">$149,485.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN'S UNIVERSITY MEDICAL GROUP</td>
+            <td class="amount">$145,606.00</td>
+        </tr>
+        <tr>
+            <td>ST. JOSEPH'S HOSPITAL AND MEDICAL CENTER</td>
+            <td class="amount">$144,952.00</td>
+        </tr>
+        <tr>
+            <td>NICOLSON, RONALD BRUCE</td>
+            <td class="amount">$143,292.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ELDERS COMMUNICATION CENTER SOCIETY</td>
+            <td class="amount">$140,000.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER RESORT ASSOCATION</td>
+            <td class="amount">$136,690.00</td>
+        </tr>
+        <tr>
+            <td>NIU, LENG SHIN</td>
+            <td class="amount">$131,585.00</td>
+        </tr>
+        <tr>
+            <td>ESOTERIX, INC.</td>
+            <td class="amount">$131,356.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN'S HOSPITAL–BOSTON</td>
+            <td class="amount">$129,897.00</td>
+        </tr>
+        <tr>
+            <td>CALIFORNIA PACIFIC MEDICAL CENTER</td>
+            <td class="amount">$127,556.00</td>
+        </tr>
+        <tr>
+            <td>INVITAE CORPORATION</td>
+            <td class="amount">$127,067.00</td>
+        </tr>
+        <tr>
+            <td>ALL WOMEN'S CARE / LILITH CLINIC</td>
+            <td class="amount">$126,390.00</td>
+        </tr>
+        <tr>
+            <td>BC HEALTHY COMMUNITIES SOCIETY</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>SAINT FRANCIS MEMORIAL HOSPITAL</td>
+            <td class="amount">$124,950.00</td>
+        </tr>
+        <tr>
+            <td>HOUSE EAR CLINIC</td>
+            <td class="amount">$124,303.00</td>
+        </tr>
+        <tr>
+            <td>SAUNDERS, ROBIN & VALLY, TOMAS & RABIEN, ANTON & FORSBERG, TRACY</td>
+            <td class="amount">$120,639.00</td>
+        </tr>
+        <tr>
+            <td>THE LAST DOOR RECOVERY SOCIETY</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>THE ANTIDOTE PHARMACY & HEALTH CENTRE</td>
+            <td class="amount">$119,252.00</td>
+        </tr>
+        <tr>
+            <td>YORK UNIVERSITY</td>
+            <td class="amount">$117,000.00</td>
+        </tr>
+        <tr>
+            <td>ESQUIMALT NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$115,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTOGENE GMBH</td>
+            <td class="amount">$114,963.00</td>
+        </tr>
+        <tr>
+            <td>PHX CHILDRENS HOSPITAL</td>
+            <td class="amount">$110,908.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK YOUTH HEALTH CENTRE SOCIETY</td>
+            <td class="amount">$110,000.00</td>
+        </tr>
+        <tr>
+            <td>SAFECARE BC HEALTH AND SAFETY ASSOCIATION</td>
+            <td class="amount">$109,865.00</td>
+        </tr>
+        <tr>
+            <td>FULGENT THERAPEUTICS, LLC</td>
+            <td class="amount">$109,859.00</td>
+        </tr>
+        <tr>
+            <td>OAK BAY FAMILY PHYSICIANS LTD.</td>
+            <td class="amount">$108,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE MEDICAL ASSOCIATES</td>
+            <td class="amount">$107,500.00</td>
+        </tr>
+        <tr>
+            <td>COURTAGEN LIFE SCIENCES INC</td>
+            <td class="amount">$106,379.00</td>
+        </tr>
+        <tr>
+            <td>ST. LUKE'S ROOSEVELT HOSPITAL</td>
+            <td class="amount">$105,483.00</td>
+        </tr>
+        <tr>
+            <td>CHRISTIANA CARE HEALTH SERVICES</td>
+            <td class="amount">$105,377.00</td>
+        </tr>
+        <tr>
+            <td>GUISACHAN FAMILY MEDICINE</td>
+            <td class="amount">$105,259.00</td>
+        </tr>
+        <tr>
+            <td>LINDSAY DIAGNOSTIC IMAGING SERVICES INC.</td>
+            <td class="amount">$105,143.00</td>
+        </tr>
+        <tr>
+            <td>BC HEPATITIS NETWORK SOCIETY</td>
+            <td class="amount">$105,000.00</td>
+        </tr>
+        <tr>
+            <td>GREENWOOD, SHANNON</td>
+            <td class="amount">$104,490.00</td>
+        </tr>
+        <tr>
+            <td>MASSACHUSETTS EYE AND EAR INFIRMARY</td>
+            <td class="amount">$102,332.00</td>
+        </tr>
+        <tr>
+            <td>SUN PEAKS MOUNTAIN RESORT MUNICIPALITY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN CYSTIC FIBROSIS FOUNDATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>SUN PEAKS HEALTH ASSOCIATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY SENIOR RESOURCES SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>SHER VANCOUVER LGBTQ FRIENDS SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>SACH SOUTH ASIAN COMMUNITY HUB SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>GI (GASTROINTESTINAL) SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>THE RICHMOND HOSPITAL FOUNDATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER FAMILY PLACE SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>BRIDGES FOR WOMEN SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH–SOUTH ENTERPRISES LTD.</td>
+            <td class="amount">$98,571.00</td>
+        </tr>
+        <tr>
+            <td>MOZAIC CARE, INC.</td>
+            <td class="amount">$96,926.00</td>
+        </tr>
+        <tr>
+            <td>MEDLIOR HEALTH OUTCOMES RESEARCH LTD.</td>
+            <td class="amount">$96,000.00</td>
+        </tr>
+        <tr>
+            <td>DORAN, AMELIA</td>
+            <td class="amount">$95,140.00</td>
+        </tr>
+        <tr>
+            <td>CLEMENT, LISA MARY</td>
+            <td class="amount">$95,130.00</td>
+        </tr>
+        <tr>
+            <td>JOHNS HOPKINS MEDICINE</td>
+            <td class="amount">$95,105.00</td>
+        </tr>
+        <tr>
+            <td>THE EMORY CLINIC INC</td>
+            <td class="amount">$94,439.00</td>
+        </tr>
+        <tr>
+            <td>MOZAIC CARE INC.</td>
+            <td class="amount">$92,342.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF CHICAGO</td>
+            <td class="amount">$92,235.00</td>
+        </tr>
+        <tr>
+            <td>ROSEBOOM, SHERISSE LYNETTE</td>
+            <td class="amount">$92,053.00</td>
+        </tr>
+        <tr>
+            <td>BON AIR SURGERY CENTER</td>
+            <td class="amount">$91,826.00</td>
+        </tr>
+        <tr>
+            <td>KECK HOSPITAL OF USC</td>
+            <td class="amount">$91,199.00</td>
+        </tr>
+        <tr>
+            <td>CATALYST ANES GRP, LLC</td>
+            <td class="amount">$91,171.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER SEKANI FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSOCIATION OF HEALTHCARE AUXILIARIES</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>LAURSEN, CELINA E</td>
+            <td class="amount">$89,963.00</td>
+        </tr>
+        <tr>
+            <td>ST. FRANCIS HOSPITAL</td>
+            <td class="amount">$89,005.00</td>
+        </tr>
+        <tr>
+            <td>HALSALL, ELAINE CHAPMAN</td>
+            <td class="amount">$88,997.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY PROFESSIONAL SERVICE</td>
+            <td class="amount">$86,045.00</td>
+        </tr>
+        <tr>
+            <td>IRWOOD MEDICAL SERVICE CORP.</td>
+            <td class="amount">$85,402.00</td>
+        </tr>
+        <tr>
+            <td>CONNECTICUT CHILDREN'S</td>
+            <td class="amount">$85,319.00</td>
+        </tr>
+        <tr>
+            <td>CHILDRENS SURGICAL FOUNDATION</td>
+            <td class="amount">$84,629.00</td>
+        </tr>
+        <tr>
+            <td>MAPLE RIDGE/PITT MEADOWS COMMUNITY SERVICES</td>
+            <td class="amount">$84,500.00</td>
+        </tr>
+        <tr>
+            <td>APPLIED SCIENCE TECHNOLOGISTS & TECHNICIANS OF B C</td>
+            <td class="amount">$84,217.00</td>
+        </tr>
+        <tr>
+            <td>VIRGINIA MASON MEDICAL CENTER</td>
+            <td class="amount">$83,039.00</td>
+        </tr>
+        <tr>
+            <td>DE CENT, CATHERINE</td>
+            <td class="amount">$82,505.00</td>
+        </tr>
+        <tr>
+            <td>SWEDISH CHERRY HILL</td>
+            <td class="amount">$81,753.00</td>
+        </tr>
+        <tr>
+            <td>SUN LIFE FINANCIAL</td>
+            <td class="amount">$81,672.00</td>
+        </tr>
+        <tr>
+            <td>JOINT CONSORTIUM FOR SCHOOL HEALTH</td>
+            <td class="amount">$81,084.00</td>
+        </tr>
+        <tr>
+            <td>MAYO COLLABORATIVE SERVICES INC</td>
+            <td class="amount">$80,280.00</td>
+        </tr>
+        <tr>
+            <td>PIVOT LEGAL SOCIETY</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>HIROSHIMA UNIVERSITY HOSPITAL</td>
+            <td class="amount">$79,821.00</td>
+        </tr>
+        <tr>
+            <td>KLINISCH GENETISCH CENTRUM</td>
+            <td class="amount">$78,481.00</td>
+        </tr>
+        <tr>
+            <td>PARTNERS CENTER FOR PERSONALIZED GENETIC MEDICINE – PCPGM</td>
+            <td class="amount">$77,618.00</td>
+        </tr>
+        <tr>
+            <td>DE ZWAGER, MARIJKE</td>
+            <td class="amount">$76,980.00</td>
+        </tr>
+        <tr>
+            <td>PARTNERS IN ABORTION CARE LLC</td>
+            <td class="amount">$76,302.00</td>
+        </tr>
+        <tr>
+            <td>BRECKENRIDGE, JEB</td>
+            <td class="amount">$74,615.00</td>
+        </tr>
+        <tr>
+            <td>OH PHARMACY</td>
+            <td class="amount">$73,852.00</td>
+        </tr>
+        <tr>
+            <td>BETH ISRAEL DEACONESS</td>
+            <td class="amount">$73,535.00</td>
+        </tr>
+        <tr>
+            <td>THE PLASTIC SURGERY CENTER</td>
+            <td class="amount">$73,120.00</td>
+        </tr>
+        <tr>
+            <td>BIOMARIN PHARMACEUTICAL, INC.</td>
+            <td class="amount">$72,862.00</td>
+        </tr>
+        <tr>
+            <td>SHIELDS AND SHIELDS PC</td>
+            <td class="amount">$72,438.00</td>
+        </tr>
+        <tr>
+            <td>ALEXANDER, TAYLOR JORDANN</td>
+            <td class="amount">$72,204.00</td>
+        </tr>
+        <tr>
+            <td>BODNER, ELIZABETH</td>
+            <td class="amount">$71,957.00</td>
+        </tr>
+        <tr>
+            <td>VERGHESE, AMANDA</td>
+            <td class="amount">$71,957.00</td>
+        </tr>
+        <tr>
+            <td>VONK, ELINE NICKIE</td>
+            <td class="amount">$71,957.00</td>
+        </tr>
+        <tr>
+            <td>CAREY, SARAH</td>
+            <td class="amount">$71,854.00</td>
+        </tr>
+        <tr>
+            <td>LIFESUPPORT AIR MEDICAL SERVICES CORP</td>
+            <td class="amount">$71,375.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER HOSPICE SOCIETY</td>
+            <td class="amount">$71,000.00</td>
+        </tr>
+        <tr>
+            <td>THE KENNEDY KRIEGER INSTITUTE</td>
+            <td class="amount">$70,774.00</td>
+        </tr>
+        <tr>
+            <td>THE COUNCIL OF SENIOR CITIZENS' ORGANIZATIONS OF BRITISH COLUMBIA</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>TETRA SOCIETY OF NORTH AMERICA</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>MEDEVAC CANADA INC.</td>
+            <td class="amount">$68,365.00</td>
+        </tr>
+        <tr>
+            <td>JOHNS HOPKINS INTERNATIONAL</td>
+            <td class="amount">$68,125.00</td>
+        </tr>
+        <tr>
+            <td>BAKER, JANE LISETTE</td>
+            <td class="amount">$67,841.00</td>
+        </tr>
+        <tr>
+            <td>RR UCLA MEDICAL CENTER</td>
+            <td class="amount">$66,991.00</td>
+        </tr>
+        <tr>
+            <td>EGL GENETIC DIAGNOSTICS LLC</td>
+            <td class="amount">$65,532.00</td>
+        </tr>
+        <tr>
+            <td>UW MEDICINE NORTHWEST HOSPITAL & MEDICAL CENTER</td>
+            <td class="amount">$65,163.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY HOSPICE SOCIETY</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO BRAIN INJURY SOCIETY</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>WARREN, KYRA EMILY</td>
+            <td class="amount">$64,519.00</td>
+        </tr>
+        <tr>
+            <td>MAYO CLINIC HOSPITAL RST</td>
+            <td class="amount">$63,935.00</td>
+        </tr>
+        <tr>
+            <td>GILLIES, JOANNE P</td>
+            <td class="amount">$62,372.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER PROSTHETICS AND ORTHOTICS INC.</td>
+            <td class="amount">$61,659.00</td>
+        </tr>
+        <tr>
+            <td>SATNAM PHARMACY</td>
+            <td class="amount">$60,890.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE INSTITUTE OF BRITISH COLUMBIA – CENTRE FOR CONFLICT RESOLUTION</td>
+            <td class="amount">$60,830.00</td>
+        </tr>
+        <tr>
+            <td>SHEFFIELD CHILDREN'S NHS FOUNDATION TRUST</td>
+            <td class="amount">$60,646.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS CHILD DEVELOPMENT SOCIETY</td>
+            <td class="amount">$60,530.00</td>
+        </tr>
+        <tr>
+            <td>VANCITY COMMUNITY FOUNDATION</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>CAYER, ANNE–MARIE</td>
+            <td class="amount">$58,990.00</td>
+        </tr>
+        <tr>
+            <td>WIEBE, CARMEN</td>
+            <td class="amount">$58,980.00</td>
+        </tr>
+        <tr>
+            <td>DR. D. HARRISON INC.</td>
+            <td class="amount">$58,056.00</td>
+        </tr>
+        <tr>
+            <td>DIALYSIS SERVICES INC.</td>
+            <td class="amount">$57,802.00</td>
+        </tr>
+        <tr>
+            <td>CHILDS, CRYSTAL</td>
+            <td class="amount">$57,344.00</td>
+        </tr>
+        <tr>
+            <td>NORTHSHORE UNIVERSITY HEALTH SYSTEM</td>
+            <td class="amount">$57,144.00</td>
+        </tr>
+        <tr>
+            <td>TOTAL CARE PHARMACY</td>
+            <td class="amount">$55,077.00</td>
+        </tr>
+        <tr>
+            <td>HBOT CLINICS INC.</td>
+            <td class="amount">$54,065.00</td>
+        </tr>
+        <tr>
+            <td>PEER MEDICAL</td>
+            <td class="amount">$53,925.00</td>
+        </tr>
+        <tr>
+            <td>CENTER FOR HUMAN GENETICS INC</td>
+            <td class="amount">$53,483.00</td>
+        </tr>
+        <tr>
+            <td>SANFORD, CARLIE</td>
+            <td class="amount">$52,351.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JOHN PRIMARY CARE SOCIETY</td>
+            <td class="amount">$52,049.00</td>
+        </tr>
+        <tr>
+            <td>GOLD, CATHERINE LEAH</td>
+            <td class="amount">$50,522.00</td>
+        </tr>
+        <tr>
+            <td>TALBOTT RECOVERY CAMPUS</td>
+            <td class="amount">$50,009.00</td>
+        </tr>
+        <tr>
+            <td>OCEANSIDE HOSPICE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CLEARWATER</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CROSSROADS HOSPICE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>RHC EDUCATION FOUNDATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>RECREATION FACILITIES ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SURREY HOSPICE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST CHILCOTIN HEALTHCARE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BLOOM GROUP COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN LIVER FOUNDATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>VANGUARD MEDICAL SPECIALISTS</td>
+            <td class="amount">$49,217.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DUNCAN</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>LYSTON, KANDACE PRICE</td>
+            <td class="amount">$48,822.00</td>
+        </tr>
+        <tr>
+            <td>SIGNATURE GENOMIC LABORATORIES</td>
+            <td class="amount">$48,687.00</td>
+        </tr>
+        <tr>
+            <td>TCPSO</td>
+            <td class="amount">$47,747.00</td>
+        </tr>
+        <tr>
+            <td>MCRAE, LORNA</td>
+            <td class="amount">$47,605.00</td>
+        </tr>
+        <tr>
+            <td>IRIDIA MEDICAL INC.</td>
+            <td class="amount">$47,250.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDENCE PORTLAND MEDICAL CENTER</td>
+            <td class="amount">$47,088.00</td>
+        </tr>
+        <tr>
+            <td>GATEWAY HEALTH & WELLNESS CLINICS INC.</td>
+            <td class="amount">$46,167.00</td>
+        </tr>
+        <tr>
+            <td>BAYLOR COLLEGE OF MEDICINE</td>
+            <td class="amount">$45,838.00</td>
+        </tr>
+        <tr>
+            <td>NOVANT HEALTH MEDICAL PARK HOSPITAL</td>
+            <td class="amount">$45,607.00</td>
+        </tr>
+        <tr>
+            <td>PATERSON, GILLIAN</td>
+            <td class="amount">$45,397.00</td>
+        </tr>
+        <tr>
+            <td>TAFELMAYER, ANDREA</td>
+            <td class="amount">$44,960.00</td>
+        </tr>
+        <tr>
+            <td>1213498 B.C. LTD.</td>
+            <td class="amount">$44,625.00</td>
+        </tr>
+        <tr>
+            <td>SHOPPERS DRUG MART 2273</td>
+            <td class="amount">$44,542.00</td>
+        </tr>
+        <tr>
+            <td>MURRAYVILLE FAMILY PRACTICE GROUP</td>
+            <td class="amount">$44,333.00</td>
+        </tr>
+        <tr>
+            <td>DR. P. ARMOGAM INC.</td>
+            <td class="amount">$44,333.00</td>
+        </tr>
+        <tr>
+            <td>NASCENT CONSULTING LTD.</td>
+            <td class="amount">$44,333.00</td>
+        </tr>
+        <tr>
+            <td>WINDERMERE SECONDARY SCHOOL</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>PHYSICIANS REFERRAL SERVICE</td>
+            <td class="amount">$43,856.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITAIR ZIEKENHUIS GENT</td>
+            <td class="amount">$43,019.00</td>
+        </tr>
+        <tr>
+            <td>CHEN, MANG L, DR</td>
+            <td class="amount">$42,996.00</td>
+        </tr>
+        <tr>
+            <td>ANGELS OF FLIGHT CANADA INC.</td>
+            <td class="amount">$42,385.00</td>
+        </tr>
+        <tr>
+            <td>HAZELDEN BETTY FORD FOUNDATION</td>
+            <td class="amount">$41,658.00</td>
+        </tr>
+        <tr>
+            <td>LANG, HANA</td>
+            <td class="amount">$41,499.00</td>
+        </tr>
+        <tr>
+            <td>FRASER BASIN COUNCIL SOCIETY</td>
+            <td class="amount">$40,500.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF CANADIAN OCCUPATIONAL THERAPY REGULATORY ORGANIZATIONS</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>UBC CENTRE FOR HEALTH SERVICES AND POLICY RESEARCH</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>BUCHMANN, MICHELE A</td>
+            <td class="amount">$39,722.00</td>
+        </tr>
+        <tr>
+            <td>HOPE MEDICAL CENTRE LTD.</td>
+            <td class="amount">$39,400.00</td>
+        </tr>
+        <tr>
+            <td>DR. ASHRAF EL KARSH INC.</td>
+            <td class="amount">$39,383.00</td>
+        </tr>
+        <tr>
+            <td>492246 ALBERTA LTD</td>
+            <td class="amount">$39,266.00</td>
+        </tr>
+        <tr>
+            <td>BLOOMINGTON ANESTHESIOLOGISTS, P.C.</td>
+            <td class="amount">$38,774.00</td>
+        </tr>
+        <tr>
+            <td>DR. ANDREW JUREN INC.</td>
+            <td class="amount">$38,667.00</td>
+        </tr>
+        <tr>
+            <td>GRAPHIC OFFICE INTERIORS LTD.</td>
+            <td class="amount">$38,232.00</td>
+        </tr>
+        <tr>
+            <td>GREENBRAE SURGERY CENTER</td>
+            <td class="amount">$37,979.00</td>
+        </tr>
+        <tr>
+            <td>BELL, DOUGLAS ROLAND</td>
+            <td class="amount">$37,537.00</td>
+        </tr>
+        <tr>
+            <td>EMORY GENETICS LAB</td>
+            <td class="amount">$37,148.00</td>
+        </tr>
+        <tr>
+            <td>GREENWOOD GENETIC CENTER</td>
+            <td class="amount">$36,462.00</td>
+        </tr>
+        <tr>
+            <td>LONDON HEALTH SCIENCES CENTRE</td>
+            <td class="amount">$36,151.00</td>
+        </tr>
+        <tr>
+            <td>AUXILIARY TO FRASER CANYON HOSPITAL & FRASER HOPE LODGE</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>MCTAGGART, HEATHER KERR</td>
+            <td class="amount">$35,971.00</td>
+        </tr>
+        <tr>
+            <td>MCGILL UNIVERSITY HEALTH CENTRE</td>
+            <td class="amount">$35,627.00</td>
+        </tr>
+        <tr>
+            <td>THE CHILLIWACK DIVISION OF FAMILY PRACTICE SOCIETY</td>
+            <td class="amount">$35,573.00</td>
+        </tr>
+        <tr>
+            <td>THE ANTIDOTE PHARMACY 2</td>
+            <td class="amount">$35,347.00</td>
+        </tr>
+        <tr>
+            <td>ANGEL MEDFLIGHT</td>
+            <td class="amount">$35,188.00</td>
+        </tr>
+        <tr>
+            <td>SCOTTSDALE HEALTHCARE OSBORN</td>
+            <td class="amount">$35,166.00</td>
+        </tr>
+        <tr>
+            <td>WINNIPEG REGIONAL HEALTH AUTHORITY</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>CRANDALL, ALEXANDRIA JUDITH</td>
+            <td class="amount">$33,927.00</td>
+        </tr>
+        <tr>
+            <td>GAFVELS, KERSTIN</td>
+            <td class="amount">$33,819.00</td>
+        </tr>
+        <tr>
+            <td>FRITZSCHE, ASTRID</td>
+            <td class="amount">$33,743.00</td>
+        </tr>
+        <tr>
+            <td>WILLOW REPRODUCTIVE HEALTH SOCIETY</td>
+            <td class="amount">$33,250.00</td>
+        </tr>
+        <tr>
+            <td>DR. LAURA BIRDSELL INC.</td>
+            <td class="amount">$33,250.00</td>
+        </tr>
+        <tr>
+            <td>PEDIATRIC ANESTHESIA ASSOCIATION</td>
+            <td class="amount">$33,166.00</td>
+        </tr>
+        <tr>
+            <td>NORBURN MEDICAL ASSOCIATES</td>
+            <td class="amount">$32,000.00</td>
+        </tr>
+        <tr>
+            <td>WOMAN'S HEALTH OPTIONS LTD.</td>
+            <td class="amount">$31,335.00</td>
+        </tr>
+        <tr>
+            <td>UAHSF–MANAGEMENT SERVICES ORGANIZATION</td>
+            <td class="amount">$31,126.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN SENIORS COMMUNITY FOUNDATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THE GOVERNING COUNCIL OF THE SALVATION ARMY IN CANADA</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PHA PUBLIC HEALTH ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA PROFESSIONAL FIRE FIGHTERS' BURN FUND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>SHOPPERS DRUG MART 2222</td>
+            <td class="amount">$29,538.00</td>
+        </tr>
+        <tr>
+            <td>TRINITY WESTERN UNIVERSITY</td>
+            <td class="amount">$29,136.00</td>
+        </tr>
+        <tr>
+            <td>EASTSIDE PHARMACY LTD.</td>
+            <td class="amount">$29,084.00</td>
+        </tr>
+        <tr>
+            <td>YUKON HOSPITAL CORPORATION</td>
+            <td class="amount">$28,999.00</td>
+        </tr>
+        <tr>
+            <td>RIGSHOSPITALET</td>
+            <td class="amount">$28,657.00</td>
+        </tr>
+        <tr>
+            <td>CSMC PHYSICIANS BILLING SERVICE</td>
+            <td class="amount">$28,369.00</td>
+        </tr>
+        <tr>
+            <td>SHOPPERS DRUG MART 255</td>
+            <td class="amount">$27,781.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN'S HOSPITAL OF WISCONSIN</td>
+            <td class="amount">$26,926.00</td>
+        </tr>
+        <tr>
+            <td>ATHENA DIAGNOSTICS, INC.</td>
+            <td class="amount">$26,339.00</td>
+        </tr>
+        <tr>
+            <td>GOVERNMENT OF NOVA SCOTIA</td>
+            <td class="amount">$26,177.00</td>
+        </tr>
+        <tr>
+            <td>LURIE CHILDREN'S MEDICAL GROUP</td>
+            <td class="amount">$25,692.00</td>
+        </tr>
+        <tr>
+            <td>HEAD & NECK SURGICAL GROUP</td>
+            <td class="amount">$25,674.00</td>
+        </tr>
+        <tr>
+            <td>THE HOSPITAL AT WESTLAKE MEDICAL CENTER</td>
+            <td class="amount">$25,515.00</td>
+        </tr>
+        <tr>
+            <td>ANTHONY, ROBERT</td>
+            <td class="amount">$25,416.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA HOSPICE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SOOKE ELDERLY CITIZENS HOUSING SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TORONTO METROPOLITAN UNIVERSITY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>THE SALVATION ARMY ROTARY HOSPICE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ST. JOSEPH'S GENERAL HOSPITAL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA RECREATION AND PARKS ASSOCIATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH OKANAGAN HOSPICE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TREATMENT ACCESS BC</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>PARK PLACE SENIORS LIVING INC. & WEXFORD CREEK SENIORS COMMUNITY LTD.</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE HOSPICE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>STIGMA–FREE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SIENNA–BALTIC (CASCADES) INC.</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DELTA HOSPICE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SING FOR YOUR LIFE FOUNDATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ST MICHAEL'S CENTRE HOSPITAL SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS HOSPICE ASSOCIATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ALBERNI VALLEY HOSPICE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF WHITE ROCK</td>
+            <td class="amount">$19,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE HEALTH NETWORK SOCIETY</td>
+            <td class="amount">$17,200.00</td>
+        </tr>
+        <tr>
+            <td>REVENUE REFUNDS</td>
+            <td class="amount">$15,288.00</td>
+        </tr>
+        <tr>
+            <td>B.C. PAVILION CORPORATION</td>
+            <td class="amount">$13,353.00</td>
+        </tr>
+        <tr>
+            <td>IMMIGRANT AND MULTICULTURAL SERVICES SOCIETY OF PRINCE GEORGE</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF OKANAGAN–SIMILKAMEEN</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>EASTER SEAL HOUSE SOCIETY</td>
+            <td class="amount">$7,305.00</td>
+        </tr>
+        <tr>
+            <td>POSTAL SERVICES</td>
+            <td class="amount">$6,025.00</td>
+        </tr>
+        <tr>
+            <td>PARK INN & SUITES VANCOUVER BROADWAY</td>
+            <td class="amount">$1,924.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$1,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC BLUE CROSS</td>
+            <td class="amount">$576.00</td>
+        </tr>
+        <tr>
+            <td>POW, LISA DIANNE</td>
+            <td class="amount">$17.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

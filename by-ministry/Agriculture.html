@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Agriculture</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Agriculture
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$169.24M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">287</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Agriculture</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>B.C. INVESTMENT AGRICULTURE FOUNDATION</td>
+            <td class="amount">$40,584,822.00</td>
+        </tr>
+        <tr>
+            <td>B.C. AGRICULTURAL RESEARCH & DEVELOPMENT CORPORATION</td>
+            <td class="amount">$20,201,113.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$15,496,374.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA SOCIETY FOR THE PREVENTION OF CRUELTY TO ANIMALS</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC SALMON FOUNDATION</td>
+            <td class="amount">$5,075,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$4,745,843.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE FARMS CANADA LIMITED PARTNERSHIP</td>
+            <td class="amount">$4,623,532.00</td>
+        </tr>
+        <tr>
+            <td>WINDSET FARMS (CANADA) LTD.</td>
+            <td class="amount">$3,536,996.00</td>
+        </tr>
+        <tr>
+            <td>BCCA PROGRAM DELIVERY INC.</td>
+            <td class="amount">$2,786,229.00</td>
+        </tr>
+        <tr>
+            <td>PARTNERSHIP FOR WATER SUSTAINABILITY IN BRITISH COLUMBIA</td>
+            <td class="amount">$2,344,349.00</td>
+        </tr>
+        <tr>
+            <td>RANDHAWA FARMS LTD.</td>
+            <td class="amount">$2,209,750.00</td>
+        </tr>
+        <tr>
+            <td>HOUWELING NURSERIES LTD.</td>
+            <td class="amount">$2,202,975.00</td>
+        </tr>
+        <tr>
+            <td>B.C. FOOD PROCESSORS ASSOCIATION</td>
+            <td class="amount">$2,097,765.00</td>
+        </tr>
+        <tr>
+            <td>FOOD PROCESSING HUMAN RESOURCES COUNCIL</td>
+            <td class="amount">$1,747,371.00</td>
+        </tr>
+        <tr>
+            <td>PRICEWATERHOUSECOOPERS LLP</td>
+            <td class="amount">$1,688,133.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST VEGETABLES LTD.</td>
+            <td class="amount">$1,461,995.00</td>
+        </tr>
+        <tr>
+            <td>FOOD PROCESSING SKILLS CANADA</td>
+            <td class="amount">$1,458,211.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY LAKE GREENHOUSES LTD.</td>
+            <td class="amount">$1,264,809.00</td>
+        </tr>
+        <tr>
+            <td>DELTA VIEW FARMS LTD.</td>
+            <td class="amount">$1,166,723.00</td>
+        </tr>
+        <tr>
+            <td>MILLENNIUM PACIFIC GREENHOUSES PARTNERSHIP</td>
+            <td class="amount">$1,135,441.00</td>
+        </tr>
+        <tr>
+            <td>CALAIS FARMS LTD.</td>
+            <td class="amount">$1,111,727.00</td>
+        </tr>
+        <tr>
+            <td>SUNSELECT PRODUCE (DELTA) INC.</td>
+            <td class="amount">$1,023,060.00</td>
+        </tr>
+        <tr>
+            <td>ORIGIN ORGANIC FARMS INC.</td>
+            <td class="amount">$983,878.00</td>
+        </tr>
+        <tr>
+            <td>MB GREENHOUSE LTD.</td>
+            <td class="amount">$929,623.00</td>
+        </tr>
+        <tr>
+            <td>CREEKSIDE HOTHOUSES LTD.</td>
+            <td class="amount">$920,786.00</td>
+        </tr>
+        <tr>
+            <td>GLENWOOD VALLEY FARMS LTD.</td>
+            <td class="amount">$827,393.00</td>
+        </tr>
+        <tr>
+            <td>PRT GROWING SERVICES LTD.</td>
+            <td class="amount">$815,420.00</td>
+        </tr>
+        <tr>
+            <td>HOLLANDIA GREENHOUSES LTD.</td>
+            <td class="amount">$808,642.00</td>
+        </tr>
+        <tr>
+            <td>SUNNYBAY GREENHOUSES LTD.</td>
+            <td class="amount">$804,259.00</td>
+        </tr>
+        <tr>
+            <td>AGRICULTURE FINANCIAL SERVICES CORPORATION</td>
+            <td class="amount">$762,048.00</td>
+        </tr>
+        <tr>
+            <td>LOWER MAINLAND HORTICULTURAL IMPROVEMENT ASSOCIATION</td>
+            <td class="amount">$702,361.00</td>
+        </tr>
+        <tr>
+            <td>SUNNYSIDE PRODUCE LTD.</td>
+            <td class="amount">$680,659.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$678,002.00</td>
+        </tr>
+        <tr>
+            <td>BAKERVIEW GREENHOUSES INC.</td>
+            <td class="amount">$639,155.00</td>
+        </tr>
+        <tr>
+            <td>DARVONDA NURSERIES LTD.</td>
+            <td class="amount">$635,543.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST GREENHOUSES HOLDINGS LTD.</td>
+            <td class="amount">$623,402.00</td>
+        </tr>
+        <tr>
+            <td>B.C. PORK PRODUCERS ASSOCIATION</td>
+            <td class="amount">$610,472.00</td>
+        </tr>
+        <tr>
+            <td>MT. LEHMAN VEGETABLE FARMS INC.</td>
+            <td class="amount">$583,176.00</td>
+        </tr>
+        <tr>
+            <td>SUNSELECT PRODUCE INC.</td>
+            <td class="amount">$558,554.00</td>
+        </tr>
+        <tr>
+            <td>BEVO FARMS LTD.</td>
+            <td class="amount">$544,310.00</td>
+        </tr>
+        <tr>
+            <td>UPPAL FARMS & GREENHOUSES LTD.</td>
+            <td class="amount">$531,222.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OLIVER</td>
+            <td class="amount">$525,000.00</td>
+        </tr>
+        <tr>
+            <td>SUNNYSIDE GREENHOUSES LTD.</td>
+            <td class="amount">$524,417.00</td>
+        </tr>
+        <tr>
+            <td>MILLENIUM PACIFIC GREENHOUSES PARTNERSHIP</td>
+            <td class="amount">$517,544.00</td>
+        </tr>
+        <tr>
+            <td>ALJANE FARMS LTD.</td>
+            <td class="amount">$512,289.00</td>
+        </tr>
+        <tr>
+            <td>MEROM FARMS LTD.</td>
+            <td class="amount">$503,496.00</td>
+        </tr>
+        <tr>
+            <td>COMMISSARY CONNECT INNOVATIONS INC.</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>GREAT BEAR INITIATIVE SOCIETY</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY LIVESTOCK ASSOCIATION</td>
+            <td class="amount">$495,000.00</td>
+        </tr>
+        <tr>
+            <td>16TH AVENUE FARMS LTD.</td>
+            <td class="amount">$483,286.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$472,961.00</td>
+        </tr>
+        <tr>
+            <td>FARM FOLK/CITY FOLK SOCIETY</td>
+            <td class="amount">$448,802.00</td>
+        </tr>
+        <tr>
+            <td>K & C SILVICULTURE LTD.</td>
+            <td class="amount">$441,435.00</td>
+        </tr>
+        <tr>
+            <td>KATATHEON FARMS INC.</td>
+            <td class="amount">$423,220.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN VALLEY GROWERS LTD.</td>
+            <td class="amount">$413,374.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF QUESNEL</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. 4–H PROVINCIAL COUNCIL</td>
+            <td class="amount">$386,928.00</td>
+        </tr>
+        <tr>
+            <td>DEVRY GREENHOUSES (1989) LTD.</td>
+            <td class="amount">$376,336.00</td>
+        </tr>
+        <tr>
+            <td>AGRARIANS FOUNDATION</td>
+            <td class="amount">$375,000.00</td>
+        </tr>
+        <tr>
+            <td>TOPGRO GREENHOUSES LTD.</td>
+            <td class="amount">$371,694.00</td>
+        </tr>
+        <tr>
+            <td>HOUWELING NURSERIES PROPERTY LTD.</td>
+            <td class="amount">$344,945.00</td>
+        </tr>
+        <tr>
+            <td>DUTCH HERITAGE GREENHOUSE (2004) LTD.</td>
+            <td class="amount">$328,785.00</td>
+        </tr>
+        <tr>
+            <td>GUARDIANS OF MID–ISLAND ESTUARIES SOCIETY</td>
+            <td class="amount">$327,200.00</td>
+        </tr>
+        <tr>
+            <td>GRAY–GRANT CONSULTING INC.</td>
+            <td class="amount">$324,200.00</td>
+        </tr>
+        <tr>
+            <td>BC BLUEBERRY COUNCIL</td>
+            <td class="amount">$321,710.00</td>
+        </tr>
+        <tr>
+            <td>ADSZIO TECHNOLOGIES INC.</td>
+            <td class="amount">$305,000.00</td>
+        </tr>
+        <tr>
+            <td>4–H BRITISH COLUMBIA PROVINCIAL COUNCIL SOCIETY</td>
+            <td class="amount">$304,999.00</td>
+        </tr>
+        <tr>
+            <td>ATWAL FARMS</td>
+            <td class="amount">$298,437.00</td>
+        </tr>
+        <tr>
+            <td>SORRENTO NURSERIES LTD.</td>
+            <td class="amount">$295,607.00</td>
+        </tr>
+        <tr>
+            <td>PLENTY & GRACE CO. LTD.</td>
+            <td class="amount">$287,500.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT ALBERNI</td>
+            <td class="amount">$287,500.00</td>
+        </tr>
+        <tr>
+            <td>WOODMERE NURSERY LTD.</td>
+            <td class="amount">$284,381.00</td>
+        </tr>
+        <tr>
+            <td>DEVRY GREENHOUSES LTD.</td>
+            <td class="amount">$273,363.00</td>
+        </tr>
+        <tr>
+            <td>CLEARVIEW HORTICULTURAL PRODUCTS INC.</td>
+            <td class="amount">$266,324.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA RESTAURANT & FOODSERVICES ASSOCIATION</td>
+            <td class="amount">$266,000.00</td>
+        </tr>
+        <tr>
+            <td>SENGHERA FARMS LTD.</td>
+            <td class="amount">$256,817.00</td>
+        </tr>
+        <tr>
+            <td>GENOME BRITISH COLUMBIA</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>IRRIGATION INDUSTRY ASSOCIATION OF B C</td>
+            <td class="amount">$243,730.00</td>
+        </tr>
+        <tr>
+            <td>B.C. FOOD & BEVERAGE ASSOCIATION</td>
+            <td class="amount">$242,000.00</td>
+        </tr>
+        <tr>
+            <td>THE SILVAGRO LIMITED PARTNERSHIP</td>
+            <td class="amount">$240,177.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST FLORAL GROWERS & DISTRIBUTORS LTD.</td>
+            <td class="amount">$236,656.00</td>
+        </tr>
+        <tr>
+            <td>S SUNDHER ORCHARDS LTD.</td>
+            <td class="amount">$236,305.00</td>
+        </tr>
+        <tr>
+            <td>CERTIFIED ORGANIC ASSOCIATIONS OF BRITISH COLUMBIA</td>
+            <td class="amount">$232,503.00</td>
+        </tr>
+        <tr>
+            <td>B C SHELLFISH GROWERS ASSOCIATION–IAS COMMITTEE</td>
+            <td class="amount">$227,005.00</td>
+        </tr>
+        <tr>
+            <td>INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$225,257.00</td>
+        </tr>
+        <tr>
+            <td>MCLAREN CONSULTING</td>
+            <td class="amount">$223,573.00</td>
+        </tr>
+        <tr>
+            <td>CVG VEG PRODUCTS LTD.</td>
+            <td class="amount">$218,865.00</td>
+        </tr>
+        <tr>
+            <td>ROSSWORN HENDERSON LLP</td>
+            <td class="amount">$216,606.00</td>
+        </tr>
+        <tr>
+            <td>PEPPERTREE FARMS LTD.</td>
+            <td class="amount">$212,245.00</td>
+        </tr>
+        <tr>
+            <td>INDUSTRIAL FORESTRY SERVICE LTD.</td>
+            <td class="amount">$207,944.00</td>
+        </tr>
+        <tr>
+            <td>ETHOS CAREER MANAGEMENT GROUP LTD.</td>
+            <td class="amount">$207,060.00</td>
+        </tr>
+        <tr>
+            <td>SUMAS RIDGE GREENHOUSES INC.</td>
+            <td class="amount">$198,591.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CATTLEMEN'S ASSOCIATION</td>
+            <td class="amount">$193,066.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA WINE INSTITUTE SOCIETY</td>
+            <td class="amount">$191,286.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND UNIVERSITY</td>
+            <td class="amount">$184,466.00</td>
+        </tr>
+        <tr>
+            <td>G. SANDHER ORCHARD LTD.</td>
+            <td class="amount">$183,742.00</td>
+        </tr>
+        <tr>
+            <td>SANDHER, RAJINDER & SANDHER, KULBIR</td>
+            <td class="amount">$177,549.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN BASIN WATER BOARD</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>B C INNOVATION COUNCIL</td>
+            <td class="amount">$166,073.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CENTRE FOR DISEASE CONTROL AND PREVENTION SOCIETY BRANCH</td>
+            <td class="amount">$165,667.00</td>
+        </tr>
+        <tr>
+            <td>AM SANDHER FARMS LTD.</td>
+            <td class="amount">$157,631.00</td>
+        </tr>
+        <tr>
+            <td>QUIK'S FARM LIMITED</td>
+            <td class="amount">$156,816.00</td>
+        </tr>
+        <tr>
+            <td>RAINBOW GREENHOUSES INC.</td>
+            <td class="amount">$150,337.00</td>
+        </tr>
+        <tr>
+            <td>BCCDC FOUNDATION FOR POPULATION AND PUBLIC HEALTH</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$146,000.00</td>
+        </tr>
+        <tr>
+            <td>B C TURKEY MARKETING BOARD</td>
+            <td class="amount">$144,794.00</td>
+        </tr>
+        <tr>
+            <td>PARTNERS FOR GROWTH ADVISORY SERVICES INC.</td>
+            <td class="amount">$139,300.00</td>
+        </tr>
+        <tr>
+            <td>BLUEBERRY INDUSTRY DEVELOPMENT FUND COUNCIL</td>
+            <td class="amount">$133,624.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA FRUIT GROWERS' ASSOCIATION</td>
+            <td class="amount">$131,155.00</td>
+        </tr>
+        <tr>
+            <td>LEE, YAN</td>
+            <td class="amount">$126,800.00</td>
+        </tr>
+        <tr>
+            <td>MARDELL GREENHOUSES INC.</td>
+            <td class="amount">$126,387.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA BROILER HATCHING EGG COMMISSION</td>
+            <td class="amount">$124,987.00</td>
+        </tr>
+        <tr>
+            <td>SANDHU GREENHOUSES & NURSERY LTD.</td>
+            <td class="amount">$121,545.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA AGRICULTURE IN THE CLASSROOM FOUNDATION</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>DAVISON ORCHARDS LTD.</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>ROSEDALE GREENHOUSES & FARM LTD.</td>
+            <td class="amount">$113,621.00</td>
+        </tr>
+        <tr>
+            <td>HEHAR, NARINDERPAL SINGH & HEHAR, SARABJIT KAUR</td>
+            <td class="amount">$109,336.00</td>
+        </tr>
+        <tr>
+            <td>BC ASSOCIATION OF ABATTOIRS</td>
+            <td class="amount">$105,790.00</td>
+        </tr>
+        <tr>
+            <td>QUALITREE PROPAGATORS INC.</td>
+            <td class="amount">$101,906.00</td>
+        </tr>
+        <tr>
+            <td>SANDHAR FARMS LTD.</td>
+            <td class="amount">$100,559.00</td>
+        </tr>
+        <tr>
+            <td>FABLE FARMS LTD.</td>
+            <td class="amount">$100,351.00</td>
+        </tr>
+        <tr>
+            <td>BERG, HARTLEY</td>
+            <td class="amount">$98,903.00</td>
+        </tr>
+        <tr>
+            <td>BC BIOENERGY NETWORK ASSOCIATION</td>
+            <td class="amount">$95,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN FOREST PRODUCTS LTD.</td>
+            <td class="amount">$92,799.00</td>
+        </tr>
+        <tr>
+            <td>MORGAN CREEK TROPICALS</td>
+            <td class="amount">$90,641.00</td>
+        </tr>
+        <tr>
+            <td>BC GREENHOUSE GROWERS' ASSOCIATION</td>
+            <td class="amount">$89,520.00</td>
+        </tr>
+        <tr>
+            <td>VANDERMEULEN GREENHOUSES INC.</td>
+            <td class="amount">$88,272.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA DAIRY ASSOCIATION</td>
+            <td class="amount">$84,335.00</td>
+        </tr>
+        <tr>
+            <td>RIVER VALLEY ORCHARDS LTD.</td>
+            <td class="amount">$84,065.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC NATIONAL EXHIBITION</td>
+            <td class="amount">$81,500.00</td>
+        </tr>
+        <tr>
+            <td>EVERGROW GREENHOUSE LTD.</td>
+            <td class="amount">$79,422.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$78,500.00</td>
+        </tr>
+        <tr>
+            <td>COTYLEDON CONSULTING INC.</td>
+            <td class="amount">$78,045.00</td>
+        </tr>
+        <tr>
+            <td>KLASSEN, GARY & KLASSEN, LAYNE</td>
+            <td class="amount">$76,530.00</td>
+        </tr>
+        <tr>
+            <td>KM&T LEAN EVOLUTIONS LTD.</td>
+            <td class="amount">$76,500.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, NACHHATTAR S., BRAR, RUPINDER S., BRAR, RAJDEEP S.</td>
+            <td class="amount">$76,230.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY FUTURES DEVELOPMENT CORPORATION OF CENTRAL INTERIOR FIRST NATIONS</td>
+            <td class="amount">$75,999.00</td>
+        </tr>
+        <tr>
+            <td>BROWN'S BAY PACKING COMPANY LTD.</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA HONEY PRODUCERS ASSOCIATION</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>SMALL SCALE FOOD PROCESSOR ASSOCIATION</td>
+            <td class="amount">$73,405.00</td>
+        </tr>
+        <tr>
+            <td>FAIRFIELD PROPAGATORS LTD.</td>
+            <td class="amount">$72,249.00</td>
+        </tr>
+        <tr>
+            <td>G. P. SANDHER HOLDINGS LTD.</td>
+            <td class="amount">$69,533.00</td>
+        </tr>
+        <tr>
+            <td>B.C. AGRICULTURE COUNCIL</td>
+            <td class="amount">$69,522.00</td>
+        </tr>
+        <tr>
+            <td>CHEAM VIEW GREENHOUSE</td>
+            <td class="amount">$67,574.00</td>
+        </tr>
+        <tr>
+            <td>AERO TRADING CO. LTD.</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>PEACE RIVER FORAGE ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$64,386.00</td>
+        </tr>
+        <tr>
+            <td>BC FRESH VEGETABLES INC.</td>
+            <td class="amount">$63,440.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, RAJINDER S</td>
+            <td class="amount">$63,349.00</td>
+        </tr>
+        <tr>
+            <td>GOOD TO GROW NATURAL PRODUCTS COACHING INC.</td>
+            <td class="amount">$62,807.00</td>
+        </tr>
+        <tr>
+            <td>LEE, YAN–YAN</td>
+            <td class="amount">$62,750.00</td>
+        </tr>
+        <tr>
+            <td>RAGE'S FARMS LTD.</td>
+            <td class="amount">$61,296.00</td>
+        </tr>
+        <tr>
+            <td>LASSER, SUKHDEV</td>
+            <td class="amount">$60,984.00</td>
+        </tr>
+        <tr>
+            <td>GILL, KARAMJIT</td>
+            <td class="amount">$60,966.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, LAKHBIR</td>
+            <td class="amount">$60,664.00</td>
+        </tr>
+        <tr>
+            <td>B C POTATO & VEGETABLE GROWERS ASSOCIATION</td>
+            <td class="amount">$60,608.00</td>
+        </tr>
+        <tr>
+            <td>EWOS CANADA LTD.</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>SIDHU, NAVDEEP N</td>
+            <td class="amount">$59,903.00</td>
+        </tr>
+        <tr>
+            <td>BEREZAN SHRIMP COMPANY LTD.</td>
+            <td class="amount">$58,295.00</td>
+        </tr>
+        <tr>
+            <td>BOPARAI, SURINDER SINGH & BOPARAI, AVTAR SINGH</td>
+            <td class="amount">$58,193.00</td>
+        </tr>
+        <tr>
+            <td>DHALIWAL, AMARJIT KAUR</td>
+            <td class="amount">$57,414.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF NEW CALEDONIA</td>
+            <td class="amount">$56,310.00</td>
+        </tr>
+        <tr>
+            <td>SCANIA GREENHOUSES LTD.</td>
+            <td class="amount">$56,305.00</td>
+        </tr>
+        <tr>
+            <td>HORSE COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>INNOVATE BC</td>
+            <td class="amount">$54,528.00</td>
+        </tr>
+        <tr>
+            <td>THE SILVAGRO PARTNERSHIP</td>
+            <td class="amount">$53,717.00</td>
+        </tr>
+        <tr>
+            <td>PEACE REGION FORAGE SEED ASSOCIATION</td>
+            <td class="amount">$51,802.00</td>
+        </tr>
+        <tr>
+            <td>SUSTAINABLE RESULTS GROUP</td>
+            <td class="amount">$51,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGION FOOD AND AGRICULTURE INITIATIVES ROUNDTABLE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADA FOUNDATION FOR SUSTAINABLE DEVELOPMENT TECHNOLOGY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>BAKERVIEW ECODAIRY LTD.</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>THE UPPER SKEENA DEVELOPMENT CENTRE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS FOOD POLICY COUNCIL</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH ISLAND COLLEGE</td>
+            <td class="amount">$49,950.00</td>
+        </tr>
+        <tr>
+            <td>SHERGILL, SURINDER SINGH</td>
+            <td class="amount">$48,432.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN FOREST PRODUCTS INC.</td>
+            <td class="amount">$45,985.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND SEA FARMS INC.</td>
+            <td class="amount">$45,520.00</td>
+        </tr>
+        <tr>
+            <td>GILL, CHAMKAUR</td>
+            <td class="amount">$45,390.00</td>
+        </tr>
+        <tr>
+            <td>B C POULTRY ASSOCIATION</td>
+            <td class="amount">$44,950.00</td>
+        </tr>
+        <tr>
+            <td>GILL, KARMJIT & GILL, BALVIR</td>
+            <td class="amount">$44,618.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$44,500.00</td>
+        </tr>
+        <tr>
+            <td>SANDHAR, RAVINDER & SANDHAR, MANDEEP</td>
+            <td class="amount">$44,343.00</td>
+        </tr>
+        <tr>
+            <td>B C GRAIN PRODUCERS ASSOCIATION</td>
+            <td class="amount">$43,399.00</td>
+        </tr>
+        <tr>
+            <td>INDEPENDENT SEAFOOD CANADA CORPORATION</td>
+            <td class="amount">$42,835.00</td>
+        </tr>
+        <tr>
+            <td>CHAHAL, RAJWINDER & CHAHAL, AVTAR</td>
+            <td class="amount">$42,628.00</td>
+        </tr>
+        <tr>
+            <td>JANDA, PARAMJIT</td>
+            <td class="amount">$40,879.00</td>
+        </tr>
+        <tr>
+            <td>MOWI CANADA WEST INC.</td>
+            <td class="amount">$40,689.00</td>
+        </tr>
+        <tr>
+            <td>0717260 B.C. LTD.</td>
+            <td class="amount">$40,111.00</td>
+        </tr>
+        <tr>
+            <td>B.C. SHELLFISH GROWER'S ASSOCIATION</td>
+            <td class="amount">$40,075.00</td>
+        </tr>
+        <tr>
+            <td>BURDICK, WES & BURDICK, SERENA</td>
+            <td class="amount">$38,716.00</td>
+        </tr>
+        <tr>
+            <td>NORTH OF 49 NATURALS INC.</td>
+            <td class="amount">$37,500.00</td>
+        </tr>
+        <tr>
+            <td>KHUN KHUN, HARBAX</td>
+            <td class="amount">$37,181.00</td>
+        </tr>
+        <tr>
+            <td>K M ORCHARD LTD.</td>
+            <td class="amount">$37,150.00</td>
+        </tr>
+        <tr>
+            <td>FOUNDTREE PRODUCT DESIGN</td>
+            <td class="amount">$37,150.00</td>
+        </tr>
+        <tr>
+            <td>GREENCHAIN CONSULTING</td>
+            <td class="amount">$36,800.00</td>
+        </tr>
+        <tr>
+            <td>LEI, WANG & LIU, HUA</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>DIMARIA, TONY</td>
+            <td class="amount">$35,897.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SALMON ARM</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SASKATCHEWAN HERB AND SPICE ASSOCIATION INC.</td>
+            <td class="amount">$34,981.00</td>
+        </tr>
+        <tr>
+            <td>A & M ORCHARDS LTD.</td>
+            <td class="amount">$34,418.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA BASIN TRUST</td>
+            <td class="amount">$34,282.00</td>
+        </tr>
+        <tr>
+            <td>BUSINESS MAX CONSULTING INC</td>
+            <td class="amount">$34,190.00</td>
+        </tr>
+        <tr>
+            <td>HARMONIC ARTS BOTANICAL DISPENSARY INC.</td>
+            <td class="amount">$34,125.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, GURDARSHAN SINGH</td>
+            <td class="amount">$33,708.00</td>
+        </tr>
+        <tr>
+            <td>INDUSTRIAL FORESTRY SERVICE LTD. (FORESTS FOR TOMORROW–MACKENZIE)</td>
+            <td class="amount">$33,311.00</td>
+        </tr>
+        <tr>
+            <td>ENTERRA FEED CORPORATION</td>
+            <td class="amount">$32,962.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF ALBERNI–CLAYOQUOT</td>
+            <td class="amount">$32,685.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY EMPLOYMENT SERVICES DEVELOPMENT SOCIETY</td>
+            <td class="amount">$32,249.00</td>
+        </tr>
+        <tr>
+            <td>UPPAL, MEENA & DHADDA, RAVINDER SINGH & DHADDA, SATWINDER SINGH</td>
+            <td class="amount">$31,934.00</td>
+        </tr>
+        <tr>
+            <td>COASTAL SHELLFISH LIMITED PARTNERSHIP</td>
+            <td class="amount">$31,900.00</td>
+        </tr>
+        <tr>
+            <td>SOHAL ORCHARDS LTD.</td>
+            <td class="amount">$31,500.00</td>
+        </tr>
+        <tr>
+            <td>BC ASSOCIATION OF FARMERS' MARKETS</td>
+            <td class="amount">$30,884.00</td>
+        </tr>
+        <tr>
+            <td>GOLDEN EAGLE SABLE FISH INC.</td>
+            <td class="amount">$30,825.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE FOR COASTAL HEALTH SOCIETY</td>
+            <td class="amount">$30,500.00</td>
+        </tr>
+        <tr>
+            <td>40 KNOTS VINEYARD AND ESTATE WINERY INC.</td>
+            <td class="amount">$30,448.00</td>
+        </tr>
+        <tr>
+            <td>STEWART FARMS</td>
+            <td class="amount">$30,258.00</td>
+        </tr>
+        <tr>
+            <td>LAUGHING COYOTE ORCHARDS LTD.</td>
+            <td class="amount">$30,068.00</td>
+        </tr>
+        <tr>
+            <td>SUN–RYPE PRODUCTS LTD.</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY FUTURES DEVELOPMENT CORPORATION OF SOUTH FRASER</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>OWEN, LORNE J</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC CLIMATE IMPACTS CONSORTIUM</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>GROUNDBREAKERS AGRICULTURE ASSOCIATION</td>
+            <td class="amount">$29,950.00</td>
+        </tr>
+        <tr>
+            <td>UPPAL, PARVINDER S</td>
+            <td class="amount">$29,438.00</td>
+        </tr>
+        <tr>
+            <td>GNUSANTE CREATIONS INCORPORATED</td>
+            <td class="amount">$29,400.00</td>
+        </tr>
+        <tr>
+            <td>ORGANIKA HEALTH PRODUCTS INC.</td>
+            <td class="amount">$29,063.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA FORAGE COUNCIL</td>
+            <td class="amount">$29,043.00</td>
+        </tr>
+        <tr>
+            <td>URBANEX (WINFIELD) DEVELOPMENT CORP.</td>
+            <td class="amount">$28,376.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, DILBAG SINGH</td>
+            <td class="amount">$28,364.00</td>
+        </tr>
+        <tr>
+            <td>SIDHU, JAGTAR SINGH & SIDHU, KARMJIT KAUR</td>
+            <td class="amount">$28,298.00</td>
+        </tr>
+        <tr>
+            <td>LOTUS ORCHARDS LTD.</td>
+            <td class="amount">$28,039.00</td>
+        </tr>
+        <tr>
+            <td>0137474 B.C. LTD.</td>
+            <td class="amount">$27,226.00</td>
+        </tr>
+        <tr>
+            <td>PANAICH, KULVIR & DHALIWAL, MANPREET</td>
+            <td class="amount">$27,192.00</td>
+        </tr>
+        <tr>
+            <td>RASPBERRY INDUSTRY DEVELOPMENT COUNCIL</td>
+            <td class="amount">$27,133.00</td>
+        </tr>
+        <tr>
+            <td>BHATHAL, BALJIT</td>
+            <td class="amount">$26,940.00</td>
+        </tr>
+        <tr>
+            <td>0925083 B.C. LTD.</td>
+            <td class="amount">$26,648.00</td>
+        </tr>
+        <tr>
+            <td>A. P. SANDHAR HOLDINGS LTD.</td>
+            <td class="amount">$26,645.00</td>
+        </tr>
+        <tr>
+            <td>BC POULTRY ASSOCIATION</td>
+            <td class="amount">$26,600.00</td>
+        </tr>
+        <tr>
+            <td>SUMAL, KARAMJIT SINGH</td>
+            <td class="amount">$26,597.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON ORCHARDS LTD.</td>
+            <td class="amount">$26,548.00</td>
+        </tr>
+        <tr>
+            <td>ATCHISON FISHING LTD.</td>
+            <td class="amount">$26,520.00</td>
+        </tr>
+        <tr>
+            <td>DELTA FARMERS' INSTITUTE SOCIETY</td>
+            <td class="amount">$26,489.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET AGRICULTURE AND FOOD SOCIETY</td>
+            <td class="amount">$26,325.00</td>
+        </tr>
+        <tr>
+            <td>VITALA FOODS INC.</td>
+            <td class="amount">$26,158.00</td>
+        </tr>
+        <tr>
+            <td>WE WAI KAI NATION</td>
+            <td class="amount">$26,000.00</td>
+        </tr>
+        <tr>
+            <td>TOLKO INDUSTRIES LTD.</td>
+            <td class="amount">$25,793.00</td>
+        </tr>
+        <tr>
+            <td>BRAR, JASPAL SINGH</td>
+            <td class="amount">$25,725.00</td>
+        </tr>
+        <tr>
+            <td>NIJJAR GREENHOUSES LTD.</td>
+            <td class="amount">$25,564.00</td>
+        </tr>
+        <tr>
+            <td>HILLTOP GREENHOUSES LTD.</td>
+            <td class="amount">$25,480.00</td>
+        </tr>
+        <tr>
+            <td>KALSAM ORCHARDS LTD</td>
+            <td class="amount">$25,251.00</td>
+        </tr>
+        <tr>
+            <td>B.C. HAZELNUT GROWERS ASSOCIATION</td>
+            <td class="amount">$25,230.00</td>
+        </tr>
+        <tr>
+            <td>UPPAL, PARVINDER S & UPPAL, BALJIT K</td>
+            <td class="amount">$25,147.00</td>
+        </tr>
+        <tr>
+            <td>LUSH VALLEY FOOD ACTION SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE VANCOUVER TRANSITION SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL OKANAGAN COMMUNITY FARM SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SUMMERLAND</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TERRACE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HOME IS WHERE WE LIVE–LIFE CYCLES PROJECT SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WILDSIGHT ELK VALLEY BRANCH</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE PUBLIC INTEREST RESEARCH GROUP SOCIETY (PGPIRG)</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>THE B.C. ASSOCIATION OF AGRICULTURAL FAIRS & EXHIBITIONS</td>
+            <td class="amount">$23,614.00</td>
+        </tr>
+        <tr>
+            <td>HAIDA WILD LIMITED PARTNERSHIP</td>
+            <td class="amount">$22,500.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY ENVIRONMENTAL PARTNERS SOCIETY</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF THE FRASER VALLEY</td>
+            <td class="amount">$14,075.00</td>
+        </tr>
+        <tr>
+            <td>DRS EARTHWISE SOCIETY</td>
+            <td class="amount">$12,600.00</td>
+        </tr>
+        <tr>
+            <td>FRASER BASIN COUNCIL SOCIETY</td>
+            <td class="amount">$11,493.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY FUTURES DEVELOPMENT CORPORATION OF THE NORTH OKANAGAN</td>
+            <td class="amount">$11,150.00</td>
+        </tr>
+        <tr>
+            <td>BC LANDSCAPE & NURSERY ASSOCIATION</td>
+            <td class="amount">$10,635.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>T. "BUCK" SUZUKI ENVIRONMENTAL FOUNDATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN INDIAN BAND</td>
+            <td class="amount">$9,910.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY ECONOMIC DEVELOPMENT SOCIETY</td>
+            <td class="amount">$9,474.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW NATION</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGAT'TEM FIRST NATION</td>
+            <td class="amount">$5,576.00</td>
+        </tr>
+        <tr>
+            <td>TSAWOUT FIRST NATION</td>
+            <td class="amount">$4,950.00</td>
+        </tr>
+        <tr>
+            <td>MNP LLP</td>
+            <td class="amount">$4,900.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF BULKLEY–NECHAKO</td>
+            <td class="amount">$4,556.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC HEALTH ASSOCIATION OF B C</td>
+            <td class="amount">$4,437.00</td>
+        </tr>
+        <tr>
+            <td>LYTTON FIRST NATION</td>
+            <td class="amount">$3,770.00</td>
+        </tr>
+        <tr>
+            <td>TLA'AMIN NATION</td>
+            <td class="amount">$3,729.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$3,500.00</td>
+        </tr>
+        <tr>
+            <td>SALMON ARM ECONOMIC DEVELOPMENT SOCIETY</td>
+            <td class="amount">$3,200.00</td>
+        </tr>
+        <tr>
+            <td>NORTH KOOTENAY LAKE COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$3,100.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY FUTURES DEVELOPMENT CORPORATION OF FRASER FORT GEORGE</td>
+            <td class="amount">$2,767.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY CONNECTIONS (REVELSTOKE) SOCIETY</td>
+            <td class="amount">$2,500.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$1,850.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGIONAL DISTRICT</td>
+            <td class="amount">$895.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE ABORIGINAL BUSINESS DEVELOPMENT ASSOCIATION</td>
+            <td class="amount">$748.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN ENVIRONMENTAL ACTION TEAM</td>
+            <td class="amount">$330.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

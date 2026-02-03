@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Education - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Advanced Education</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Advanced Education
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$6.29B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">78</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Advanced Education</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,930,341,509.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$747,823,091.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$561,648,829.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA INSTITUTE OF TECHNOLOGY</td>
+            <td class="amount">$416,202,317.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$221,554,097.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$207,276,437.00</td>
+        </tr>
+        <tr>
+            <td>CAMOSUN COLLEGE</td>
+            <td class="amount">$185,037,356.00</td>
+        </tr>
+        <tr>
+            <td>DOUGLAS COLLEGE</td>
+            <td class="amount">$181,036,962.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND UNIVERSITY</td>
+            <td class="amount">$176,188,033.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF THE FRASER VALLEY</td>
+            <td class="amount">$173,797,521.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN COLLEGE</td>
+            <td class="amount">$172,074,072.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER COMMUNITY COLLEGE</td>
+            <td class="amount">$160,048,892.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$152,431,973.00</td>
+        </tr>
+        <tr>
+            <td>LANGARA COLLEGE</td>
+            <td class="amount">$136,394,726.00</td>
+        </tr>
+        <tr>
+            <td>CAPILANO UNIVERSITY</td>
+            <td class="amount">$119,790,602.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF NEW CALEDONIA</td>
+            <td class="amount">$109,789,642.00</td>
+        </tr>
+        <tr>
+            <td>SELKIRK COLLEGE</td>
+            <td class="amount">$91,930,847.00</td>
+        </tr>
+        <tr>
+            <td>EMILY CARR UNIVERSITY OF ART + DESIGN</td>
+            <td class="amount">$84,996,122.00</td>
+        </tr>
+        <tr>
+            <td>NORTH ISLAND COLLEGE</td>
+            <td class="amount">$76,143,952.00</td>
+        </tr>
+        <tr>
+            <td>NORTHWEST COMMUNITY COLLEGE</td>
+            <td class="amount">$68,515,522.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN LIGHTS COLLEGE</td>
+            <td class="amount">$65,083,814.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL ROADS UNIVERSITY</td>
+            <td class="amount">$61,785,241.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF THE ROCKIES</td>
+            <td class="amount">$58,870,944.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE INSTITUTE OF BRITISH COLUMBIA</td>
+            <td class="amount">$42,126,563.00</td>
+        </tr>
+        <tr>
+            <td>NICOLA VALLEY INSTITUTE OF TECHNOLOGY</td>
+            <td class="amount">$31,400,167.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF SASKATCHEWAN</td>
+            <td class="amount">$22,982,560.00</td>
+        </tr>
+        <tr>
+            <td>MITACS INC.</td>
+            <td class="amount">$11,000,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 39 VANCOUVER</td>
+            <td class="amount">$5,287,200.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA COUNCIL FOR INTERNATIONAL EDUCATION</td>
+            <td class="amount">$5,045,000.00</td>
+        </tr>
+        <tr>
+            <td>VFA CANADA CORPORATION</td>
+            <td class="amount">$2,415,008.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA FOUNDATION</td>
+            <td class="amount">$2,150,000.00</td>
+        </tr>
+        <tr>
+            <td>BCNET</td>
+            <td class="amount">$1,450,000.00</td>
+        </tr>
+        <tr>
+            <td>NATIVE EDUCATION COLLEGE</td>
+            <td class="amount">$989,550.00</td>
+        </tr>
+        <tr>
+            <td>D+H LIMITED PARTNERSHIP</td>
+            <td class="amount">$915,931.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A LISIMS GOVERNMENT</td>
+            <td class="amount">$840,000.00</td>
+        </tr>
+        <tr>
+            <td>THE POST SECONDARY EMPLOYERS' ASSOCIATION</td>
+            <td class="amount">$720,000.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT NATION</td>
+            <td class="amount">$644,293.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF ONTARIO</td>
+            <td class="amount">$619,712.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS EDUCATION STEERING COMMITTEE SOCIETY</td>
+            <td class="amount">$510,000.00</td>
+        </tr>
+        <tr>
+            <td>IRVING K. BARBER BRITISH COLUMBIA SCHOLARSHIP SOCIETY</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>NEC NATIVE EDUCATION COLLEGE</td>
+            <td class="amount">$264,770.00</td>
+        </tr>
+        <tr>
+            <td>DECODA LITERACY SOLUTIONS SOCIETY</td>
+            <td class="amount">$258,681.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER FOUNDATION</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS EMERGENCY SERVICES SOCIETY OF B C</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>B C STUDENT LOANS</td>
+            <td class="amount">$176,572.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA LAKE FIRST NATION</td>
+            <td class="amount">$111,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE NATIVE FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$107,274.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO ABORIGINAL SKILLS & EMPLOYMENT TRAINING</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAHT FIRST NATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER SEKANI FAMILY SERVICES A BRANCH SOC OF THE CARRIER SEKANI TRIBAL COUNCIL</td>
+            <td class="amount">$99,807.00</td>
+        </tr>
+        <tr>
+            <td>PORT ALBERNI FRIENDSHIP CENTER</td>
+            <td class="amount">$95,897.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL COMMUNITY CAREER EMPLOYMENT SERVICES SOCIETY</td>
+            <td class="amount">$93,000.00</td>
+        </tr>
+        <tr>
+            <td>CHOW, JEFFREY</td>
+            <td class="amount">$90,336.00</td>
+        </tr>
+        <tr>
+            <td>441170 BC LTD.</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE NECHAKO ABORIGINAL EMPLOYMENT AND TRAINING ASSOCIATION</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>DAGG, ELIZABETH</td>
+            <td class="amount">$89,347.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER ISLAND ABORIGINAL TRAINING SOCIETY</td>
+            <td class="amount">$78,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER STL'ATL'IMX TRIBAL COUNCIL</td>
+            <td class="amount">$75,268.00</td>
+        </tr>
+        <tr>
+            <td>NORTH EAST NATIVE ADVANCING SOCIETY</td>
+            <td class="amount">$69,203.00</td>
+        </tr>
+        <tr>
+            <td>OLLIS, RYAN</td>
+            <td class="amount">$63,425.00</td>
+        </tr>
+        <tr>
+            <td>WILP WILXO'OSKWHL NISGA'A SOCIETY</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>HAN, JENNY JUNG HEE</td>
+            <td class="amount">$59,399.00</td>
+        </tr>
+        <tr>
+            <td>SPROULE, BREE</td>
+            <td class="amount">$58,619.00</td>
+        </tr>
+        <tr>
+            <td>RUSSO, MICHELLE</td>
+            <td class="amount">$57,500.00</td>
+        </tr>
+        <tr>
+            <td>FLINK, ISAAC</td>
+            <td class="amount">$56,452.00</td>
+        </tr>
+        <tr>
+            <td>SZEFER, JULIA</td>
+            <td class="amount">$55,566.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SCHOOL SUPERINTENDENTS' ASSOCIATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL SOCIETY</td>
+            <td class="amount">$36,543.00</td>
+        </tr>
+        <tr>
+            <td>MUSEY, NICOLE</td>
+            <td class="amount">$32,394.00</td>
+        </tr>
+        <tr>
+            <td>INDIGENOUS ADULT AND HIGHER LEARNING ASSOCIATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK TRIBAL COUNCIL</td>
+            <td class="amount">$16,200.00</td>
+        </tr>
+        <tr>
+            <td>REVENUE REFUNDS</td>
+            <td class="amount">$15,774.00</td>
+        </tr>
+        <tr>
+            <td>TLA'AMIN COMMUNITY HEALTH BOARD SOCIETY</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$14,958.00</td>
+        </tr>
+        <tr>
+            <td>PHILLIPS, HEATHER</td>
+            <td class="amount">$4,590.00</td>
+        </tr>
+        <tr>
+            <td>ASIA PACIFIC FOUNDATION OF CANADA</td>
+            <td class="amount">$3,750.00</td>
+        </tr>
+        <tr>
+            <td>ALVARADO, SHELLY V</td>
+            <td class="amount">$2,574.00</td>
+        </tr>
+        <tr>
+            <td>RANSOME, CATHERINE RUTH</td>
+            <td class="amount">$200.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

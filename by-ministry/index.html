@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>By Ministry - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Government Transfers by Ministry</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; By Ministry
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Transfers</h3>
+                <div class="value">$491.23B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Ministries</h3>
+                <div class="value">56</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Select a Ministry</h2>
+            <p style="margin-bottom: 1rem; color: var(--text-light);">Note: Ministry data is only available for Government Transfers (not Suppliers).</p>
+            <div class="year-grid">
+                
+        <a href="Health.html" class="year-link">
+            <h3 style="font-size: 1rem;">Health</h3>
+            <div class="amount">$267.37B</div>
+            <div class="count">643 recipients</div>
+        </a>
+        
+        <a href="Education.html" class="year-link">
+            <h3 style="font-size: 1rem;">Education</h3>
+            <div class="amount">$53.84B</div>
+            <div class="count">555 recipients</div>
+        </a>
+        
+        <a href="Social_Development_and_Poverty_Reduction.html" class="year-link">
+            <h3 style="font-size: 1rem;">Social Development and Poverty Reduction</h3>
+            <div class="amount">$34.55B</div>
+            <div class="count">1,898 recipients</div>
+        </a>
+        
+        <a href="Education_and_Child_Care.html" class="year-link">
+            <h3 style="font-size: 1rem;">Education and Child Care</h3>
+            <div class="amount">$29.59B</div>
+            <div class="count">4,637 recipients</div>
+        </a>
+        
+        <a href="Children_and_Family_Development.html" class="year-link">
+            <h3 style="font-size: 1rem;">Children and Family Development</h3>
+            <div class="amount">$17.10B</div>
+            <div class="count">13,848 recipients</div>
+        </a>
+        
+        <a href="Post–Secondary_Education_and_Future_Skills.html" class="year-link">
+            <h3 style="font-size: 1rem;">Post–Secondary Education and Future Skills</h3>
+            <div class="amount">$11.23B</div>
+            <div class="count">986 recipients</div>
+        </a>
+        
+        <a href="Social_Development_and_Social_Innovation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Social Development and Social Innovation</h3>
+            <div class="amount">$8.22B</div>
+            <div class="count">821 recipients</div>
+        </a>
+        
+        <a href="Advanced_Education_Skills_and_Training.html" class="year-link">
+            <h3 style="font-size: 1rem;">Advanced Education, Skills and Training</h3>
+            <div class="amount">$7.69B</div>
+            <div class="count">764 recipients</div>
+        </a>
+        
+        <a href="Advanced_Education.html" class="year-link">
+            <h3 style="font-size: 1rem;">Advanced Education</h3>
+            <div class="amount">$6.29B</div>
+            <div class="count">78 recipients</div>
+        </a>
+        
+        <a href="Advanced_Education_and_Skills_Training.html" class="year-link">
+            <h3 style="font-size: 1rem;">Advanced Education and Skills Training</h3>
+            <div class="amount">$6.03B</div>
+            <div class="count">856 recipients</div>
+        </a>
+        
+        <a href="Finance.html" class="year-link">
+            <h3 style="font-size: 1rem;">Finance</h3>
+            <div class="amount">$5.91B</div>
+            <div class="count">3,098 recipients</div>
+        </a>
+        
+        <a href="Public_Safety_and_Solicitor_General.html" class="year-link">
+            <h3 style="font-size: 1rem;">Public Safety and Solicitor General</h3>
+            <div class="amount">$4.81B</div>
+            <div class="count">4,725 recipients</div>
+        </a>
+        
+        <a href="Indigenous_Relations_and_Reconciliation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Indigenous Relations and Reconciliation</h3>
+            <div class="amount">$4.52B</div>
+            <div class="count">518 recipients</div>
+        </a>
+        
+        <a href="Attorney_General.html" class="year-link">
+            <h3 style="font-size: 1rem;">Attorney General</h3>
+            <div class="amount">$3.97B</div>
+            <div class="count">2,769 recipients</div>
+        </a>
+        
+        <a href="Municipal_Affairs.html" class="year-link">
+            <h3 style="font-size: 1rem;">Municipal Affairs</h3>
+            <div class="amount">$3.10B</div>
+            <div class="count">491 recipients</div>
+        </a>
+        
+        <a href="Municipal_Affairs_and_Housing.html" class="year-link">
+            <h3 style="font-size: 1rem;">Municipal Affairs and Housing</h3>
+            <div class="amount">$3.09B</div>
+            <div class="count">382 recipients</div>
+        </a>
+        
+        <a href="Transportation_and_Infrastructure.html" class="year-link">
+            <h3 style="font-size: 1rem;">Transportation and Infrastructure</h3>
+            <div class="amount">$2.87B</div>
+            <div class="count">467 recipients</div>
+        </a>
+        
+        <a href="Housing.html" class="year-link">
+            <h3 style="font-size: 1rem;">Housing</h3>
+            <div class="amount">$2.76B</div>
+            <div class="count">213 recipients</div>
+        </a>
+        
+        <a href="Housing_and_Municipal_Affairs.html" class="year-link">
+            <h3 style="font-size: 1rem;">Housing and Municipal Affairs</h3>
+            <div class="amount">$2.21B</div>
+            <div class="count">364 recipients</div>
+        </a>
+        
+        <a href="Tourism_Arts_Culture_and_Sport.html" class="year-link">
+            <h3 style="font-size: 1rem;">Tourism, Arts, Culture and Sport</h3>
+            <div class="amount">$1.72B</div>
+            <div class="count">1,992 recipients</div>
+        </a>
+        
+        <a href="Environment_and_Climate_Change_Strategy.html" class="year-link">
+            <h3 style="font-size: 1rem;">Environment and Climate Change Strategy</h3>
+            <div class="amount">$1.61B</div>
+            <div class="count">437 recipients</div>
+        </a>
+        
+        <a href="Natural_Gas_Development.html" class="year-link">
+            <h3 style="font-size: 1rem;">Natural Gas Development</h3>
+            <div class="amount">$1.33B</div>
+            <div class="count">16 recipients</div>
+        </a>
+        
+        <a href="Community_Sport_and_Cultural_Development.html" class="year-link">
+            <h3 style="font-size: 1rem;">Community, Sport and Cultural Development</h3>
+            <div class="amount">$1.05B</div>
+            <div class="count">973 recipients</div>
+        </a>
+        
+        <a href="Energy_Mines_and_Low_Carbon_Innovation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Energy, Mines and Low Carbon Innovation</h3>
+            <div class="amount">$922.27M</div>
+            <div class="count">267 recipients</div>
+        </a>
+        
+        <a href="Justice.html" class="year-link">
+            <h3 style="font-size: 1rem;">Justice</h3>
+            <div class="amount">$863.12M</div>
+            <div class="count">679 recipients</div>
+        </a>
+        
+        <a href="Water_Land_and_Resource_Stewardship.html" class="year-link">
+            <h3 style="font-size: 1rem;">Water, Land and Resource Stewardship</h3>
+            <div class="amount">$747.37M</div>
+            <div class="count">237 recipients</div>
+        </a>
+        
+        <a href="Jobs_Tourism_and_Skills_Training.html" class="year-link">
+            <h3 style="font-size: 1rem;">Jobs, Tourism and Skills Training</h3>
+            <div class="amount">$725.87M</div>
+            <div class="count">696 recipients</div>
+        </a>
+        
+        <a href="Forests_Lands_Natural_Resource_Operations_and_Rural_Development.html" class="year-link">
+            <h3 style="font-size: 1rem;">Forests, Lands, Natural Resource Operations and Rural Development</h3>
+            <div class="amount">$593.70M</div>
+            <div class="count">1,387 recipients</div>
+        </a>
+        
+        <a href="Jobs_Economic_Recovery_and_Innovation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Jobs, Economic Recovery and Innovation</h3>
+            <div class="amount">$550.49M</div>
+            <div class="count">7,470 recipients</div>
+        </a>
+        
+        <a href="Transportation_and_Transit.html" class="year-link">
+            <h3 style="font-size: 1rem;">Transportation and Transit</h3>
+            <div class="amount">$537.11M</div>
+            <div class="count">154 recipients</div>
+        </a>
+        
+        <a href="Emergency_Management_and_Climate_Readiness.html" class="year-link">
+            <h3 style="font-size: 1rem;">Emergency Management and Climate Readiness</h3>
+            <div class="amount">$479.97M</div>
+            <div class="count">666 recipients</div>
+        </a>
+        
+        <a href="Tourism_Arts_and_Culture.html" class="year-link">
+            <h3 style="font-size: 1rem;">Tourism, Arts and Culture</h3>
+            <div class="amount">$462.44M</div>
+            <div class="count">729 recipients</div>
+        </a>
+        
+        <a href="Jobs_Economic_Development_and_Innovation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Jobs, Economic Development and Innovation</h3>
+            <div class="amount">$429.48M</div>
+            <div class="count">478 recipients</div>
+        </a>
+        
+        <a href="Aboriginal_Relations_and_Reconciliation.html" class="year-link">
+            <h3 style="font-size: 1rem;">Aboriginal Relations and Reconciliation</h3>
+            <div class="amount">$414.16M</div>
+            <div class="count">313 recipients</div>
+        </a>
+        
+        <a href="Agriculture_and_Food.html" class="year-link">
+            <h3 style="font-size: 1rem;">Agriculture and Food</h3>
+            <div class="amount">$380.64M</div>
+            <div class="count">639 recipients</div>
+        </a>
+        
+        <a href="Forests_Lands_and_Natural_Resource_Operations.html" class="year-link">
+            <h3 style="font-size: 1rem;">Forests, Lands and Natural Resource Operations</h3>
+            <div class="amount">$353.24M</div>
+            <div class="count">293 recipients</div>
+        </a>
+        
+        <a href="Forests.html" class="year-link">
+            <h3 style="font-size: 1rem;">Forests</h3>
+            <div class="amount">$308.80M</div>
+            <div class="count">434 recipients</div>
+        </a>
+        
+        <a href="Environment_and_Parks.html" class="year-link">
+            <h3 style="font-size: 1rem;">Environment and Parks</h3>
+            <div class="amount">$303.55M</div>
+            <div class="count">242 recipients</div>
+        </a>
+        
+        <a href="Infrastructure.html" class="year-link">
+            <h3 style="font-size: 1rem;">Infrastructure</h3>
+            <div class="amount">$285.66M</div>
+            <div class="count">52 recipients</div>
+        </a>
+        
+        <a href="Energy_Mines_and_Petroleum_Resources.html" class="year-link">
+            <h3 style="font-size: 1rem;">Energy, Mines and Petroleum Resources</h3>
+            <div class="amount">$276.64M</div>
+            <div class="count">148 recipients</div>
+        </a>
+        
+        <a href="Energy_and_Climate_Solutions.html" class="year-link">
+            <h3 style="font-size: 1rem;">Energy and Climate Solutions</h3>
+            <div class="amount">$248.93M</div>
+            <div class="count">168 recipients</div>
+        </a>
+        
+        <a href="Jobs_Trade_and_Technology.html" class="year-link">
+            <h3 style="font-size: 1rem;">Jobs, Trade and Technology</h3>
+            <div class="amount">$231.92M</div>
+            <div class="count">381 recipients</div>
+        </a>
+        
+        <a href="Mental_Health_and_Addictions.html" class="year-link">
+            <h3 style="font-size: 1rem;">Mental Health and Addictions</h3>
+            <div class="amount">$231.61M</div>
+            <div class="count">104 recipients</div>
+        </a>
+        
+        <a href="Citizens'_Services.html" class="year-link">
+            <h3 style="font-size: 1rem;">Citizens' Services</h3>
+            <div class="amount">$227.81M</div>
+            <div class="count">45 recipients</div>
+        </a>
+        
+        <a href="Agriculture.html" class="year-link">
+            <h3 style="font-size: 1rem;">Agriculture</h3>
+            <div class="amount">$169.24M</div>
+            <div class="count">287 recipients</div>
+        </a>
+        
+        <a href="Other_Appropriations.html" class="year-link">
+            <h3 style="font-size: 1rem;">Other Appropriations</h3>
+            <div class="amount">$140.48M</div>
+            <div class="count">997 recipients</div>
+        </a>
+        
+        <a href="Agriculture_Food_and_Fisheries.html" class="year-link">
+            <h3 style="font-size: 1rem;">Agriculture, Food and Fisheries</h3>
+            <div class="amount">$99.80M</div>
+            <div class="count">178 recipients</div>
+        </a>
+        
+        <a href="International_Trade.html" class="year-link">
+            <h3 style="font-size: 1rem;">International Trade</h3>
+            <div class="amount">$60.12M</div>
+            <div class="count">65 recipients</div>
+        </a>
+        
+        <a href="Technology_Innovation_and_Citizens'_Services.html" class="year-link">
+            <h3 style="font-size: 1rem;">Technology, Innovation and Citizens' Services</h3>
+            <div class="amount">$55.96M</div>
+            <div class="count">6 recipients</div>
+        </a>
+        
+        <a href="Labour.html" class="year-link">
+            <h3 style="font-size: 1rem;">Labour</h3>
+            <div class="amount">$55.46M</div>
+            <div class="count">869 recipients</div>
+        </a>
+        
+        <a href="Energy_and_Mines.html" class="year-link">
+            <h3 style="font-size: 1rem;">Energy and Mines</h3>
+            <div class="amount">$51.56M</div>
+            <div class="count">64 recipients</div>
+        </a>
+        
+        <a href="Jobs_Economic_Development_and_Competitiveness.html" class="year-link">
+            <h3 style="font-size: 1rem;">Jobs, Economic Development and Competitiveness</h3>
+            <div class="amount">$48.23M</div>
+            <div class="count">62 recipients</div>
+        </a>
+        
+        <a href="Officers_of_the_Legislature.html" class="year-link">
+            <h3 style="font-size: 1rem;">Officers of the Legislature</h3>
+            <div class="amount">$46.68M</div>
+            <div class="count">67 recipients</div>
+        </a>
+        
+        <a href="Environment.html" class="year-link">
+            <h3 style="font-size: 1rem;">Environment</h3>
+            <div class="amount">$37.26M</div>
+            <div class="count">135 recipients</div>
+        </a>
+        
+        <a href="Office_of_the_Premier.html" class="year-link">
+            <h3 style="font-size: 1rem;">Office of the Premier</h3>
+            <div class="amount">$8.36M</div>
+            <div class="count">77 recipients</div>
+        </a>
+        
+        <a href="Small_Business_and_Red_Tape_Reduction.html" class="year-link">
+            <h3 style="font-size: 1rem;">Small Business and Red Tape Reduction</h3>
+            <div class="amount">$1.48M</div>
+            <div class="count">6 recipients</div>
+        </a>
+        
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+</body>
+</html>

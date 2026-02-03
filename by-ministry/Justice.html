@@ -1,0 +1,3292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Justice</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Justice
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$863.12M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">679</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Justice</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA (RCMP OTTAWA)</td>
+            <td class="amount">$352,334,010.00</td>
+        </tr>
+        <tr>
+            <td>LEGAL SERVICES SOCIETY</td>
+            <td class="amount">$213,930,629.00</td>
+        </tr>
+        <tr>
+            <td>THEMIS PROGRAM MANAGEMENT AND CONSULTING LIMITED</td>
+            <td class="amount">$55,421,509.00</td>
+        </tr>
+        <tr>
+            <td>VICTIM & PROVIDER PAYMENTS</td>
+            <td class="amount">$20,679,899.00</td>
+        </tr>
+        <tr>
+            <td>CHIRON HEALTH SERVICES INC.</td>
+            <td class="amount">$19,298,817.00</td>
+        </tr>
+        <tr>
+            <td>COMPASS GROUP CANADA LTD.</td>
+            <td class="amount">$17,547,261.00</td>
+        </tr>
+        <tr>
+            <td>SENTRY CORRECTIONAL HEALTH SERVICES INC.</td>
+            <td class="amount">$17,075,567.00</td>
+        </tr>
+        <tr>
+            <td>COURT ORDERED DEFENCE COSTS</td>
+            <td class="amount">$13,687,515.00</td>
+        </tr>
+        <tr>
+            <td>STROH HEALTH CARE CONSULTING CORPORATION</td>
+            <td class="amount">$10,772,155.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$7,165,560.00</td>
+        </tr>
+        <tr>
+            <td>THE NATIVE COURTWORKER AND COUNSELLING ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$5,141,958.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE INSTITUTE OF BRITISH COLUMBIA</td>
+            <td class="amount">$4,037,250.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY LEGAL ASSISTANCE SOCIETY</td>
+            <td class="amount">$3,317,700.00</td>
+        </tr>
+        <tr>
+            <td>PEP–HOMEOWNER/RENTER DISASTER CLAIMS</td>
+            <td class="amount">$2,727,600.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY SERVICES OF GREATER VANCOUVER</td>
+            <td class="amount">$2,269,152.00</td>
+        </tr>
+        <tr>
+            <td>RICK HANSEN FOUNDATION</td>
+            <td class="amount">$1,976,412.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF ELKFORD</td>
+            <td class="amount">$1,934,024.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CHILLIWACK</td>
+            <td class="amount">$1,896,185.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$1,842,459.00</td>
+        </tr>
+        <tr>
+            <td>MEDIATE BC SOCIETY</td>
+            <td class="amount">$1,806,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER AND LOWER MAINLAND MULTICULTURAL FAMILY SUPPORT SERVICES SOCIETY</td>
+            <td class="amount">$1,734,939.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ASSOCIATION OF ABORIGINAL FRIENDSHIP CENTRES</td>
+            <td class="amount">$1,720,000.00</td>
+        </tr>
+        <tr>
+            <td>STL'ATL'IMX TRIBAL POLICE BOARD</td>
+            <td class="amount">$1,487,255.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER COASTAL HEALTH AUTHORITY</td>
+            <td class="amount">$1,455,721.00</td>
+        </tr>
+        <tr>
+            <td>SURREY WOMEN'S CENTRE SOCIETY</td>
+            <td class="amount">$1,359,531.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF RICHMOND</td>
+            <td class="amount">$1,328,917.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NORTH VANCOUVER</td>
+            <td class="amount">$1,245,477.00</td>
+        </tr>
+        <tr>
+            <td>ENDING VIOLENCE ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,205,241.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VANCOUVER</td>
+            <td class="amount">$1,181,363.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH PEACE COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$1,155,230.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$1,121,107.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA SEXUAL ASSAULT CENTRE SOCIETY</td>
+            <td class="amount">$1,101,122.00</td>
+        </tr>
+        <tr>
+            <td>211 BRITISH COLUMBIA SERVICES SOCIETY</td>
+            <td class="amount">$1,091,290.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD COMMUNITY SERVICES</td>
+            <td class="amount">$1,051,768.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE AND DISTRICT ELIZABETH FRY SOCIETY</td>
+            <td class="amount">$1,029,124.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA WOMENS TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$1,003,146.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF BURNABY</td>
+            <td class="amount">$965,618.00</td>
+        </tr>
+        <tr>
+            <td>WOMEN'S RESOURCE SOCIETY OF THE FRASER VALLEY</td>
+            <td class="amount">$948,216.00</td>
+        </tr>
+        <tr>
+            <td>TRI–CITY TRANSITIONS SOCIETY</td>
+            <td class="amount">$931,204.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KIMBERLEY</td>
+            <td class="amount">$905,569.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF EAST KOOTENAY</td>
+            <td class="amount">$894,797.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF DELTA</td>
+            <td class="amount">$893,591.00</td>
+        </tr>
+        <tr>
+            <td>HAVEN SOCIETY: PROMOTING THE SAFETY OF WOMEN, CHILDREN, YOUTH AND FAMILIES</td>
+            <td class="amount">$886,406.00</td>
+        </tr>
+        <tr>
+            <td>B.W.S.S: BATTERED WOMEN'S SUPPORT SERVICES ASSOCIATION</td>
+            <td class="amount">$880,639.00</td>
+        </tr>
+        <tr>
+            <td>INSIGHT DRIVING SOLUTIONS INC.</td>
+            <td class="amount">$873,442.00</td>
+        </tr>
+        <tr>
+            <td>FORENSIC PSYCHIATRIC SERVICES COMMISSION</td>
+            <td class="amount">$834,622.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SQUAMISH</td>
+            <td class="amount">$807,845.00</td>
+        </tr>
+        <tr>
+            <td>ISHTAR TRANSITION HOUSING SOCIETY</td>
+            <td class="amount">$789,218.00</td>
+        </tr>
+        <tr>
+            <td>W.A.V.A.W./R.C.C.: WOMEN AGAINST VIOLENCE AGAINST WOMEN/RAPE CRISIS CENTRE</td>
+            <td class="amount">$736,791.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER AREA HUMAN RIGHTS COALITION SOCIETY</td>
+            <td class="amount">$730,692.00</td>
+        </tr>
+        <tr>
+            <td>DIVERSECITY COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$717,273.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SOCIETY FOR DOMESTIC PEACE</td>
+            <td class="amount">$712,989.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE GEORGE</td>
+            <td class="amount">$709,128.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO REGION JOHN HOWARD SOCIETY</td>
+            <td class="amount">$706,819.00</td>
+        </tr>
+        <tr>
+            <td>VERNON WOMEN'S TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$696,306.00</td>
+        </tr>
+        <tr>
+            <td>THE ELIZABETH FRY SOCIETY OF GREATER VANCOUVER</td>
+            <td class="amount">$674,184.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VERNON</td>
+            <td class="amount">$630,285.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ABBOTSFORD</td>
+            <td class="amount">$602,008.00</td>
+        </tr>
+        <tr>
+            <td>NORTH PEACE COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$584,725.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS SEXUAL ASSAULT COUNSELLING CENTRE SOCIETY</td>
+            <td class="amount">$574,619.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NELSON</td>
+            <td class="amount">$560,236.00</td>
+        </tr>
+        <tr>
+            <td>CHIMO COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$551,348.00</td>
+        </tr>
+        <tr>
+            <td>SOURCES COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$545,843.00</td>
+        </tr>
+        <tr>
+            <td>SUNSHINE COAST COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$545,267.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE INSTITUTE OF BRITISH COLUMBIA – CENTRE FOR CONFLICT RESOLUTION</td>
+            <td class="amount">$537,706.00</td>
+        </tr>
+        <tr>
+            <td>SUMMIT COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$529,220.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF VANDERHOOF</td>
+            <td class="amount">$528,578.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF THE FRASER VALLEY</td>
+            <td class="amount">$521,387.00</td>
+        </tr>
+        <tr>
+            <td>FRASER REGIONAL CORRECTIONAL CENTRE INMATE TRUST ACCOUNT</td>
+            <td class="amount">$518,174.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC GUARDIAN AND TRUSTEE OF B C OFFICE PETTY CASH IMPREST ACCOUNT</td>
+            <td class="amount">$517,913.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL KOOTENAY</td>
+            <td class="amount">$514,025.00</td>
+        </tr>
+        <tr>
+            <td>KSAN HOUSE SOCIETY</td>
+            <td class="amount">$513,506.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY TRANSITION SOCIETY</td>
+            <td class="amount">$504,091.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY SERVICES OF THE NORTH SHORE</td>
+            <td class="amount">$503,352.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN WOMEN AGAINST VIOLENCE SOCIETY</td>
+            <td class="amount">$488,773.00</td>
+        </tr>
+        <tr>
+            <td>ANN DAVIS TRANSITION SOCIETY</td>
+            <td class="amount">$480,932.00</td>
+        </tr>
+        <tr>
+            <td>OPTIONS COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$480,580.00</td>
+        </tr>
+        <tr>
+            <td>MOSAIC MULTI–LINGUAL ORIENTATION SERVICE ASSOCIATION FOR IMMIGRANT COMMUNITIES</td>
+            <td class="amount">$480,175.00</td>
+        </tr>
+        <tr>
+            <td>NORTH ISLAND CRISIS & COUNSELLING CENTRE SOCIETY</td>
+            <td class="amount">$480,069.00</td>
+        </tr>
+        <tr>
+            <td>ALBERNI COMMUNITY AND WOMEN'S SERVICES SOCIETY</td>
+            <td class="amount">$475,419.00</td>
+        </tr>
+        <tr>
+            <td>CYTHERA TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$470,761.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF LUMBY</td>
+            <td class="amount">$468,614.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP AREA FAMILY EMERGENCY SOCIETY</td>
+            <td class="amount">$467,987.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY FAMILY LIFE INSTITUTE</td>
+            <td class="amount">$457,182.00</td>
+        </tr>
+        <tr>
+            <td>NELSON COMMUNITY SERVICES CENTRE</td>
+            <td class="amount">$443,707.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA LAW INSTITUTE</td>
+            <td class="amount">$440,000.00</td>
+        </tr>
+        <tr>
+            <td>PEMBERTON VALLEY DYKING DISTRICT</td>
+            <td class="amount">$437,842.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER & REGION TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$433,556.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$433,350.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL OKANAGAN ELIZABETH FRY SOCIETY</td>
+            <td class="amount">$431,634.00</td>
+        </tr>
+        <tr>
+            <td>WAL–MART CANADA CORP.</td>
+            <td class="amount">$429,718.00</td>
+        </tr>
+        <tr>
+            <td>WISH DROP–IN CENTRE SOCIETY</td>
+            <td class="amount">$428,045.00</td>
+        </tr>
+        <tr>
+            <td>ATIRA WOMEN'S RESOURCE SOCIETY</td>
+            <td class="amount">$414,218.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER POLICE BOARD</td>
+            <td class="amount">$408,826.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF WEST KELOWNA</td>
+            <td class="amount">$406,713.00</td>
+        </tr>
+        <tr>
+            <td>HOLLYBURN FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$400,824.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$400,635.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ENDERBY</td>
+            <td class="amount">$395,588.00</td>
+        </tr>
+        <tr>
+            <td>ISLANDS WELLNESS SOCIETY</td>
+            <td class="amount">$393,141.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$388,673.00</td>
+        </tr>
+        <tr>
+            <td>NECHAKO VALLEY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$387,180.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN HUMAN RESOURCE CORP.</td>
+            <td class="amount">$385,581.00</td>
+        </tr>
+        <tr>
+            <td>CHILD ABUSE PREVENTION AND COUNSELLING SOCIETY OF GREATER VICTORIA</td>
+            <td class="amount">$377,174.00</td>
+        </tr>
+        <tr>
+            <td>JOAN COTIE MEDIATION & CONSULTING LTD.</td>
+            <td class="amount">$375,548.00</td>
+        </tr>
+        <tr>
+            <td>PLEA COMMUNITY SERVICES SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$372,192.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH OKANAGAN VICTIM ASSISTANCE SOCIETY</td>
+            <td class="amount">$370,705.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH–LILLOOET REGIONAL DISTRICT</td>
+            <td class="amount">$367,450.00</td>
+        </tr>
+        <tr>
+            <td>RAINCOAST COMMUNITY REHABILITATION SERVICES INCORPORATED</td>
+            <td class="amount">$365,132.00</td>
+        </tr>
+        <tr>
+            <td>LIFESTYLE EQUITY SOCIETY</td>
+            <td class="amount">$360,295.00</td>
+        </tr>
+        <tr>
+            <td>INSURANCE CORPORATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$352,808.00</td>
+        </tr>
+        <tr>
+            <td>ROBSON VALLEY SUPPORT SOCIETY</td>
+            <td class="amount">$343,562.00</td>
+        </tr>
+        <tr>
+            <td>THE TRAIL FAMILY AND INDIVIDUAL RESOURCE CENTRE SOCIETY</td>
+            <td class="amount">$332,182.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COQUITLAM</td>
+            <td class="amount">$327,185.00</td>
+        </tr>
+        <tr>
+            <td>THE TAMITIK STATUS OF WOMEN ASSOCIATION</td>
+            <td class="amount">$326,293.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF COLUMBIA–SHUSWAP</td>
+            <td class="amount">$321,591.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS COMMUNITY YMCA–YWCA</td>
+            <td class="amount">$320,529.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HOPE</td>
+            <td class="amount">$315,251.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT COMMUNITY ENRICHMENT SOCIETY</td>
+            <td class="amount">$314,688.00</td>
+        </tr>
+        <tr>
+            <td>AVALANCHE CANADA</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VICTORIA POLICE VICTIM SERVICES SOCIETY</td>
+            <td class="amount">$299,355.00</td>
+        </tr>
+        <tr>
+            <td>POLICE VICTIM SERVICES OF B C</td>
+            <td class="amount">$296,944.00</td>
+        </tr>
+        <tr>
+            <td>SEA TO SKY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$296,555.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MENTAL HEALTH ASSOCIATION FOR THE KOOTENAYS</td>
+            <td class="amount">$293,129.00</td>
+        </tr>
+        <tr>
+            <td>THE CASTLEGAR AND DISTRICT COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$291,783.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE REGIONAL CORRECTIONAL CENTRE INMATE TRUST ACCOUNT</td>
+            <td class="amount">$291,210.00</td>
+        </tr>
+        <tr>
+            <td>THE DOWNTOWN EASTSIDE WOMEN'S CENTRE ASSOCIATION</td>
+            <td class="amount">$289,497.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF BULKLEY–NECHAKO</td>
+            <td class="amount">$288,656.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY CONNECTIONS (REVELSTOKE) SOCIETY</td>
+            <td class="amount">$288,469.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SOCIETY FOR MALE SURVIVORS OF SEXUAL ABUSE</td>
+            <td class="amount">$288,145.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CACHE CREEK</td>
+            <td class="amount">$287,047.00</td>
+        </tr>
+        <tr>
+            <td>ARROW AND SLOCAN LAKES COMMUNITY SERVICES</td>
+            <td class="amount">$281,146.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON ABORIGINAL FRIENDSHIP SOCIETY</td>
+            <td class="amount">$276,288.00</td>
+        </tr>
+        <tr>
+            <td>THS SOCIETY OF TRANSITION HOUSES</td>
+            <td class="amount">$272,801.00</td>
+        </tr>
+        <tr>
+            <td>NORTH SHORE CRISIS SERVICES SOCIETY</td>
+            <td class="amount">$269,470.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY THERAPISTS (1998) INC.</td>
+            <td class="amount">$269,101.00</td>
+        </tr>
+        <tr>
+            <td>IMS CONSULTING LTD.</td>
+            <td class="amount">$267,946.00</td>
+        </tr>
+        <tr>
+            <td>SOOKE TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$266,588.00</td>
+        </tr>
+        <tr>
+            <td>JIWON'S JOYFUL JOURNEY SOCIETY</td>
+            <td class="amount">$265,061.00</td>
+        </tr>
+        <tr>
+            <td>DELTASSIST FAMILY & COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$261,849.00</td>
+        </tr>
+        <tr>
+            <td>QUESNEL WOMEN'S RESOURCE CENTRE SOCIETY</td>
+            <td class="amount">$258,496.00</td>
+        </tr>
+        <tr>
+            <td>BAYSHORE HOME HEALTH</td>
+            <td class="amount">$257,114.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND WOMEN AGAINST VIOLENCE</td>
+            <td class="amount">$255,528.00</td>
+        </tr>
+        <tr>
+            <td>BOUNDARY WOMEN'S COALITION</td>
+            <td class="amount">$255,386.00</td>
+        </tr>
+        <tr>
+            <td>BELLA COOLA COMMUNITY SUPPORT SOCIETY</td>
+            <td class="amount">$253,965.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT 69 FAMILY RESOURCE ASSOCIATION</td>
+            <td class="amount">$252,361.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$251,576.00</td>
+        </tr>
+        <tr>
+            <td>SEASONS CONSULTING GROUP LTD.</td>
+            <td class="amount">$251,178.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA COURTHOUSE LIBRARY SOCIETY</td>
+            <td class="amount">$249,980.00</td>
+        </tr>
+        <tr>
+            <td>MAPLE RIDGE/PITT MEADOWS COMMUNITY SERVICES</td>
+            <td class="amount">$248,944.00</td>
+        </tr>
+        <tr>
+            <td>OMINECA SAFE HOME SOCIETY</td>
+            <td class="amount">$244,334.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO CORRECTIONAL CENTRE INMATE TRUST ACCOUNT</td>
+            <td class="amount">$242,710.00</td>
+        </tr>
+        <tr>
+            <td>CONNECT COMMUNITIES</td>
+            <td class="amount">$241,527.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND REGIONAL CORRECTIONAL CENTRE</td>
+            <td class="amount">$241,137.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SICAMOUS</td>
+            <td class="amount">$239,658.00</td>
+        </tr>
+        <tr>
+            <td>SINGER COMMUNICATIONS INC.</td>
+            <td class="amount">$238,368.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO NATION</td>
+            <td class="amount">$235,190.00</td>
+        </tr>
+        <tr>
+            <td>DALLEN'S DREAM TEAM SOCIETY</td>
+            <td class="amount">$230,556.00</td>
+        </tr>
+        <tr>
+            <td>OFFICE OF THE WET'SUWET'EN HEREDITARY CHIEFS</td>
+            <td class="amount">$228,928.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK COMMUNITY SERVICES</td>
+            <td class="amount">$228,490.00</td>
+        </tr>
+        <tr>
+            <td>VALLEY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$228,351.00</td>
+        </tr>
+        <tr>
+            <td>HAIDA GWAII SOCIETY FOR COMMUNITY PEACE</td>
+            <td class="amount">$227,460.00</td>
+        </tr>
+        <tr>
+            <td>GOLDEN FAMILY CENTER SOCIETY</td>
+            <td class="amount">$226,036.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA FAMILY SERVICE CENTRE SOCIETY</td>
+            <td class="amount">$222,235.00</td>
+        </tr>
+        <tr>
+            <td>NORTH KOOTENAY LAKE COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$220,717.00</td>
+        </tr>
+        <tr>
+            <td>NORTH COAST TRANSITION SOCIETY</td>
+            <td class="amount">$220,702.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC CENTRE FAMILY SERVICES ASSOCIATION</td>
+            <td class="amount">$220,685.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY FAMILY SERVICES ASSOCIATION</td>
+            <td class="amount">$220,471.00</td>
+        </tr>
+        <tr>
+            <td>FERNIE WOMEN'S RESOURCE AND DROP IN CENTRE</td>
+            <td class="amount">$219,483.00</td>
+        </tr>
+        <tr>
+            <td>TILLICUM LELUM ABORIGINAL SOCIETY</td>
+            <td class="amount">$219,374.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER COMMUNITY SERVICES ASSOCIATION</td>
+            <td class="amount">$217,275.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK TRIBAL COUNCIL</td>
+            <td class="amount">$217,180.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH OKANAGAN WOMEN IN NEED SOCIETY</td>
+            <td class="amount">$214,354.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS REGIONAL CORRECTIONAL CENTRE INMATE TRUST</td>
+            <td class="amount">$214,288.00</td>
+        </tr>
+        <tr>
+            <td>THE NORTH ISLAND SURVIVORS' HEALING SOCIETY</td>
+            <td class="amount">$213,754.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$211,865.00</td>
+        </tr>
+        <tr>
+            <td>0701743 B.C. LTD.</td>
+            <td class="amount">$210,600.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF WEST VANCOUVER</td>
+            <td class="amount">$207,062.00</td>
+        </tr>
+        <tr>
+            <td>COLLEEN SPIER LAW CORPORATION</td>
+            <td class="amount">$206,432.00</td>
+        </tr>
+        <tr>
+            <td>NICOLA VALLEY COMMUNITY HUMAN SERVICES ASSOCIATION</td>
+            <td class="amount">$205,936.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF HARRISON HOT SPRINGS</td>
+            <td class="amount">$204,195.00</td>
+        </tr>
+        <tr>
+            <td>HOWE SOUND WOMEN'S CENTRE SOCIETY</td>
+            <td class="amount">$203,480.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH OKANAGAN INTEGRATED COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$203,387.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF WILLIAMS LAKE</td>
+            <td class="amount">$202,497.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NORTH OKANAGAN</td>
+            <td class="amount">$199,883.00</td>
+        </tr>
+        <tr>
+            <td>FRASERSIDE COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$199,426.00</td>
+        </tr>
+        <tr>
+            <td>SURPASSING OUR SURVIVAL (S.O.S.) SOCIETY SEXUAL VIOLENCE PREVENT & COUNSEL SER</td>
+            <td class="amount">$199,389.00</td>
+        </tr>
+        <tr>
+            <td>TROTTIER, ANA D</td>
+            <td class="amount">$196,610.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF GOLDEN</td>
+            <td class="amount">$195,643.00</td>
+        </tr>
+        <tr>
+            <td>OAKHILL COUNSELLING AND MEDIATION SERVICES</td>
+            <td class="amount">$194,875.00</td>
+        </tr>
+        <tr>
+            <td>CHESHIRE HOMES SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$193,135.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT ABORIGINAL COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$191,242.00</td>
+        </tr>
+        <tr>
+            <td>BOBBI POUSHINSKY MEDIATION SERVICES INCORPORATED</td>
+            <td class="amount">$190,340.00</td>
+        </tr>
+        <tr>
+            <td>JUSTICE EDUCATION SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$189,356.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY RESOURCE CENTRE OF INVERMERE</td>
+            <td class="amount">$184,569.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CRIME PREVENTION ASSOCIATION</td>
+            <td class="amount">$184,250.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY DYNAMIX ASSOCIATION</td>
+            <td class="amount">$183,986.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC WOMEN'S SERVICES LTD.</td>
+            <td class="amount">$183,885.00</td>
+        </tr>
+        <tr>
+            <td>SALMO COMMUNITY RESOURCE SOCIETY</td>
+            <td class="amount">$177,696.00</td>
+        </tr>
+        <tr>
+            <td>DEWDNEY AREA IMPROVEMENT DISTRICT</td>
+            <td class="amount">$177,094.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$176,281.00</td>
+        </tr>
+        <tr>
+            <td>RESORT MUNICIPALITY OF WHISTLER</td>
+            <td class="amount">$174,124.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE TOWNSHIP OF LANGLEY</td>
+            <td class="amount">$173,977.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF CRESTON</td>
+            <td class="amount">$173,632.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SEARCH AND RESCUE ASSOCIATION</td>
+            <td class="amount">$170,000.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A NATION, AS REPRESENTED BY THE CHIEF EXECUTIVE OFFICER OF NISGA'A LISIMS</td>
+            <td class="amount">$169,888.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KOOTENAY–BOUNDARY</td>
+            <td class="amount">$169,676.00</td>
+        </tr>
+        <tr>
+            <td>AXIS FAMILY RESOURCES LTD.</td>
+            <td class="amount">$168,022.00</td>
+        </tr>
+        <tr>
+            <td>NICOMEN ISLAND IMPROVEMENT DISTRICT</td>
+            <td class="amount">$167,992.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND MEN'S TRAUMA COUNSELLING SOCIETY</td>
+            <td class="amount">$165,850.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KAMLOOPS</td>
+            <td class="amount">$164,997.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VICTORIA</td>
+            <td class="amount">$164,555.00</td>
+        </tr>
+        <tr>
+            <td>SURREY PRETRIAL INMATE TRUST ACCOUNT</td>
+            <td class="amount">$163,906.00</td>
+        </tr>
+        <tr>
+            <td>YELLOWHEAD COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$163,044.00</td>
+        </tr>
+        <tr>
+            <td>NILES, ANTHONY JOSEPH</td>
+            <td class="amount">$161,912.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CARIBOO</td>
+            <td class="amount">$161,281.00</td>
+        </tr>
+        <tr>
+            <td>STRIVE LIVING SOCIETY</td>
+            <td class="amount">$158,612.00</td>
+        </tr>
+        <tr>
+            <td>NORTH FRASER PRETRIAL CENTRE–INMATE TRUST ACCOUNT</td>
+            <td class="amount">$157,997.00</td>
+        </tr>
+        <tr>
+            <td>DAUM, JULIE</td>
+            <td class="amount">$157,947.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF FRASER–FORT GEORGE</td>
+            <td class="amount">$157,411.00</td>
+        </tr>
+        <tr>
+            <td>JENIFER B. CRAWFORD LAW CORPORATION</td>
+            <td class="amount">$156,965.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY MULTI–TENANT FACILITY</td>
+            <td class="amount">$156,250.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL OKANAGAN</td>
+            <td class="amount">$155,982.00</td>
+        </tr>
+        <tr>
+            <td>PORT ALBERNI VICTIM SERVICES SOCIETY</td>
+            <td class="amount">$155,731.00</td>
+        </tr>
+        <tr>
+            <td>100 MILE HOUSE AND DISTRICT WOMEN'S CENTRE SOCIETY</td>
+            <td class="amount">$152,953.00</td>
+        </tr>
+        <tr>
+            <td>L & T SERVICES LTD.</td>
+            <td class="amount">$152,388.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST FAMILY CENTRES SOCIETY</td>
+            <td class="amount">$151,814.00</td>
+        </tr>
+        <tr>
+            <td>NELSON CARES SOCIETY</td>
+            <td class="amount">$151,545.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE URBAN ABORIGINAL JUSTICE SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKUSTA, WENDY C</td>
+            <td class="amount">$149,564.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH CARIBOO ELIZABETH FRY SOCIETY</td>
+            <td class="amount">$145,796.00</td>
+        </tr>
+        <tr>
+            <td>HOPE & AREA TRANSITION SOCIETY</td>
+            <td class="amount">$144,009.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE NATIVE FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$143,669.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA NATION</td>
+            <td class="amount">$143,612.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NORTH VANCOUVER</td>
+            <td class="amount">$143,415.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER VICTIM ASSISTANCE ASSOCIATION</td>
+            <td class="amount">$143,130.00</td>
+        </tr>
+        <tr>
+            <td>CHINESE COMMUNITY POLICING CENTRE</td>
+            <td class="amount">$142,809.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SHUSWAP TRIBAL COUNCIL SOCIETY</td>
+            <td class="amount">$142,809.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$141,838.00</td>
+        </tr>
+        <tr>
+            <td>LYTTON FIRST NATION</td>
+            <td class="amount">$141,160.00</td>
+        </tr>
+        <tr>
+            <td>MARKLEY, KENNETH DAVID</td>
+            <td class="amount">$140,571.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAT HOLISTIC RECOVERY CENTRE SOCIETY</td>
+            <td class="amount">$139,826.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CRANBROOK</td>
+            <td class="amount">$139,225.00</td>
+        </tr>
+        <tr>
+            <td>THE WATARI RESEARCH ASSOCIATION</td>
+            <td class="amount">$138,834.00</td>
+        </tr>
+        <tr>
+            <td>THE KAMLOOPS AND DISTRICT ELIZABETH FRY SOCIETY</td>
+            <td class="amount">$137,377.00</td>
+        </tr>
+        <tr>
+            <td>MACKENZIE COUNSELLING SERVICES SOCIETY</td>
+            <td class="amount">$137,242.00</td>
+        </tr>
+        <tr>
+            <td>CIRQUE RESOURCE ASSOCIATES LTD.</td>
+            <td class="amount">$136,899.00</td>
+        </tr>
+        <tr>
+            <td>PUNKY LAKE WILDERNESS CAMP SOCIETY</td>
+            <td class="amount">$135,788.00</td>
+        </tr>
+        <tr>
+            <td>SIERRA SYSTEMS GROUP INC.</td>
+            <td class="amount">$135,628.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN INDIAN EDUCATIONAL RESOURCES SOCIETY</td>
+            <td class="amount">$135,036.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL OKANAGAN EMERGENCY SHELTER SOCIETY</td>
+            <td class="amount">$134,956.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY RESOURCE CENTRE SOCIETY FOR THE NORTH OKANAGAN</td>
+            <td class="amount">$134,834.00</td>
+        </tr>
+        <tr>
+            <td>BOYS AND GIRLS CLUBS OF SOUTH COAST BC</td>
+            <td class="amount">$129,055.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CRIME STOPPERS SOCIETY</td>
+            <td class="amount">$128,000.00</td>
+        </tr>
+        <tr>
+            <td>BROOKS, JEREME DONALD ALEXANDER</td>
+            <td class="amount">$127,750.00</td>
+        </tr>
+        <tr>
+            <td>ASINIATIK CULTURAL SERVICES</td>
+            <td class="amount">$127,719.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NANAIMO</td>
+            <td class="amount">$127,171.00</td>
+        </tr>
+        <tr>
+            <td>BOUNDARY FAMILY & INDIVIDUAL SERVICES SOCIETY</td>
+            <td class="amount">$126,858.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF MAPLE RIDGE</td>
+            <td class="amount">$126,835.00</td>
+        </tr>
+        <tr>
+            <td>CAMERAY COMMUNITY FUND</td>
+            <td class="amount">$126,084.00</td>
+        </tr>
+        <tr>
+            <td>HUNTER, NATALIE, DR</td>
+            <td class="amount">$125,833.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO POLICE BASED VICTIM SERVICES SOCIETY</td>
+            <td class="amount">$125,310.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PENTICTON</td>
+            <td class="amount">$125,239.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MENTAL HEALTH ASSOCIATION – CARIBOO CHILCOTIN BRANCH</td>
+            <td class="amount">$125,029.00</td>
+        </tr>
+        <tr>
+            <td>AMATA TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$124,732.00</td>
+        </tr>
+        <tr>
+            <td>SECRETARIAT OF THE HAIDA NATION</td>
+            <td class="amount">$124,330.00</td>
+        </tr>
+        <tr>
+            <td>B.C. CENTRE FOR ELDER ADVOCACY AND SUPPORT</td>
+            <td class="amount">$123,060.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CAMPBELL RIVER</td>
+            <td class="amount">$120,968.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AZDLI BAND COUNCIL</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE RUPERT</td>
+            <td class="amount">$118,782.00</td>
+        </tr>
+        <tr>
+            <td>MOULD, DIANNA LYNN</td>
+            <td class="amount">$118,768.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT MOODY</td>
+            <td class="amount">$117,243.00</td>
+        </tr>
+        <tr>
+            <td>TENNANT, KELLIE LEIGH</td>
+            <td class="amount">$117,186.00</td>
+        </tr>
+        <tr>
+            <td>KIRKLEVY PROPRIETARY CARE HOME & REHABILITATIVE SERVICES</td>
+            <td class="amount">$116,960.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON FIRST NATION</td>
+            <td class="amount">$116,760.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF PRINCETON</td>
+            <td class="amount">$116,188.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN OF THE STREET SOCIETY</td>
+            <td class="amount">$114,995.00</td>
+        </tr>
+        <tr>
+            <td>FRASER HEALTH AUTHORITY</td>
+            <td class="amount">$114,058.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF MISSION</td>
+            <td class="amount">$112,678.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF WARFIELD</td>
+            <td class="amount">$110,467.00</td>
+        </tr>
+        <tr>
+            <td>MENTAL HEALTH COMMISSION OF CANADA</td>
+            <td class="amount">$109,882.00</td>
+        </tr>
+        <tr>
+            <td>GREGG, PAULINE R</td>
+            <td class="amount">$109,711.00</td>
+        </tr>
+        <tr>
+            <td>PHOENIX TRANSITION SOCIETY</td>
+            <td class="amount">$109,647.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK COMMUNITY POLICING SOCIETY</td>
+            <td class="amount">$109,148.00</td>
+        </tr>
+        <tr>
+            <td>OCEANSIDE RCMP VICTIM SERVICES SOCIETY</td>
+            <td class="amount">$107,455.00</td>
+        </tr>
+        <tr>
+            <td>ELKFORD WOMEN'S TASK FORCE SOCIETY</td>
+            <td class="amount">$107,260.00</td>
+        </tr>
+        <tr>
+            <td>YOUNG WOMEN'S CHRISTIAN ASSOCIATION</td>
+            <td class="amount">$107,241.00</td>
+        </tr>
+        <tr>
+            <td>SALT SPRING AND SOUTHERN GULF ISLANDS COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$107,098.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF LANGFORD</td>
+            <td class="amount">$107,024.00</td>
+        </tr>
+        <tr>
+            <td>NORTH PEACE DRUG AWARENESS SOCIETY</td>
+            <td class="amount">$106,920.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SAANICH</td>
+            <td class="amount">$106,137.00</td>
+        </tr>
+        <tr>
+            <td>MILNE, SANDRA E</td>
+            <td class="amount">$105,898.00</td>
+        </tr>
+        <tr>
+            <td>GOLDEN WOMEN'S CENTRE SOCIETY</td>
+            <td class="amount">$105,521.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER SCHOOL BOARD</td>
+            <td class="amount">$104,500.00</td>
+        </tr>
+        <tr>
+            <td>PRINCETON FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$100,107.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC GUARDIAN AND TRUSTEE OF BRITISH COLUMBIA IN TRUST</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER SEKANI FAMILY SERVICES A BRANCH SOC OF THE CARRIER SEKANI TRIBAL COUNCIL</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA BEREAVEMENT HELPLINE</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>AVONLEA CARE CENTRE LTD.</td>
+            <td class="amount">$99,141.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TRAIL</td>
+            <td class="amount">$98,986.00</td>
+        </tr>
+        <tr>
+            <td>S.U.C.C.E.S.S. (A/K/A UNITED CHINESE COMMUNITY ENRICHMENT SERVICES SOCIETY)</td>
+            <td class="amount">$98,830.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY REGIONAL VICTIM SERVICES SOCIETY</td>
+            <td class="amount">$98,713.00</td>
+        </tr>
+        <tr>
+            <td>RIDGE MEADOWS COLLEGE</td>
+            <td class="amount">$98,535.00</td>
+        </tr>
+        <tr>
+            <td>FIREWEED COLLECTIVE SOCIETY</td>
+            <td class="amount">$98,321.00</td>
+        </tr>
+        <tr>
+            <td>LAICHWILTACH FAMILY LIFE SOCIETY</td>
+            <td class="amount">$97,874.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF PEACHLAND</td>
+            <td class="amount">$97,371.00</td>
+        </tr>
+        <tr>
+            <td>RICOH CANADA INC.</td>
+            <td class="amount">$95,530.00</td>
+        </tr>
+        <tr>
+            <td>STEPPING STONES COUNSELLING GROUP LTD.</td>
+            <td class="amount">$94,480.00</td>
+        </tr>
+        <tr>
+            <td>THE JOHN HOWARD SOCIETY OF VICTORIA</td>
+            <td class="amount">$94,286.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TERRACE</td>
+            <td class="amount">$93,983.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF QUESNEL</td>
+            <td class="amount">$93,983.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$92,491.00</td>
+        </tr>
+        <tr>
+            <td>TREEMENDOUS CONTRACTING</td>
+            <td class="amount">$91,459.00</td>
+        </tr>
+        <tr>
+            <td>TL'AZT'EN NATION</td>
+            <td class="amount">$90,972.00</td>
+        </tr>
+        <tr>
+            <td>ALOUETTE CORRECTIONAL CENTRE FOR WOMEN, INMATE TRUST</td>
+            <td class="amount">$90,632.00</td>
+        </tr>
+        <tr>
+            <td>BAYBRIDGE–BALTIC (BROOKSIDE) INC.</td>
+            <td class="amount">$90,630.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE BAND</td>
+            <td class="amount">$90,080.00</td>
+        </tr>
+        <tr>
+            <td>DIXON TRANSITION SOCIETY</td>
+            <td class="amount">$89,884.00</td>
+        </tr>
+        <tr>
+            <td>WHE–LA–LA–U AREA COUNCIL</td>
+            <td class="amount">$89,087.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON FAMILY DEVELOPMENT SOCIETY</td>
+            <td class="amount">$88,445.00</td>
+        </tr>
+        <tr>
+            <td>NUMBER 169 HOLDINGS LTD.</td>
+            <td class="amount">$86,986.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$86,686.00</td>
+        </tr>
+        <tr>
+            <td>THE PUBLIC GUARDIAN & TRUSTEE OF ONTARIO</td>
+            <td class="amount">$86,641.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KELOWNA</td>
+            <td class="amount">$86,070.00</td>
+        </tr>
+        <tr>
+            <td>SOOKE RESIDENTS IN NEED SOCIETY</td>
+            <td class="amount">$85,344.00</td>
+        </tr>
+        <tr>
+            <td>TEEL TECHNOLOGIES CANADA INC.</td>
+            <td class="amount">$85,336.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION</td>
+            <td class="amount">$84,456.00</td>
+        </tr>
+        <tr>
+            <td>STARR, LENORA ANNE</td>
+            <td class="amount">$83,943.00</td>
+        </tr>
+        <tr>
+            <td>LOBLAW COMPANIES LIMITED</td>
+            <td class="amount">$83,804.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN BAND COUNCIL</td>
+            <td class="amount">$83,512.00</td>
+        </tr>
+        <tr>
+            <td>SANDMAN HOTELS, INNS & SUITES LIMITED</td>
+            <td class="amount">$82,163.00</td>
+        </tr>
+        <tr>
+            <td>THE PRINCE GEORGE ACTIVATOR SOCIETY</td>
+            <td class="amount">$81,862.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAI COMMUNITY CENTRE SOCIETY</td>
+            <td class="amount">$80,926.00</td>
+        </tr>
+        <tr>
+            <td>TK'EMLUPS TE SECWEPEMC</td>
+            <td class="amount">$78,098.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF KENT</td>
+            <td class="amount">$77,883.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRE DEPARTMENT ASSOCIATION</td>
+            <td class="amount">$77,723.00</td>
+        </tr>
+        <tr>
+            <td>MEDICHAIR NORTHERN B C</td>
+            <td class="amount">$75,347.00</td>
+        </tr>
+        <tr>
+            <td>CONTACT WOMEN'S GROUP SOCIETY</td>
+            <td class="amount">$75,296.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN RED CROSS SOCIETY</td>
+            <td class="amount">$75,248.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CHETWYND</td>
+            <td class="amount">$75,017.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF BURNS LAKE</td>
+            <td class="amount">$75,017.00</td>
+        </tr>
+        <tr>
+            <td>100 MILE AND DISTRICT COMMUNITY POLICING CONSULTATIVE COMMITTEE</td>
+            <td class="amount">$75,017.00</td>
+        </tr>
+        <tr>
+            <td>NAMGIS FIRST NATION</td>
+            <td class="amount">$74,814.00</td>
+        </tr>
+        <tr>
+            <td>SISTERS IN SPIRIT FORT ST JOHN</td>
+            <td class="amount">$74,665.00</td>
+        </tr>
+        <tr>
+            <td>LINDA HAMM THERAPY & CONSULTATION LTD.</td>
+            <td class="amount">$74,433.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN HEALTH & SOCIAL SERVICES AUTHORITY</td>
+            <td class="amount">$74,338.00</td>
+        </tr>
+        <tr>
+            <td>THE SOCIAL HEALTH AND ECONOMIC DEVELOPMENT SOCIETY OF BELLA COOLA</td>
+            <td class="amount">$73,850.00</td>
+        </tr>
+        <tr>
+            <td>NORTH THOMPSON VICTIM ASSISTANCE SOCIETY</td>
+            <td class="amount">$73,231.00</td>
+        </tr>
+        <tr>
+            <td>IRENE V. PETERSON AND ASSOCIATES COUNSELLING SERVICES INCORPORATED</td>
+            <td class="amount">$72,675.00</td>
+        </tr>
+        <tr>
+            <td>LADYSMITH RESOURCES CENTRE ASSOCIATION</td>
+            <td class="amount">$72,482.00</td>
+        </tr>
+        <tr>
+            <td>WELLS, SIERRA JOLENE</td>
+            <td class="amount">$72,357.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA SPEECH & LANGUAGE SERVICES INC.</td>
+            <td class="amount">$72,336.00</td>
+        </tr>
+        <tr>
+            <td>V LONDON PRODUCTIONS INC.</td>
+            <td class="amount">$72,229.00</td>
+        </tr>
+        <tr>
+            <td>NICOLA VALLEY WOMEN IN ACTION</td>
+            <td class="amount">$71,565.00</td>
+        </tr>
+        <tr>
+            <td>PRINCETON & DISTRICT COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$71,404.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF FRASER LAKE</td>
+            <td class="amount">$71,404.00</td>
+        </tr>
+        <tr>
+            <td>PENDER ISLANDS FIRE PROTECTION SOCIETY</td>
+            <td class="amount">$71,120.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ABORIGINAL TRANSFORMATIVE JUSTICE SERVICES SOCIETY</td>
+            <td class="amount">$70,110.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST LEAF ASSOCIATION</td>
+            <td class="amount">$69,364.00</td>
+        </tr>
+        <tr>
+            <td>CLASSIC LIFECARE LTD.</td>
+            <td class="amount">$69,306.00</td>
+        </tr>
+        <tr>
+            <td>DROLET ELDRED BARRISTERS</td>
+            <td class="amount">$69,273.00</td>
+        </tr>
+        <tr>
+            <td>SHOPPERS HOME HEALTH CARE</td>
+            <td class="amount">$69,088.00</td>
+        </tr>
+        <tr>
+            <td>BURK, PATRICK KEITH</td>
+            <td class="amount">$68,877.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF THOMPSON–NICOLA</td>
+            <td class="amount">$67,167.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ROSSLAND</td>
+            <td class="amount">$64,691.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NEW WESTMINSTER</td>
+            <td class="amount">$64,599.00</td>
+        </tr>
+        <tr>
+            <td>THE KITIMAT COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$63,725.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO FRIENDSHIP SOCIETY</td>
+            <td class="amount">$63,701.00</td>
+        </tr>
+        <tr>
+            <td>CODOCEO, CECILIA ARACELLY</td>
+            <td class="amount">$63,690.00</td>
+        </tr>
+        <tr>
+            <td>SEMIAHMOO HOUSE SOCIETY</td>
+            <td class="amount">$63,214.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OSOYOOS</td>
+            <td class="amount">$62,767.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF REVELSTOKE</td>
+            <td class="amount">$62,655.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF MACKENZIE</td>
+            <td class="amount">$62,655.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF WHITE ROCK</td>
+            <td class="amount">$62,655.00</td>
+        </tr>
+        <tr>
+            <td>GOLDEN COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$62,514.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON COMMUNITY SERVICES ASSOCIATION</td>
+            <td class="amount">$62,514.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF GRAND FORKS</td>
+            <td class="amount">$62,514.00</td>
+        </tr>
+        <tr>
+            <td>CHASE FUNDRAISING SOCIETY</td>
+            <td class="amount">$62,514.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OLIVER</td>
+            <td class="amount">$62,237.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF MIDWAY</td>
+            <td class="amount">$62,230.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH ISLAND WELLNESS SOCIETY</td>
+            <td class="amount">$62,000.00</td>
+        </tr>
+        <tr>
+            <td>ESK'ETEMC FIRST NATION</td>
+            <td class="amount">$61,486.00</td>
+        </tr>
+        <tr>
+            <td>REVENUE REFUNDS</td>
+            <td class="amount">$61,232.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDING ALTERNATIVES COUNSELLING & EDUCATION SOCIETY VANCOUVER</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>P.D.R. INVESTMENTS INC.</td>
+            <td class="amount">$59,736.00</td>
+        </tr>
+        <tr>
+            <td>PALMANTIER, SHAWNEE</td>
+            <td class="amount">$57,894.00</td>
+        </tr>
+        <tr>
+            <td>THE CENTRE FOR CHILD DEVELOPMENT OF THE LOWER MAINLAND</td>
+            <td class="amount">$57,630.00</td>
+        </tr>
+        <tr>
+            <td>FINLAY COUNSELLING SERVICE</td>
+            <td class="amount">$56,884.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN TRIBES</td>
+            <td class="amount">$56,708.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND HEALTH AUTHORITY</td>
+            <td class="amount">$56,338.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$56,300.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT ALBERNI</td>
+            <td class="amount">$55,072.00</td>
+        </tr>
+        <tr>
+            <td>BLOCK WATCH SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>BAILEY, ROY A</td>
+            <td class="amount">$53,197.00</td>
+        </tr>
+        <tr>
+            <td>ADVANCED MOBILITY PRODUCTS LTD.</td>
+            <td class="amount">$53,147.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF LIONS BAY</td>
+            <td class="amount">$52,797.00</td>
+        </tr>
+        <tr>
+            <td>A–1 WHEELCHAIRS UNLIMITED SUPPLY INC.</td>
+            <td class="amount">$51,286.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 61 GREATER VICTORIA</td>
+            <td class="amount">$50,200.00</td>
+        </tr>
+        <tr>
+            <td>OCEAN NETWORKS CANADA SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLINGWOOD NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRE CHIEFS ASSOCIATION OF B C</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 06 ROCKY MOUNTAIN</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SPARWOOD</td>
+            <td class="amount">$49,579.00</td>
+        </tr>
+        <tr>
+            <td>WE CARE HOME HEALTH SERVICES</td>
+            <td class="amount">$49,550.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KOOTENAY BOUNDARY</td>
+            <td class="amount">$48,215.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LAKE COUNTRY</td>
+            <td class="amount">$47,747.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE TOWNSHIP OF SPALLUMCHEEN</td>
+            <td class="amount">$47,100.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT CURRIE INDIAN BAND</td>
+            <td class="amount">$46,683.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK NATION</td>
+            <td class="amount">$46,216.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL CANADIAN MOUNTED POLICE</td>
+            <td class="amount">$46,000.00</td>
+        </tr>
+        <tr>
+            <td>WE CARE HOME HEALTH SERVICES (PRINCE GEORGE)</td>
+            <td class="amount">$45,927.00</td>
+        </tr>
+        <tr>
+            <td>FRASER REGION COMMUNITY JUSTICE INITIATIVES ASSOCIATION</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN BOYS AND GIRLS CLUBS</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>ACCESS COMMUNITY THERAPISTS LTD.</td>
+            <td class="amount">$44,678.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC GUARDIAN AND TRUSTEE OF BRITISH COLUMBIA</td>
+            <td class="amount">$43,179.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY NEIGHBOURHOODS ASSOCIATION</td>
+            <td class="amount">$42,672.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 79 COWICHAN VALLEY</td>
+            <td class="amount">$42,000.00</td>
+        </tr>
+        <tr>
+            <td>INTERIOR HEALTH AUTHORITY</td>
+            <td class="amount">$41,248.00</td>
+        </tr>
+        <tr>
+            <td>THE GOVERNMENT OF YUKON</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>METIS COMMUNITY SERVICES SOCIETY OF BC</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>PEERS VICTORIA RESOURCES SOCIETY</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY SERVICES OF GREATER VICTORIA SOCIETY</td>
+            <td class="amount">$39,520.00</td>
+        </tr>
+        <tr>
+            <td>MEDICHAIR</td>
+            <td class="amount">$39,513.00</td>
+        </tr>
+        <tr>
+            <td>XAXLI'P FIRST NATION</td>
+            <td class="amount">$37,300.00</td>
+        </tr>
+        <tr>
+            <td>KRUGER NEURO–REHABILITATION</td>
+            <td class="amount">$36,266.00</td>
+        </tr>
+        <tr>
+            <td>MANNELLA, CECILIA ARACELLY</td>
+            <td class="amount">$35,625.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY FUTURES DEVELOPMENT CORPORATION OF CARIBOO–CHILCOTIN</td>
+            <td class="amount">$35,560.00</td>
+        </tr>
+        <tr>
+            <td>JR REHABILITATION SERVICES INC.</td>
+            <td class="amount">$35,218.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER & NORTH ISLAND TRANSITION SOCIETY</td>
+            <td class="amount">$34,356.00</td>
+        </tr>
+        <tr>
+            <td>THE JOHN HOWARD SOCIETY OF THE LOWER MAINLAND OF BRITISH COLUMBIA</td>
+            <td class="amount">$33,611.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA/KINBASKET CHILD AND FAMILY SERVICE SOCIETY</td>
+            <td class="amount">$33,286.00</td>
+        </tr>
+        <tr>
+            <td>G.V. COUNSELLING AND EDUCATION SOCIETY FOR FAMILIES</td>
+            <td class="amount">$32,385.00</td>
+        </tr>
+        <tr>
+            <td>W.I.N.G.S. FELLOWSHIP MINISTRIES</td>
+            <td class="amount">$32,214.00</td>
+        </tr>
+        <tr>
+            <td>CIRCLE OF INDIGENOUS NATIONS SOCIETY</td>
+            <td class="amount">$31,940.00</td>
+        </tr>
+        <tr>
+            <td>JOHN HOWARD SOCIETY OF THE CENTRAL AND SOUTH OKANAGAN</td>
+            <td class="amount">$31,746.00</td>
+        </tr>
+        <tr>
+            <td>HARDMAN, GORDON AND HARDMAN, TAMMY</td>
+            <td class="amount">$31,200.00</td>
+        </tr>
+        <tr>
+            <td>PHILLIPS, CRYSTAL LOREEN</td>
+            <td class="amount">$31,127.00</td>
+        </tr>
+        <tr>
+            <td>MOTION LP</td>
+            <td class="amount">$30,885.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA POLICE DEPARTMENT</td>
+            <td class="amount">$30,345.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC RIM SAFETY TRAINING INCORPORATED</td>
+            <td class="amount">$30,040.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN JOHN HOWARD SOCIETY OF B C</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC ASSOCIATION OF FIRST NATION'S WOMEN</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY BOUNDARY COMMUNITY SERVICES CO–OPERATIVE</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THE HALFMOON BAY–CHATELECH COMMUNITY SCHOOL ASSOCIATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY CONNECTIONS SOCIETY OF SOUTHEAST BC</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS SOCIAL DEVELOPMENT SOCIETY (FNSDS)</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN FIRST NATIONS CHILD AND FAMILY SERVICES COUNCIL SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER CHILD AND YOUTH ADVOCACY CENTRE SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>NON–GOV'T EMPLOYEES TRAVEL</td>
+            <td class="amount">$29,472.00</td>
+        </tr>
+        <tr>
+            <td>COMBINED FORCES SPECIAL ENFORCEMENT UNIT OF BRITISH COLUMBIA</td>
+            <td class="amount">$29,278.00</td>
+        </tr>
+        <tr>
+            <td>GIESBRECHT, NICOLE DIONNE</td>
+            <td class="amount">$29,213.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$28,884.00</td>
+        </tr>
+        <tr>
+            <td>MATTHEWS, LAURA ANN</td>
+            <td class="amount">$28,457.00</td>
+        </tr>
+        <tr>
+            <td>MOULD, DIANNA</td>
+            <td class="amount">$28,345.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC THERAPY & CONSULTING INC.</td>
+            <td class="amount">$28,325.00</td>
+        </tr>
+        <tr>
+            <td>CANADA SAFEWAY LIMITED</td>
+            <td class="amount">$28,313.00</td>
+        </tr>
+        <tr>
+            <td>COMPASSIONATE CARE HOME & HOSPITAL HEALTH SERVICES INC.</td>
+            <td class="amount">$28,248.00</td>
+        </tr>
+        <tr>
+            <td>YOUTHSPORT PUBLICATIONS</td>
+            <td class="amount">$28,059.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON, BEATRICE G</td>
+            <td class="amount">$27,884.00</td>
+        </tr>
+        <tr>
+            <td>DISABILITY ALLIANCE BC SOCIETY</td>
+            <td class="amount">$27,168.00</td>
+        </tr>
+        <tr>
+            <td>DAVIES PRESCRIPTIONS–ST GEORGES</td>
+            <td class="amount">$27,026.00</td>
+        </tr>
+        <tr>
+            <td>TOUCHSTONE FAMILY ASSOCIATION</td>
+            <td class="amount">$26,680.00</td>
+        </tr>
+        <tr>
+            <td>CAULDER, JOHN</td>
+            <td class="amount">$26,580.00</td>
+        </tr>
+        <tr>
+            <td>SOLUTIONS TO LIFE COUNSELLING</td>
+            <td class="amount">$26,560.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 63 SAANICH</td>
+            <td class="amount">$26,388.00</td>
+        </tr>
+        <tr>
+            <td>MERIDIAN REHABILITATION CONSULTING INC.</td>
+            <td class="amount">$25,912.00</td>
+        </tr>
+        <tr>
+            <td>CREATIVE MOBILITY PRODUCTS INC.</td>
+            <td class="amount">$25,684.00</td>
+        </tr>
+        <tr>
+            <td>MOTION SPECIALTIES INCORPORATED</td>
+            <td class="amount">$25,338.00</td>
+        </tr>
+        <tr>
+            <td>REVERA LONG TERM CARE INC.</td>
+            <td class="amount">$25,322.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA IMMIGRANT AND REFUGEE CENTRE SOCIETY</td>
+            <td class="amount">$25,140.00</td>
+        </tr>
+        <tr>
+            <td>THE INTERNATIONAL CENTRE FOR CRIMINAL LAW REFORM & CRIMINAL JUSTICE POLICY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CANAL FLATS</td>
+            <td class="amount">$24,409.00</td>
+        </tr>
+        <tr>
+            <td>SOBEYS WEST INC.</td>
+            <td class="amount">$24,154.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL COAST</td>
+            <td class="amount">$23,920.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 27 CARIBOO-CHILCOTIN</td>
+            <td class="amount">$23,540.00</td>
+        </tr>
+        <tr>
+            <td>PEP–SMALL BUSINESS DISASTER CLAIMS</td>
+            <td class="amount">$23,302.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAHT FIRST NATION</td>
+            <td class="amount">$23,072.00</td>
+        </tr>
+        <tr>
+            <td>SLIAMMON FIRST NATION</td>
+            <td class="amount">$23,065.00</td>
+        </tr>
+        <tr>
+            <td>SUNCREEK DEVELOPMENTS LTD.</td>
+            <td class="amount">$22,752.00</td>
+        </tr>
+        <tr>
+            <td>BIG WATER SOCIETY</td>
+            <td class="amount">$22,307.00</td>
+        </tr>
+        <tr>
+            <td>INTEGRA SUPPORT SERVICES LTD.</td>
+            <td class="amount">$22,179.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF NEW DENVER</td>
+            <td class="amount">$22,110.00</td>
+        </tr>
+        <tr>
+            <td>ABILITY HEALTHCARE GROUP INC.</td>
+            <td class="amount">$21,169.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER POLICE SERVICE</td>
+            <td class="amount">$21,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF MOUNT WADDINGTON</td>
+            <td class="amount">$20,850.00</td>
+        </tr>
+        <tr>
+            <td>ALEXANDER, JASMINE ROSE</td>
+            <td class="amount">$20,400.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND ADDICTION SERVICES SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA TEACHERS' FEDERATION</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>MALAHAT FIRST NATION</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>KIDSAFE PROJECT SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF NEW CALEDONIA</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>QMUNITY BC'S QUEER RESOURCE CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>OLD MASSETT VILLAGE COUNCIL</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>PEERNET ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>MISSION FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>MISCELLANEOUS PRODUCTIONS SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMOSUN COLLEGE</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>THE MCCREARY CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>THE JOHN HOWARD SOCIETY OF NORTH ISLAND</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL MOTHER CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>ACCESS TO MEDIA EDUCATION SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>URBAN INK PRODUCTION SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>FROG HOLLOW NEIGHBOURHOOD HOUSE</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 35 LANGLEY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>ST. LEONARD'S YOUTH AND FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 37 DELTA</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 19 REVELSTOKE</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 69 QUALICUM</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 36 SURREY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>FRIENDSHIP HOUSE ASSOCIATION OF PRINCE RUPERT</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>AGASSIZ–HARRISON COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$19,956.00</td>
+        </tr>
+        <tr>
+            <td>POSITIVE WOMEN'S NETWORK</td>
+            <td class="amount">$19,842.00</td>
+        </tr>
+        <tr>
+            <td>PROPHET RIVER FIRST NATION</td>
+            <td class="amount">$19,835.00</td>
+        </tr>
+        <tr>
+            <td>BC FAMILIES IN TRANSITION SOCIETY</td>
+            <td class="amount">$19,760.00</td>
+        </tr>
+        <tr>
+            <td>KI–LOW–NA FRIENDSHIP SOCIETY</td>
+            <td class="amount">$19,377.00</td>
+        </tr>
+        <tr>
+            <td>BALTIC PROPERTIES (BROOKSIDE) LTD.</td>
+            <td class="amount">$19,080.00</td>
+        </tr>
+        <tr>
+            <td>METIS NATION BRITISH COLUMBIA</td>
+            <td class="amount">$18,500.00</td>
+        </tr>
+        <tr>
+            <td>WACHIAY FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$18,000.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A NATION</td>
+            <td class="amount">$17,780.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 42 MAPLE RIDGE- PITT MEADOWS</td>
+            <td class="amount">$17,140.00</td>
+        </tr>
+        <tr>
+            <td>GURU NANAK EDUCATION SOCIETY OF B.C.</td>
+            <td class="amount">$17,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF PEACE RIVER</td>
+            <td class="amount">$16,484.00</td>
+        </tr>
+        <tr>
+            <td>BROADFOOT, FREDERICK DOUGLAS</td>
+            <td class="amount">$16,396.00</td>
+        </tr>
+        <tr>
+            <td>SPECTRUM SOCIETY FOR COMMUNITY LIVING</td>
+            <td class="amount">$16,096.00</td>
+        </tr>
+        <tr>
+            <td>REGENCY MEDICAL SUPPLIES</td>
+            <td class="amount">$15,468.00</td>
+        </tr>
+        <tr>
+            <td>ROGERS ELEMENTARY OUT OF SCHOOL CARE SOCIETY</td>
+            <td class="amount">$15,195.00</td>
+        </tr>
+        <tr>
+            <td>PROVINCIAL HEALTH SERVICES AUTHORITY</td>
+            <td class="amount">$15,050.00</td>
+        </tr>
+        <tr>
+            <td>BIG BROTHERS BIG SISTERS OF KAMLOOPS & REGION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK RESTORATIVE JUSTICE AND YOUTH ADVOCACY ASSOCIATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND AIDS SOCIETY</td>
+            <td class="amount">$14,900.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 78 FRASER-CASCADE</td>
+            <td class="amount">$14,295.00</td>
+        </tr>
+        <tr>
+            <td>SELFCARE HOME HEALTH PRODUCTS LTD.</td>
+            <td class="amount">$13,800.00</td>
+        </tr>
+        <tr>
+            <td>CONNECT HEARING</td>
+            <td class="amount">$13,715.00</td>
+        </tr>
+        <tr>
+            <td>KITASOO BAND COUNCIL</td>
+            <td class="amount">$13,707.00</td>
+        </tr>
+        <tr>
+            <td>WEST KOOTENAY WOMEN'S ASSOCIATION</td>
+            <td class="amount">$13,600.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD RESTORATIVE JUSTICE AND ADVOCACY ASSOCIATION</td>
+            <td class="amount">$12,600.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TAYLOR</td>
+            <td class="amount">$12,561.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF KASLO</td>
+            <td class="amount">$12,479.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER RESOURCE SOCIETY FOR THE PHYSICALLY DISABLED</td>
+            <td class="amount">$12,321.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF FRASER VALLEY</td>
+            <td class="amount">$12,248.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF KITIMAT</td>
+            <td class="amount">$12,138.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CENTRAL SAANICH</td>
+            <td class="amount">$11,920.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF ALBERNI–CLAYOQUOT</td>
+            <td class="amount">$11,156.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF OAK BAY</td>
+            <td class="amount">$11,045.00</td>
+        </tr>
+        <tr>
+            <td>DEVINE, LINDY</td>
+            <td class="amount">$10,720.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 58 NICOLA-SIMILKAMEEN</td>
+            <td class="amount">$10,648.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NORTH COWICHAN</td>
+            <td class="amount">$10,174.00</td>
+        </tr>
+        <tr>
+            <td>GITXSAN HEALTH SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH SHORE WOMEN'S CENTRE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 38 RICHMOND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 05 SOUTHEAST KOOTENAY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 82 COAST MOUNTAIN</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMP JUBILEE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NORTH SHORE RESTORATIVE JUSTICE SOCIETY</td>
+            <td class="amount">$9,200.00</td>
+        </tr>
+        <tr>
+            <td>ADVANTAGE SPEECH–LANGUAGE PATHOLOGY LTD.</td>
+            <td class="amount">$9,171.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 68 NANAIMO-LADYSMITH</td>
+            <td class="amount">$9,115.00</td>
+        </tr>
+        <tr>
+            <td>NEUROMOTION PHYSIOTHERAPY CLINIC</td>
+            <td class="amount">$8,845.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 70 ALBERNI</td>
+            <td class="amount">$8,700.00</td>
+        </tr>
+        <tr>
+            <td>INTERIOR COMMUNITY SERVICES</td>
+            <td class="amount">$8,150.00</td>
+        </tr>
+        <tr>
+            <td>THE LIVING THROUGH LOSS COUNSELLING SOCIETY OF B.C.</td>
+            <td class="amount">$7,645.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF SILVERTON</td>
+            <td class="amount">$7,502.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 91 NECHAKO LAKES</td>
+            <td class="amount">$7,200.00</td>
+        </tr>
+        <tr>
+            <td>THE GOVERNING COUNCIL OF THE SALVATION ARMY IN CANADA</td>
+            <td class="amount">$7,150.00</td>
+        </tr>
+        <tr>
+            <td>PRIORITY POSTURE SYSTEMS LTD.</td>
+            <td class="amount">$7,130.00</td>
+        </tr>
+        <tr>
+            <td>REVERA INC.</td>
+            <td class="amount">$6,997.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 23 CENTRAL OKANAGAN</td>
+            <td class="amount">$6,700.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON AND DISTRICT COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$6,600.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 52 PRINCE RUPERT</td>
+            <td class="amount">$6,450.00</td>
+        </tr>
+        <tr>
+            <td>SAVE–ON–FOODS</td>
+            <td class="amount">$6,406.00</td>
+        </tr>
+        <tr>
+            <td>THE CANADIAN NATIONAL INSTITUTE FOR THE BLIND</td>
+            <td class="amount">$6,325.00</td>
+        </tr>
+        <tr>
+            <td>CASCADIA COMMUNITY COUNSELLING CLINIC LTD.</td>
+            <td class="amount">$6,280.00</td>
+        </tr>
+        <tr>
+            <td>1ST CHOICE MOBILITY PRODUCTS INC.</td>
+            <td class="amount">$6,195.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF OKANAGAN–SIMILKAMEEN</td>
+            <td class="amount">$6,144.00</td>
+        </tr>
+        <tr>
+            <td>GRACE MEMORIAL FUNERAL HOME & CREMATORIUM LTD.</td>
+            <td class="amount">$6,076.00</td>
+        </tr>
+        <tr>
+            <td>ARC PROGRAMS LTD.</td>
+            <td class="amount">$5,928.00</td>
+        </tr>
+        <tr>
+            <td>FIRST MEMORIAL FUNERAL SERVICES & CREMATORIUM</td>
+            <td class="amount">$5,856.00</td>
+        </tr>
+        <tr>
+            <td>MEDICHAIR KAMLOOPS</td>
+            <td class="amount">$5,695.00</td>
+        </tr>
+        <tr>
+            <td>EXTENDICARE (CANADA) INC.</td>
+            <td class="amount">$5,495.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA INSTITUTE OF TECHNOLOGY</td>
+            <td class="amount">$5,483.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF COLDSTREAM</td>
+            <td class="amount">$5,315.00</td>
+        </tr>
+        <tr>
+            <td>DYE & DURHAM CORPORATION</td>
+            <td class="amount">$5,223.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE BAND</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITIES EMBRACING RESTORATIVE ACTION (CERA) SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY JUSTICE CENTRE OF THE COMOX VALLEY SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA RESTORATIVE JUSTICE SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>KEARNEY FUNERAL SERVICES LTD.</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA LAKE FIRST NATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>RIDGE MEADOWS YOUTH & JUSTICE ADVOCACY ASSOCIATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SUMMERLAND</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>CHAPEL OF MEMORIES FUNERAL DIRECTORS</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>AVALON SURREY FUNERAL HOME AND CREMATION CENTRE</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>SYMBIOSIS PEDIATRIC THERAPY INC.</td>
+            <td class="amount">$4,950.00</td>
+        </tr>
+        <tr>
+            <td>ABILITIES NEUROLOGICAL REHABILITATION – SURREY</td>
+            <td class="amount">$4,900.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COURTENAY</td>
+            <td class="amount">$4,885.00</td>
+        </tr>
+        <tr>
+            <td>KIDS FIRST PHYSIOTHERAPY</td>
+            <td class="amount">$4,850.00</td>
+        </tr>
+        <tr>
+            <td>CRESTON PHYSIOWORKS & MORE</td>
+            <td class="amount">$4,849.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FORT ST. JOHN</td>
+            <td class="amount">$4,730.00</td>
+        </tr>
+        <tr>
+            <td>THE FRASER VALLEY REHAB SHOP LTD.</td>
+            <td class="amount">$4,643.00</td>
+        </tr>
+        <tr>
+            <td>2400 MOTEL</td>
+            <td class="amount">$4,412.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 84 VANCOUVER ISLAND WEST</td>
+            <td class="amount">$4,405.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES FIRST NATION</td>
+            <td class="amount">$4,350.00</td>
+        </tr>
+        <tr>
+            <td>GITGA'AT FIRST NATION</td>
+            <td class="amount">$4,288.00</td>
+        </tr>
+        <tr>
+            <td>P.G. SURG–MED LTD.</td>
+            <td class="amount">$4,118.00</td>
+        </tr>
+        <tr>
+            <td>THE CRIDGE CENTRE FOR THE FAMILY</td>
+            <td class="amount">$4,016.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF UCLUELET</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>DIVERSIFIED REHABILITATION GROUP INC.</td>
+            <td class="amount">$3,959.00</td>
+        </tr>
+        <tr>
+            <td>DZE L K'ANT FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$3,796.00</td>
+        </tr>
+        <tr>
+            <td>SHERATON VANCOUVER AIRPORT HOTEL</td>
+            <td class="amount">$3,602.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER COMMUNITY COLLEGE</td>
+            <td class="amount">$3,510.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL & FAIRWEATHER PSYCHOLOGY GROUP</td>
+            <td class="amount">$3,455.00</td>
+        </tr>
+        <tr>
+            <td>BEZOOYEN, ANDREW MARK</td>
+            <td class="amount">$3,400.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS LAKE INDIAN BAND</td>
+            <td class="amount">$3,290.00</td>
+        </tr>
+        <tr>
+            <td>ST. MARY'S INDIAN BAND</td>
+            <td class="amount">$3,259.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMSON, BONNIE LEE</td>
+            <td class="amount">$2,880.00</td>
+        </tr>
+        <tr>
+            <td>SHARE FAMILY AND COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$2,800.00</td>
+        </tr>
+        <tr>
+            <td>ARROWSMITH SEARCH AND RESCUE SOCIETY</td>
+            <td class="amount">$2,798.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY OPTIONS SOCIETY</td>
+            <td class="amount">$2,730.00</td>
+        </tr>
+        <tr>
+            <td>VALLEY ORTHOCARE LTD.</td>
+            <td class="amount">$2,525.00</td>
+        </tr>
+        <tr>
+            <td>CRANBROOK AND DISTRICT RESTORATIVE JUSTICE SOCIETY</td>
+            <td class="amount">$2,500.00</td>
+        </tr>
+        <tr>
+            <td>TSESHAHT FIRST NATION</td>
+            <td class="amount">$2,498.00</td>
+        </tr>
+        <tr>
+            <td>VALLEY VIEW FUNERAL HOME</td>
+            <td class="amount">$2,440.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH COAST BRITISH COLUMBIA TRANSPORTATION AUTHORITY</td>
+            <td class="amount">$2,253.00</td>
+        </tr>
+        <tr>
+            <td>B.C. MEDEQUIP HOME HEALTH CARE LTD.</td>
+            <td class="amount">$2,229.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$2,183.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF MCBRIDE</td>
+            <td class="amount">$2,059.00</td>
+        </tr>
+        <tr>
+            <td>TREEHOUSE PHYSIO INC.</td>
+            <td class="amount">$2,040.00</td>
+        </tr>
+        <tr>
+            <td>REACH OUT YOUTH COUNSELLING & SERVICES SOCIETY</td>
+            <td class="amount">$2,020.00</td>
+        </tr>
+        <tr>
+            <td>FRASERVIEW CREMATORIUM LTD</td>
+            <td class="amount">$2,003.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN HEALTH AUTHORITY</td>
+            <td class="amount">$1,963.00</td>
+        </tr>
+        <tr>
+            <td>OVERWAITEA FOODS</td>
+            <td class="amount">$1,953.00</td>
+        </tr>
+        <tr>
+            <td>RICE, ALLISON MARIE</td>
+            <td class="amount">$1,840.00</td>
+        </tr>
+        <tr>
+            <td>PENTLAND'S PROSTHETIC & ORTHOTIC SERVICES, INC.</td>
+            <td class="amount">$1,535.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND ORTHOTICS INC.</td>
+            <td class="amount">$1,450.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HUDSON'S HOPE</td>
+            <td class="amount">$1,449.00</td>
+        </tr>
+        <tr>
+            <td>ABLE DEVELOPMENTAL CLINIC INC.</td>
+            <td class="amount">$1,365.00</td>
+        </tr>
+        <tr>
+            <td>B.D. MITCHELL PROSTHETIC & ORTHOTIC SERVICES LTD.</td>
+            <td class="amount">$1,303.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF LANGLEY</td>
+            <td class="amount">$1,298.00</td>
+        </tr>
+        <tr>
+            <td>MACDONALD'S PRESCRIPTIONS 2</td>
+            <td class="amount">$1,179.00</td>
+        </tr>
+        <tr>
+            <td>ANGEL ACCESSIBILITY SOLUTIONS LTD.</td>
+            <td class="amount">$1,094.00</td>
+        </tr>
+        <tr>
+            <td>THRIFTY FOODS</td>
+            <td class="amount">$1,015.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER SEARCH & RESCUE SOCIETY</td>
+            <td class="amount">$977.00</td>
+        </tr>
+        <tr>
+            <td>NORTHWEST COUNSELLING CENTRE LTD.</td>
+            <td class="amount">$960.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS THERAPEUTIC RIDING ASSOCIATION</td>
+            <td class="amount">$910.00</td>
+        </tr>
+        <tr>
+            <td>NEW LIFE MISSION</td>
+            <td class="amount">$834.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DAWSON CREEK</td>
+            <td class="amount">$800.00</td>
+        </tr>
+        <tr>
+            <td>HEALTHLINC MEDICAL EQUIPMENT LTD.</td>
+            <td class="amount">$792.00</td>
+        </tr>
+        <tr>
+            <td>MACNEIL, CONRAD F</td>
+            <td class="amount">$735.00</td>
+        </tr>
+        <tr>
+            <td>UBC OKANAGAN</td>
+            <td class="amount">$686.00</td>
+        </tr>
+        <tr>
+            <td>THE WISHING STAR, LAPOINTE PSYCHOLOGY SERVICES</td>
+            <td class="amount">$683.00</td>
+        </tr>
+        <tr>
+            <td>NEIL SQUIRE SOCIETY</td>
+            <td class="amount">$665.00</td>
+        </tr>
+        <tr>
+            <td>THE BRIDGE YOUTH & FAMILY SERVICES</td>
+            <td class="amount">$665.00</td>
+        </tr>
+        <tr>
+            <td>CENTURY GLASS (85) LTD.</td>
+            <td class="amount">$582.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY ORTHOPAEDIC AND MASTECTOMY</td>
+            <td class="amount">$575.00</td>
+        </tr>
+        <tr>
+            <td>TURNER, LAURA LEE</td>
+            <td class="amount">$560.00</td>
+        </tr>
+        <tr>
+            <td>KULDIP COUNSELLING & CONSULTING SERVICES INC.</td>
+            <td class="amount">$480.00</td>
+        </tr>
+        <tr>
+            <td>ORTHO DESIGN INC.</td>
+            <td class="amount">$480.00</td>
+        </tr>
+        <tr>
+            <td>WHITEVALLEY COMMUNITY RESOURCE CENTRE</td>
+            <td class="amount">$475.00</td>
+        </tr>
+        <tr>
+            <td>ISLE VISTA HOLDINGS (2001) INC.</td>
+            <td class="amount">$420.00</td>
+        </tr>
+        <tr>
+            <td>RESPIRATORY HOMECARE SOLUTIONS KELOWNA</td>
+            <td class="amount">$400.00</td>
+        </tr>
+        <tr>
+            <td>MEDICHAIR CRANBROOK</td>
+            <td class="amount">$357.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF STEWART</td>
+            <td class="amount">$322.00</td>
+        </tr>
+        <tr>
+            <td>YOUNG MEN'S CHRISTIAN ASSOCIATION OF GREATER VANCOUVER</td>
+            <td class="amount">$319.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA FERRY SERVICES INC.</td>
+            <td class="amount">$314.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER PROSTHETICS AND ORTHOTICS INC.</td>
+            <td class="amount">$300.00</td>
+        </tr>
+        <tr>
+            <td>SUNRISE SPEECH & MYOFUNCTIONAL THERAPY</td>
+            <td class="amount">$281.00</td>
+        </tr>
+        <tr>
+            <td>RANCH EHRLO SOCIETY</td>
+            <td class="amount">$270.00</td>
+        </tr>
+        <tr>
+            <td>ORTHO DYNAMICS INC.</td>
+            <td class="amount">$264.00</td>
+        </tr>
+        <tr>
+            <td>MACDONALD'S HOME HEALTH CARE</td>
+            <td class="amount">$234.00</td>
+        </tr>
+        <tr>
+            <td>ABBEY MEDICAL SUPPLIES LTD.</td>
+            <td class="amount">$224.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF QUEEN CHARLOTTE</td>
+            <td class="amount">$220.00</td>
+        </tr>
+        <tr>
+            <td>FREEMAN, LENA, DR</td>
+            <td class="amount">$210.00</td>
+        </tr>
+        <tr>
+            <td>GUILDFORD CAB (1993) LTD</td>
+            <td class="amount">$153.00</td>
+        </tr>
+        <tr>
+            <td>MONARCH HOUSE AUTISM CENTRE</td>
+            <td class="amount">$105.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT 69 SOCIETY OF ORGANIZED SERVICES</td>
+            <td class="amount">$102.00</td>
+        </tr>
+        <tr>
+            <td>PHOENIX AUDIOLOGY & HEARING AID CLINIC LTD.</td>
+            <td class="amount">$100.00</td>
+        </tr>
+        <tr>
+            <td>WE CARE HEALTH SERVICES (NANAIMO)</td>
+            <td class="amount">$89.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF TAHSIS</td>
+            <td class="amount">$68.00</td>
+        </tr>
+        <tr>
+            <td>NELSON SEARCH AND RESCUE SOCIETY</td>
+            <td class="amount">$23.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDENCE HEALTH CARE</td>
+            <td class="amount">$12.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forests - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Forests</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Forests
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$308.80M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">434</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Forests</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>FOREST ENHANCEMENT SOCIETY OF BC</td>
+            <td class="amount">$95,000,000.00</td>
+        </tr>
+        <tr>
+            <td>BULKLEY VALLEY CENTRE FOR NATURAL RESOURCES RESEARCH AND MANAGEMENT</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>UNION OF BRITISH COLUMBIA MUNICIPALITIES</td>
+            <td class="amount">$10,000,000.00</td>
+        </tr>
+        <tr>
+            <td>TOQUAHT FIRST NATION</td>
+            <td class="amount">$8,070,000.00</td>
+        </tr>
+        <tr>
+            <td>MA–MOOK NATURAL RESOURCES LTD.</td>
+            <td class="amount">$8,000,000.00</td>
+        </tr>
+        <tr>
+            <td>FPINNOVATIONS</td>
+            <td class="amount">$7,466,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF HAZELTON</td>
+            <td class="amount">$6,400,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER BASIN COUNCIL SOCIETY</td>
+            <td class="amount">$5,990,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$5,796,486.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA BASIN TRUST</td>
+            <td class="amount">$5,500,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS' EMERGENCY SERVICES SOCIETY OF B.C.</td>
+            <td class="amount">$5,250,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS' FORESTRY COUNCIL</td>
+            <td class="amount">$4,975,939.00</td>
+        </tr>
+        <tr>
+            <td>NLAKA'PAMUX NATION TRIBAL COUNCIL</td>
+            <td class="amount">$4,615,196.00</td>
+        </tr>
+        <tr>
+            <td>TSIDELDEL FIRST NATION</td>
+            <td class="amount">$2,540,000.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP INDIAN BAND</td>
+            <td class="amount">$2,440,025.00</td>
+        </tr>
+        <tr>
+            <td>TLA'AMIN NATION</td>
+            <td class="amount">$2,309,210.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF SMITHERS</td>
+            <td class="amount">$2,300,000.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRST NATION</td>
+            <td class="amount">$2,144,833.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF ALBERTA</td>
+            <td class="amount">$2,020,000.00</td>
+        </tr>
+        <tr>
+            <td>SEKANI FOREST PRODUCTS LTD.</td>
+            <td class="amount">$2,000,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE TIMBER LIMITED PARTNERSHIP</td>
+            <td class="amount">$2,000,000.00</td>
+        </tr>
+        <tr>
+            <td>YUNESIT'IN GOVERNMENT</td>
+            <td class="amount">$1,687,500.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS FORESTRY COUNCIL</td>
+            <td class="amount">$1,647,800.00</td>
+        </tr>
+        <tr>
+            <td>NANWAKOLAS COUNCIL SOCIETY</td>
+            <td class="amount">$1,645,000.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO INDIAN BAND</td>
+            <td class="amount">$1,630,000.00</td>
+        </tr>
+        <tr>
+            <td>HOMALCO INDIAN BAND</td>
+            <td class="amount">$1,614,500.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK NATION</td>
+            <td class="amount">$1,532,188.00</td>
+        </tr>
+        <tr>
+            <td>VAN SOEREN, ERIC, IN TRUST</td>
+            <td class="amount">$1,525,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. INVESTMENT AGRICULTURE FOUNDATION</td>
+            <td class="amount">$1,450,000.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL SOCIETY</td>
+            <td class="amount">$1,445,250.00</td>
+        </tr>
+        <tr>
+            <td>SCW'EXMX TRIBAL COUNCIL</td>
+            <td class="amount">$1,400,579.00</td>
+        </tr>
+        <tr>
+            <td>NESKONLITH INDIAN BAND</td>
+            <td class="amount">$1,400,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA COMMUNITY FOREST ASSOCIATION</td>
+            <td class="amount">$1,320,000.00</td>
+        </tr>
+        <tr>
+            <td>WET'SUWET'EN TREATY OFFICE SOCIETY</td>
+            <td class="amount">$1,315,000.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP LAKE INDIAN BAND</td>
+            <td class="amount">$1,280,000.00</td>
+        </tr>
+        <tr>
+            <td>INVASIVE SPECIES COUNCIL OF BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$1,265,100.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$1,222,500.00</td>
+        </tr>
+        <tr>
+            <td>VGN RESOURCES GROUP, INC.</td>
+            <td class="amount">$1,200,000.00</td>
+        </tr>
+        <tr>
+            <td>SOCIETY FOR ECOSYSTEM RESTORATION IN NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$1,152,385.00</td>
+        </tr>
+        <tr>
+            <td>BCCA PROGRAM DELIVERY INC.</td>
+            <td class="amount">$1,133,122.00</td>
+        </tr>
+        <tr>
+            <td>KANAKA BAR INDIAN BAND</td>
+            <td class="amount">$1,120,000.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS LAKE INDIAN BAND</td>
+            <td class="amount">$1,105,200.00</td>
+        </tr>
+        <tr>
+            <td>SIMPCW FIRST NATION</td>
+            <td class="amount">$1,095,800.00</td>
+        </tr>
+        <tr>
+            <td>DUCKS UNLIMITED CANADA</td>
+            <td class="amount">$1,092,965.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AZDLI DEVELOPMENT CORPORATION</td>
+            <td class="amount">$1,063,568.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN NATION ALLIANCE</td>
+            <td class="amount">$1,037,000.00</td>
+        </tr>
+        <tr>
+            <td>ESK'ETEMC FIRST NATION</td>
+            <td class="amount">$1,030,286.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGAT'TEM FIRST NATION</td>
+            <td class="amount">$1,030,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF NORTHERN BRITISH COLUMBIA</td>
+            <td class="amount">$1,017,379.00</td>
+        </tr>
+        <tr>
+            <td>EAST KOOTENAY INVASIVE SPECIES COUNCIL</td>
+            <td class="amount">$1,017,000.00</td>
+        </tr>
+        <tr>
+            <td>SMALL–SCALE MEAT PRODUCERS ASSOCIATION</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE RUPERT</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF BARRIERE</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHWEST INVASIVE PLANT COUNCIL</td>
+            <td class="amount">$994,000.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN FIRST NATION</td>
+            <td class="amount">$980,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF KASLO</td>
+            <td class="amount">$979,173.00</td>
+        </tr>
+        <tr>
+            <td>CHESLATTA CARRIER NATION</td>
+            <td class="amount">$922,777.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO REGIONAL DISTRICT</td>
+            <td class="amount">$889,300.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH NATION</td>
+            <td class="amount">$876,952.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION</td>
+            <td class="amount">$809,000.00</td>
+        </tr>
+        <tr>
+            <td>SNUNEYMUXW FIRST NATION</td>
+            <td class="amount">$770,000.00</td>
+        </tr>
+        <tr>
+            <td>HIGH BAR FIRST NATION</td>
+            <td class="amount">$750,250.00</td>
+        </tr>
+        <tr>
+            <td>CABI INTERNATIONAL</td>
+            <td class="amount">$725,000.00</td>
+        </tr>
+        <tr>
+            <td>TK'EMLUPS TE SECWEPEMC</td>
+            <td class="amount">$714,225.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA CONSERVATION FOUNDATION</td>
+            <td class="amount">$701,481.00</td>
+        </tr>
+        <tr>
+            <td>NAKUSP SKI CLUB ASSOCIATION</td>
+            <td class="amount">$699,150.00</td>
+        </tr>
+        <tr>
+            <td>AGRICULTURE AND AGRI–FOOD CANADA</td>
+            <td class="amount">$698,000.00</td>
+        </tr>
+        <tr>
+            <td>LAXYIP MANAGEMENT OFFICE SOCIETY</td>
+            <td class="amount">$680,519.00</td>
+        </tr>
+        <tr>
+            <td>KWIKWASUT'INUXW HAXWA'MIS FIRST NATION</td>
+            <td class="amount">$667,500.00</td>
+        </tr>
+        <tr>
+            <td>LYTTON FIRST NATION</td>
+            <td class="amount">$658,082.00</td>
+        </tr>
+        <tr>
+            <td>KILBY HERITAGE SOCIETY</td>
+            <td class="amount">$650,745.00</td>
+        </tr>
+        <tr>
+            <td>HORNBY ISLAND FARMLAND TRUST SOCIETY</td>
+            <td class="amount">$626,750.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$626,180.00</td>
+        </tr>
+        <tr>
+            <td>TOOSEY INDIAN BAND</td>
+            <td class="amount">$626,072.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE FIRST NATION</td>
+            <td class="amount">$625,000.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF BRITISH COLUMBIA FOREST PROFESSIONALS</td>
+            <td class="amount">$620,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$613,072.00</td>
+        </tr>
+        <tr>
+            <td>FEDERATION OF BRITISH COLUMBIA WOODLOT ASSOCIATIONS</td>
+            <td class="amount">$610,000.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP BAND</td>
+            <td class="amount">$605,225.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AZDLI WHUT'EN</td>
+            <td class="amount">$600,327.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES</td>
+            <td class="amount">$591,049.00</td>
+        </tr>
+        <tr>
+            <td>TSILHQOT'IN NATIONAL GOVERNMENT</td>
+            <td class="amount">$582,682.00</td>
+        </tr>
+        <tr>
+            <td>LHEIDLI T'ENNEH BAND</td>
+            <td class="amount">$580,854.00</td>
+        </tr>
+        <tr>
+            <td>YINKA DENE ECONOMIC DEVELOPMENT LIMITED PARTNERSHIP</td>
+            <td class="amount">$576,000.00</td>
+        </tr>
+        <tr>
+            <td>ASHCROFT INDIAN BAND</td>
+            <td class="amount">$570,000.00</td>
+        </tr>
+        <tr>
+            <td>TSESHAHT FIRST NATION</td>
+            <td class="amount">$555,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF MASSET</td>
+            <td class="amount">$547,629.00</td>
+        </tr>
+        <tr>
+            <td>ROCKY MOUNTAIN TRENCH NATURAL RESOURCES SOCIETY</td>
+            <td class="amount">$542,200.00</td>
+        </tr>
+        <tr>
+            <td>ALEXANDRIA INDIAN BAND</td>
+            <td class="amount">$540,000.00</td>
+        </tr>
+        <tr>
+            <td>NAMGIS FIRST NATION</td>
+            <td class="amount">$536,840.00</td>
+        </tr>
+        <tr>
+            <td>MAMALILIKULLA FIRST NATION</td>
+            <td class="amount">$535,000.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT TRIBE</td>
+            <td class="amount">$535,000.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL BAND COUNCIL</td>
+            <td class="amount">$524,382.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT NATION</td>
+            <td class="amount">$515,000.00</td>
+        </tr>
+        <tr>
+            <td>WHISPERING PINES/CLINTON INDIAN BAND</td>
+            <td class="amount">$505,000.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT BAND</td>
+            <td class="amount">$505,000.00</td>
+        </tr>
+        <tr>
+            <td>QUATSINO FIRST NATION</td>
+            <td class="amount">$500,540.00</td>
+        </tr>
+        <tr>
+            <td>GWAWAENUK TRIBE</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>BC OIL AND GAS RESEARCH AND INNOVATION SOCIETY</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>SODA CREEK INDIAN BAND</td>
+            <td class="amount">$496,000.00</td>
+        </tr>
+        <tr>
+            <td>STUWIX RESOURCES LTD.</td>
+            <td class="amount">$486,659.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$484,227.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF CUMBERLAND</td>
+            <td class="amount">$481,625.00</td>
+        </tr>
+        <tr>
+            <td>KWIAKAH FIRST NATION</td>
+            <td class="amount">$465,000.00</td>
+        </tr>
+        <tr>
+            <td>MCLEOD LAKE INDIAN BAND</td>
+            <td class="amount">$463,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER NICOLA INDIAN BAND</td>
+            <td class="amount">$459,550.00</td>
+        </tr>
+        <tr>
+            <td>NOOAITCH INDIAN BAND</td>
+            <td class="amount">$455,000.00</td>
+        </tr>
+        <tr>
+            <td>SHACKAN INDIAN BAND</td>
+            <td class="amount">$455,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$452,000.00</td>
+        </tr>
+        <tr>
+            <td>SHISHALH NATION</td>
+            <td class="amount">$440,355.00</td>
+        </tr>
+        <tr>
+            <td>THE GOVERNORS OF THE UNIVERSITY OF ALBERTA</td>
+            <td class="amount">$425,000.00</td>
+        </tr>
+        <tr>
+            <td>SECWEPEMCUL'ECW RESTORATION AND STEWARDSHIP SOCIETY</td>
+            <td class="amount">$425,000.00</td>
+        </tr>
+        <tr>
+            <td>XAXLI'P DEVELOPMENT CORPORATION</td>
+            <td class="amount">$412,600.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO INDIAN BAND</td>
+            <td class="amount">$412,350.00</td>
+        </tr>
+        <tr>
+            <td>ESDILAGH FIRST NATION</td>
+            <td class="amount">$410,000.00</td>
+        </tr>
+        <tr>
+            <td>SKEETCHESTN INDIAN BAND</td>
+            <td class="amount">$410,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KOOTENAY BOUNDARY</td>
+            <td class="amount">$405,000.00</td>
+        </tr>
+        <tr>
+            <td>BC PARKS FOUNDATION</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>HFN FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>FRESHWATER FISHERIES SOCIETY OF B.C.</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRE CHIEFS' ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER KOOTENAY INDIAN BAND</td>
+            <td class="amount">$397,000.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE INDIAN BAND</td>
+            <td class="amount">$393,132.00</td>
+        </tr>
+        <tr>
+            <td>COLDWATER INDIAN BAND</td>
+            <td class="amount">$385,000.00</td>
+        </tr>
+        <tr>
+            <td>FORT WARE INDIAN BAND (KWADACHA BAND)</td>
+            <td class="amount">$377,500.00</td>
+        </tr>
+        <tr>
+            <td>SKEETCHESTN NATURAL RESOURCES LLP</td>
+            <td class="amount">$375,000.00</td>
+        </tr>
+        <tr>
+            <td>SKAWAHLOOK FIRST NATION</td>
+            <td class="amount">$373,950.00</td>
+        </tr>
+        <tr>
+            <td>COOK'S FERRY INDIAN BAND</td>
+            <td class="amount">$370,000.00</td>
+        </tr>
+        <tr>
+            <td>OLD MASSETT VILLAGE COUNCIL</td>
+            <td class="amount">$369,586.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE FIRST NATION</td>
+            <td class="amount">$369,000.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO SERVICE AGENCY SOCIETY</td>
+            <td class="amount">$368,000.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW</td>
+            <td class="amount">$362,500.00</td>
+        </tr>
+        <tr>
+            <td>OSOYOOS INDIAN BAND ADMINISTRATION PROGRAMS</td>
+            <td class="amount">$360,750.00</td>
+        </tr>
+        <tr>
+            <td>GREAT BEAR INITIATIVE SOCIETY</td>
+            <td class="amount">$360,000.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP INDIAN BAND</td>
+            <td class="amount">$360,000.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS INDIAN BAND</td>
+            <td class="amount">$353,125.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SNOWMOBILE FEDERATION</td>
+            <td class="amount">$346,500.00</td>
+        </tr>
+        <tr>
+            <td>HALFWAY RIVER FIRST NATION</td>
+            <td class="amount">$346,000.00</td>
+        </tr>
+        <tr>
+            <td>KA:'YU:'K'T'H'/CHE:K'TLES7ET'H' FIRST NATIONS</td>
+            <td class="amount">$345,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL CHILCOTIN REHABILITATION LTD.</td>
+            <td class="amount">$342,500.00</td>
+        </tr>
+        <tr>
+            <td>UPPER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$335,000.00</td>
+        </tr>
+        <tr>
+            <td>UPPER NICOLA BAND</td>
+            <td class="amount">$325,000.00</td>
+        </tr>
+        <tr>
+            <td>KLEEKHOOT GOLD LIMITED PARTNERSHIP</td>
+            <td class="amount">$325,000.00</td>
+        </tr>
+        <tr>
+            <td>DOUGLAS FIRST NATION</td>
+            <td class="amount">$320,000.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN TRIBES</td>
+            <td class="amount">$318,000.00</td>
+        </tr>
+        <tr>
+            <td>XENI GWET'IN FIRST NATIONS GOVERNMENT</td>
+            <td class="amount">$310,000.00</td>
+        </tr>
+        <tr>
+            <td>BRIDGE RIVER INDIAN BAND</td>
+            <td class="amount">$301,230.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>GITANYOW HUWILP SOCIETY</td>
+            <td class="amount">$283,980.00</td>
+        </tr>
+        <tr>
+            <td>TS'ELXWEYEQW TRIBE LIMITED PARTNERSHIP</td>
+            <td class="amount">$277,500.00</td>
+        </tr>
+        <tr>
+            <td>NICOMEN INDIAN BAND</td>
+            <td class="amount">$275,000.00</td>
+        </tr>
+        <tr>
+            <td>UNION OF BC INDIAN CHIEFS</td>
+            <td class="amount">$272,796.00</td>
+        </tr>
+        <tr>
+            <td>AKISQ'NUK FIRST NATION</td>
+            <td class="amount">$270,000.00</td>
+        </tr>
+        <tr>
+            <td>LHTAKO DENE NATION</td>
+            <td class="amount">$267,500.00</td>
+        </tr>
+        <tr>
+            <td>B.C. WOOD SPECIALTIES GROUP ASSOCIATION</td>
+            <td class="amount">$265,000.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON FIRST NATION</td>
+            <td class="amount">$261,550.00</td>
+        </tr>
+        <tr>
+            <td>WET'SUWET'EN FIRST NATION</td>
+            <td class="amount">$260,100.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF POWELL RIVER</td>
+            <td class="amount">$259,900.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$254,000.00</td>
+        </tr>
+        <tr>
+            <td>ERIC VAN SOEREN & ASSOCIATES LTD.</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A LISIMS GOVERNMENT</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>WITSET FIRST NATION</td>
+            <td class="amount">$248,100.00</td>
+        </tr>
+        <tr>
+            <td>SUMAS FIRST NATION</td>
+            <td class="amount">$245,000.00</td>
+        </tr>
+        <tr>
+            <td>HABITAT CONSERVATION TRUST FOUNDATION</td>
+            <td class="amount">$240,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL KOOTENAY INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$235,750.00</td>
+        </tr>
+        <tr>
+            <td>TOBACCO PLAINS INDIAN BAND</td>
+            <td class="amount">$235,000.00</td>
+        </tr>
+        <tr>
+            <td>TL'ETINQOX GOVERNMENT</td>
+            <td class="amount">$235,000.00</td>
+        </tr>
+        <tr>
+            <td>HUU–AY–AHT FIRST NATIONS</td>
+            <td class="amount">$230,200.00</td>
+        </tr>
+        <tr>
+            <td>YUNESIT'IN LEADING EDGE G.P. INC.</td>
+            <td class="amount">$230,200.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF FRASER LAKE</td>
+            <td class="amount">$230,000.00</td>
+        </tr>
+        <tr>
+            <td>K'OMOKS FIRST NATION</td>
+            <td class="amount">$225,000.00</td>
+        </tr>
+        <tr>
+            <td>AQ'AM RESOURCES LIMITED PARTNERSHIP</td>
+            <td class="amount">$225,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN INDIAN BAND</td>
+            <td class="amount">$225,000.00</td>
+        </tr>
+        <tr>
+            <td>CITXW NLAKA'PAMUX ASSEMBLY</td>
+            <td class="amount">$215,000.00</td>
+        </tr>
+        <tr>
+            <td>DOIG RIVER FIRST NATION</td>
+            <td class="amount">$214,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST MOBERLY FIRST NATIONS</td>
+            <td class="amount">$214,000.00</td>
+        </tr>
+        <tr>
+            <td>PROPHET RIVER FIRST NATION</td>
+            <td class="amount">$214,000.00</td>
+        </tr>
+        <tr>
+            <td>SEA TO SKY INVASIVE SPECIES COUNCIL</td>
+            <td class="amount">$213,750.00</td>
+        </tr>
+        <tr>
+            <td>HUPACASATH FIRST NATION</td>
+            <td class="amount">$205,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CATTLEMEN'S ASSOCIATION</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>GUIDE–OUTFITTERS ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>TLA–O–QUI–AHT FIRST NATION</td>
+            <td class="amount">$190,000.00</td>
+        </tr>
+        <tr>
+            <td>KHOWUTZUN FREEGRO TREE SHELTERS LLP</td>
+            <td class="amount">$188,350.00</td>
+        </tr>
+        <tr>
+            <td>NADLEH WHUT'EN INDIAN BAND</td>
+            <td class="amount">$188,223.00</td>
+        </tr>
+        <tr>
+            <td>LOWER FRASER FISHERIES ALLIANCE SOCIETY</td>
+            <td class="amount">$187,500.00</td>
+        </tr>
+        <tr>
+            <td>CAYOOSE CREEK INDIAN BAND</td>
+            <td class="amount">$185,000.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO FIRST NATION</td>
+            <td class="amount">$184,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'IL KAZ KOH</td>
+            <td class="amount">$184,000.00</td>
+        </tr>
+        <tr>
+            <td>KPMG LLP</td>
+            <td class="amount">$180,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON–NICOLA REGIONAL DISTRICT</td>
+            <td class="amount">$176,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE BAND</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>TOBACCO PLAINS BAND COUNCIL</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NATURE TRUST OF BRITISH COLUMBIA</td>
+            <td class="amount">$172,188.00</td>
+        </tr>
+        <tr>
+            <td>LEQ'A:MEL FIRST NATION</td>
+            <td class="amount">$170,000.00</td>
+        </tr>
+        <tr>
+            <td>SECHELT INDIAN BAND</td>
+            <td class="amount">$170,000.00</td>
+        </tr>
+        <tr>
+            <td>MATSQUI FIRST NATION</td>
+            <td class="amount">$160,000.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC SHUSWAP NATION</td>
+            <td class="amount">$155,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC INSTITUTE FOR CLIMATE SOLUTIONS</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN COMMUNITY CENTRE</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY LIVESTOCK ASSOCIATION</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>CARRIER–SEKANI TRIBAL COUNCIL</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>YEKOOCHE FIRST NATION</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>TSLEIL–WAUTUTH NATION</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CAPE MUDGE INDIAN BAND</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET DISTRICT INDIAN COUNCIL</td>
+            <td class="amount">$141,600.00</td>
+        </tr>
+        <tr>
+            <td>FIRST WEST CREDIT UNION</td>
+            <td class="amount">$140,822.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$140,000.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$132,750.00</td>
+        </tr>
+        <tr>
+            <td>SECRETARIAT OF THE HAIDA NATION</td>
+            <td class="amount">$132,500.00</td>
+        </tr>
+        <tr>
+            <td>SNSAYCKSTX (SINIXT) CONFEDERACY</td>
+            <td class="amount">$130,000.00</td>
+        </tr>
+        <tr>
+            <td>ELHDAQOX DEVELOPMENTS LTD.</td>
+            <td class="amount">$130,000.00</td>
+        </tr>
+        <tr>
+            <td>HALALT FIRST NATION</td>
+            <td class="amount">$127,000.00</td>
+        </tr>
+        <tr>
+            <td>KLUSKUS INDIAN BAND</td>
+            <td class="amount">$123,750.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN DAM ASSOCIATION</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>CARLETON UNIVERSITY</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAWOUT FIRST NATION</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>UCHUCKLESAHT TRIBE</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET REGIONAL INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$118,000.00</td>
+        </tr>
+        <tr>
+            <td>CHILCOTIN PLATEAU ENTERPRISE LTD.</td>
+            <td class="amount">$112,500.00</td>
+        </tr>
+        <tr>
+            <td>SPUZZUM FIRST NATION</td>
+            <td class="amount">$110,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CANAL FLATS</td>
+            <td class="amount">$109,205.00</td>
+        </tr>
+        <tr>
+            <td>BOUNDARY INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$105,500.00</td>
+        </tr>
+        <tr>
+            <td>TK'EMLUPSEMC FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$105,000.00</td>
+        </tr>
+        <tr>
+            <td>TSI DEL DEL TIMBER DEVELOPMENT LIMITED PARTNERSHIP</td>
+            <td class="amount">$105,000.00</td>
+        </tr>
+        <tr>
+            <td>CREDENTIAL QTRADE SECURITIES INC.</td>
+            <td class="amount">$102,400.00</td>
+        </tr>
+        <tr>
+            <td>THICHUM FOREST PRODUCTS LIMITED PARTNERSHIP</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>WLFN FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>MALAHAT FIRST NATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>QWELMINTE SECWEPEMC</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>MARMOT RECOVERY FOUNDATION</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK INTEGRATED RESOURCE MANAGEMENT DEPARTMENT</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION</td>
+            <td class="amount">$98,286.00</td>
+        </tr>
+        <tr>
+            <td>HORIZON NORTH CAMP & CATERING PARTNERSHIP</td>
+            <td class="amount">$95,238.00</td>
+        </tr>
+        <tr>
+            <td>SAMAHQUAM INDIAN BAND</td>
+            <td class="amount">$95,000.00</td>
+        </tr>
+        <tr>
+            <td>SKATIN NATIONS</td>
+            <td class="amount">$95,000.00</td>
+        </tr>
+        <tr>
+            <td>KATZIE FIRST NATION</td>
+            <td class="amount">$95,000.00</td>
+        </tr>
+        <tr>
+            <td>INVESTIA FINANCIAL SERVICES INC.</td>
+            <td class="amount">$94,400.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS BAND COUNCIL</td>
+            <td class="amount">$93,411.00</td>
+        </tr>
+        <tr>
+            <td>TIICMA MANAGEMENT SERVICES LIMITED PARTNERSHIP</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>YUU–TLUTH–AHT FIRST NATION (UCLUELET FIRST NATION)</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST PEOPLES' CULTURAL FOUNDATION</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE DISTRICT OF NORTH COWICHAN</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>YINKA DENE ECONOMIC DEVELOPMENT GENERAL PARTNER INC.</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>UCHUCKLESAHT TRIBE GOVERNMENT</td>
+            <td class="amount">$87,100.00</td>
+        </tr>
+        <tr>
+            <td>KITSUMKALUM INDIAN BAND</td>
+            <td class="amount">$86,411.00</td>
+        </tr>
+        <tr>
+            <td>PENELAKUT TRIBE</td>
+            <td class="amount">$85,482.00</td>
+        </tr>
+        <tr>
+            <td>DITIDAHT FIRST NATION</td>
+            <td class="amount">$85,000.00</td>
+        </tr>
+        <tr>
+            <td>SISKA INDIAN BAND</td>
+            <td class="amount">$85,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC CLIMATE IMPACTS CONSORTIUM</td>
+            <td class="amount">$84,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$82,500.00</td>
+        </tr>
+        <tr>
+            <td>LYACKSON FIRST NATION</td>
+            <td class="amount">$82,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN AND SIMILKAMEEN INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$82,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF EAST KOOTENAY</td>
+            <td class="amount">$81,000.00</td>
+        </tr>
+        <tr>
+            <td>GITXSAN TREATY SOCIETY</td>
+            <td class="amount">$80,520.00</td>
+        </tr>
+        <tr>
+            <td>OUTDOOR RECREATION COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>NANOOSE FIRST NATION</td>
+            <td class="amount">$79,826.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE INDIAN BAND</td>
+            <td class="amount">$79,000.00</td>
+        </tr>
+        <tr>
+            <td>TLATLASIKWALA FIRST NATION</td>
+            <td class="amount">$79,000.00</td>
+        </tr>
+        <tr>
+            <td>OFFICE OF THE WET'SUWET'EN SOCIETY</td>
+            <td class="amount">$77,500.00</td>
+        </tr>
+        <tr>
+            <td>EDWARD JONES</td>
+            <td class="amount">$77,089.00</td>
+        </tr>
+        <tr>
+            <td>TL'ETINQOX–T'IN GOVERNMENT</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN CENTRAL GOVERNMENT</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>WL COMMUNITY FOREST LIMITED PARTNERSHIP</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>LHOOSK'UZ DENE NATION</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>SHERBININ, KENNIE ANDREW</td>
+            <td class="amount">$73,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NORTH OKANAGAN</td>
+            <td class="amount">$72,500.00</td>
+        </tr>
+        <tr>
+            <td>EMILY CARR UNIVERSITY OF ART + DESIGN</td>
+            <td class="amount">$72,164.00</td>
+        </tr>
+        <tr>
+            <td>KAILA, JARNAIL SINGH</td>
+            <td class="amount">$71,661.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON INDIAN BAND</td>
+            <td class="amount">$70,593.00</td>
+        </tr>
+        <tr>
+            <td>AHOUSAHT FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>TSARTLIP FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>TSEYCUM FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>DENE THA' FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'UUBAA–ASATX FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>ACHO DENE KOE FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>POPKUM FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>HORSE LAKE FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTBANK FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>HESQUIAHT FIRST NATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>LARTER, ANDREW JONATHAN</td>
+            <td class="amount">$69,000.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGET'TEM FIRST NATION</td>
+            <td class="amount">$68,333.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, LAWRENCE RONALD</td>
+            <td class="amount">$66,400.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS DEVELOPMENT LIMITED PARTNERSHIP</td>
+            <td class="amount">$66,200.00</td>
+        </tr>
+        <tr>
+            <td>TS'KW'AYLAXW FIRST NATION</td>
+            <td class="amount">$65,000.00</td>
+        </tr>
+        <tr>
+            <td>DEARDEN, SCOTT BRADLEY</td>
+            <td class="amount">$62,600.00</td>
+        </tr>
+        <tr>
+            <td>NEE TAHI–BUHN BAND</td>
+            <td class="amount">$61,000.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT INDIAN BAND</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>SETETKWE ENVIRONMENTAL INC.</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE BAND COUNCIL</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND LOCAL HISTORY SOCIETY</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>BURNS LAKE BAND</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>UPPER NICOLA INDIAN BAND</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>CUMMING, DOUGLAS NORMAN</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRELIGHT RESEARCH INC.</td>
+            <td class="amount">$58,600.00</td>
+        </tr>
+        <tr>
+            <td>SAVITSKOFF, JACKIE MICHAEL</td>
+            <td class="amount">$56,343.00</td>
+        </tr>
+        <tr>
+            <td>PEACE RIVER REGIONAL DISTRICT</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>INNES, ALAN ROBERT</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA NATURAL RESOURCES AGENCY LTD.</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>HAYNES, STEPHEN ROBERT</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>T'IT'Q'ET ADMINISTRATION</td>
+            <td class="amount">$53,500.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A NATION</td>
+            <td class="amount">$53,125.00</td>
+        </tr>
+        <tr>
+            <td>GITXAALA NATION</td>
+            <td class="amount">$53,125.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND BAND</td>
+            <td class="amount">$52,500.00</td>
+        </tr>
+        <tr>
+            <td>DEGRAAF, GERALD PETER</td>
+            <td class="amount">$51,670.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA SHUSWAP REGIONAL DISTRICT</td>
+            <td class="amount">$51,600.00</td>
+        </tr>
+        <tr>
+            <td>BREITER, TERRY DALE</td>
+            <td class="amount">$51,589.00</td>
+        </tr>
+        <tr>
+            <td>GITGA'AT FIRST NATION</td>
+            <td class="amount">$51,411.00</td>
+        </tr>
+        <tr>
+            <td>MANULIFE SECURITIES INVESTMENT SERVICES INC.</td>
+            <td class="amount">$51,400.00</td>
+        </tr>
+        <tr>
+            <td>KRAGT, ROBERT OTTO</td>
+            <td class="amount">$51,312.00</td>
+        </tr>
+        <tr>
+            <td>HRYHORUK, RODNEY JASON</td>
+            <td class="amount">$51,010.00</td>
+        </tr>
+        <tr>
+            <td>THE FIRST NATIONS OF THE MAA NULTH TREATY SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER BAND OFFICE</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>STO:LO COMMUNITY FUTURES CORPORATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>FORESIGHT CLEANTECH ACCELERATOR CENTRE</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>THE UNIVERSITY OF MELBOURNE</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DA'NAXDA'XW/AWAETLALA FIRST NATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>STRATEGIC NATURAL RESOURCE CONSULTANTS INC.</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DEXTERRA COMMUNITY INITIATIVES</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU RESOURCE VENTURES LTD.</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER RIVER STURGEON CONSERVATION SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>BOOTHROYD INDIAN BAND</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>B. C. TRAPPERS ASSOCIATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL NATION DEVELOPMENT CORPORATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN FOREST PRODUCTS INC.</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL, GORDON MERVIN</td>
+            <td class="amount">$48,800.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA FIRST NATION</td>
+            <td class="amount">$48,121.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGIONAL DISTRICT</td>
+            <td class="amount">$48,000.00</td>
+        </tr>
+        <tr>
+            <td>STZ'UMINUS FIRST NATION</td>
+            <td class="amount">$47,000.00</td>
+        </tr>
+        <tr>
+            <td>MCDONALD, JOHN</td>
+            <td class="amount">$46,661.00</td>
+        </tr>
+        <tr>
+            <td>KEEHN, DERRICK DALE</td>
+            <td class="amount">$46,589.00</td>
+        </tr>
+        <tr>
+            <td>CHERNOFF, STEVE W C</td>
+            <td class="amount">$46,589.00</td>
+        </tr>
+        <tr>
+            <td>QQS (EYES) PROJECTS SOCIETY</td>
+            <td class="amount">$45,375.00</td>
+        </tr>
+        <tr>
+            <td>PETERS INDIAN BAND</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>N'QUATQUA FIRST NATIONS</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL OKANAGAN</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF RICHMOND</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>BROCK, BRYON LOUGHLAN</td>
+            <td class="amount">$44,780.00</td>
+        </tr>
+        <tr>
+            <td>LENTZ, RANDELL SURRAN</td>
+            <td class="amount">$44,290.00</td>
+        </tr>
+        <tr>
+            <td>NATIONAL BANK INVESTMENTS INC.</td>
+            <td class="amount">$42,377.00</td>
+        </tr>
+        <tr>
+            <td>BARRETT, BERNARD LEO, ESTATE OF</td>
+            <td class="amount">$41,607.00</td>
+        </tr>
+        <tr>
+            <td>SHIELDS, CALVIN MURRAY</td>
+            <td class="amount">$41,010.00</td>
+        </tr>
+        <tr>
+            <td>INVASIVE SPECIES COUNCIL OF METRO VANCOUVER SOCIETY</td>
+            <td class="amount">$40,750.00</td>
+        </tr>
+        <tr>
+            <td>TL'AZT'EN NATION</td>
+            <td class="amount">$40,374.00</td>
+        </tr>
+        <tr>
+            <td>REITMEIER, PAUL TITUS</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF OKANAGAN–SIMILKAMEEN</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>MEMORIAL UNIVERSITY OF NEWFOUNDLAND</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT FORESTRY VENTURES LIMITED PARTNERSHIP</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$39,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER, CHARLES THOMAS</td>
+            <td class="amount">$39,000.00</td>
+        </tr>
+        <tr>
+            <td>YUROS, HARRY RICHARD</td>
+            <td class="amount">$38,000.00</td>
+        </tr>
+        <tr>
+            <td>STARR, DONALD</td>
+            <td class="amount">$36,743.00</td>
+        </tr>
+        <tr>
+            <td>BARTLEY, DONALD WARREN</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>ZUPP, DARREN GERRY</td>
+            <td class="amount">$36,400.00</td>
+        </tr>
+        <tr>
+            <td>CI INVESTMENTS</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>DITIDAHT ECONOMIC DEVELOPMENT LIMITED PARTNERSHIP</td>
+            <td class="amount">$35,550.00</td>
+        </tr>
+        <tr>
+            <td>N'QUATQUA BAND</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE SALES LIMITED PARTNERSHIP</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BINCHE KEYOH BU SOCIETY</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>BINCHE WHUT'EN NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>NK'MIP FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>KWIKWETLEM FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN LANDS RESOURCES AND STEWARDSHIP LTD.</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>HARTLEY, BRIAN HARRY JAMES</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>KITASOO–XAI'XAIS INDIAN BAND</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>KATZIE INDIAN BAND</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>PAUQUACHIN FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>PETERS FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>T'IT'Q'ET NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>T'SOU–KE NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAL'ALH</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>ESQUIMALT NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>XWEMALHKWU FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SHXW'OW'HAMEL FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>SONGHEES FIRST NATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA SHUSWAP INVASIVE SPECIES SOCIETY</td>
+            <td class="amount">$34,600.00</td>
+        </tr>
+        <tr>
+            <td>SKYWEST ENVIRONMENTAL INC.</td>
+            <td class="amount">$33,660.00</td>
+        </tr>
+        <tr>
+            <td>HFN TIMBER TILES LIMITED PARTNERSHIP</td>
+            <td class="amount">$33,500.00</td>
+        </tr>
+        <tr>
+            <td>ANDERTON, ROBERT HUGH</td>
+            <td class="amount">$31,589.00</td>
+        </tr>
+        <tr>
+            <td>POWDER MOUNTAIN SNOWMOBILE & OUTDOOR RECREATION CLUB</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>OFFICE OF THE WET'SUWET'EN</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>WOOD, JOHN FREDERICK</td>
+            <td class="amount">$28,984.00</td>
+        </tr>
+        <tr>
+            <td>LACHAPELLE, SYLVAIN JOSEPH ARMAND</td>
+            <td class="amount">$28,123.00</td>
+        </tr>
+        <tr>
+            <td>AEBISCHER, JON ERIC</td>
+            <td class="amount">$27,806.00</td>
+        </tr>
+        <tr>
+            <td>ECCHER, MARY</td>
+            <td class="amount">$26,170.00</td>
+        </tr>
+        <tr>
+            <td>BUDINSKY, LUDOVIT</td>
+            <td class="amount">$26,000.00</td>
+        </tr>
+        <tr>
+            <td>SKIN TYEE NATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WILDLIFE STEWARDSHIP COUNCIL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KENKEKNEM FOREST TENURES LIMITED PARTNERSHIP</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>PACHEEDAHT FIRST NATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>AQ'AM FIRST NATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>AKISQNUK FIRST NATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SIYA FORESTRY LIMITED PARTNERSHIP</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SKEENA FISHERIES COMMISSION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TSETSPA7 LOAKAM (LOGGING) LTD.</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE BAND FAMILY WELLNESS CENTRE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DELTA</td>
+            <td class="amount">$24,000.00</td>
+        </tr>
+        <tr>
+            <td>BIODIVERSITY PATHWAYS LTD.</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>STELLAT'EN FIRST NATION</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>GITANYOW</td>
+            <td class="amount">$19,000.00</td>
+        </tr>
+        <tr>
+            <td>SQ'EWLETS FIRST NATION</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>CHAWATHIL INDIAN BAND</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>CHEAM INDIAN BAND</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW COUNCIL</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>WUIKINUXV NATION</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK BAND COUNCIL</td>
+            <td class="amount">$17,500.00</td>
+        </tr>
+        <tr>
+            <td>COQUIHALLA SUMMIT SNOWMOBILE CLUB</td>
+            <td class="amount">$17,300.00</td>
+        </tr>
+        <tr>
+            <td>RAYMOND JAMES LTD.</td>
+            <td class="amount">$16,206.00</td>
+        </tr>
+        <tr>
+            <td>TSQ'ESCEN' FIRST NATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN SHUSWAP TRIBAL COUNCIL SOCIETY</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>SONGHEES NATION</td>
+            <td class="amount">$12,006.00</td>
+        </tr>
+        <tr>
+            <td>THE DENA KAYEH INSTITUTE</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>XATS'ULL FIRST NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF CALEDONIA TRAILBUILDERS</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF VALEMOUNT</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>BULKLEY VALLEY RESEARCH CENTRE</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>CARR HOUSE COMMUNITY SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA NATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>THE QUATSINO INDIAN BAND</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>METLAKATLA STEWARDSHIP SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>MACKENZIE OUTDOOR ROUTE AND TRAIL ASSOCIATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE COWICHAN FIRST NATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>NELSON CYCLING CLUB SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE OF NEW CALEDONIA</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION COUNCIL</td>
+            <td class="amount">$3,125.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE BACKCOUNTRY RECREATION SOCIETY</td>
+            <td class="amount">$2,500.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA NATURAL RESOURCES LIMITED PARTNERSHIP</td>
+            <td class="amount">$2,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF MACKENZIE</td>
+            <td class="amount">$2,000.00</td>
+        </tr>
+        <tr>
+            <td>NAWALAKW HEALING SOCIETY</td>
+            <td class="amount">$2,000.00</td>
+        </tr>
+        <tr>
+            <td>QUESNEL TILLICUM SOCIETY</td>
+            <td class="amount">$1,500.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER SALMON FESTIVAL SOCIETY</td>
+            <td class="amount">$1,500.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

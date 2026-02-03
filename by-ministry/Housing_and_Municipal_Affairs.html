@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing and Municipal Affairs - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Housing and Municipal Affairs</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Housing and Municipal Affairs
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$2.21B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">364</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Housing and Municipal Affairs</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>BC HOUSING MANAGEMENT COMMISSION</td>
+            <td class="amount">$1,551,750,608.00</td>
+        </tr>
+        <tr>
+            <td>HAF HOUSING ACQUISITION FUND SOCIETY</td>
+            <td class="amount">$100,000,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE RUPERT</td>
+            <td class="amount">$28,387,427.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TERRACE</td>
+            <td class="amount">$28,152,470.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FORT ST. JOHN</td>
+            <td class="amount">$27,342,218.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VANCOUVER</td>
+            <td class="amount">$26,955,897.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KIMBERLEY</td>
+            <td class="amount">$25,797,653.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF SMITHERS</td>
+            <td class="amount">$18,358,835.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF DAWSON CREEK</td>
+            <td class="amount">$17,348,270.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KOOTENAY BOUNDARY</td>
+            <td class="amount">$17,308,695.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF KITIMAT</td>
+            <td class="amount">$16,489,903.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF VANDERHOOF</td>
+            <td class="amount">$15,921,344.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF BULKLEY–NECHAKO</td>
+            <td class="amount">$13,001,152.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HOUSTON</td>
+            <td class="amount">$11,768,500.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NORTH OKANAGAN</td>
+            <td class="amount">$11,400,438.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KITIMAT–STIKINE</td>
+            <td class="amount">$10,599,432.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF BURNS LAKE</td>
+            <td class="amount">$8,597,118.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF FORT ST JAMES</td>
+            <td class="amount">$7,898,258.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF TELKWA</td>
+            <td class="amount">$7,833,941.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$7,620,557.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF WILLIAMS LAKE</td>
+            <td class="amount">$7,400,820.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF NANAIMO</td>
+            <td class="amount">$6,917,977.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF DAAJING GIIDS</td>
+            <td class="amount">$6,102,751.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF FRASER LAKE</td>
+            <td class="amount">$6,088,213.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF MASSET</td>
+            <td class="amount">$5,711,412.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN ROCKIES REGIONAL MUNICIPALITY</td>
+            <td class="amount">$5,538,416.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NEW HAZELTON</td>
+            <td class="amount">$5,214,904.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF LADYSMITH</td>
+            <td class="amount">$4,641,779.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF GRANISLE</td>
+            <td class="amount">$4,572,444.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF HAZELTON</td>
+            <td class="amount">$4,462,416.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF PORT CLEMENTS</td>
+            <td class="amount">$4,209,840.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF PORT EDWARD</td>
+            <td class="amount">$4,126,624.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF CRANBROOK</td>
+            <td class="amount">$3,973,830.00</td>
+        </tr>
+        <tr>
+            <td>NORTH COAST REGIONAL DISTRICT</td>
+            <td class="amount">$3,779,998.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF GOLD RIVER</td>
+            <td class="amount">$3,687,754.00</td>
+        </tr>
+        <tr>
+            <td>THE IMMIGRANT SERVICES SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$3,633,349.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF KENT</td>
+            <td class="amount">$3,565,653.00</td>
+        </tr>
+        <tr>
+            <td>PEACE RIVER REGIONAL DISTRICT</td>
+            <td class="amount">$3,494,642.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CHETWYND</td>
+            <td class="amount">$3,411,131.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KELOWNA</td>
+            <td class="amount">$3,396,576.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF ASHCROFT</td>
+            <td class="amount">$3,247,260.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TOFINO</td>
+            <td class="amount">$3,184,816.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF BURNABY</td>
+            <td class="amount">$3,115,784.00</td>
+        </tr>
+        <tr>
+            <td>VANCITY COMMUNITY FOUNDATION</td>
+            <td class="amount">$3,082,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF STEWART</td>
+            <td class="amount">$2,946,294.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CLEARWATER</td>
+            <td class="amount">$2,912,930.00</td>
+        </tr>
+        <tr>
+            <td>DECODA LITERACY SOLUTIONS SOCIETY</td>
+            <td class="amount">$2,685,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF CENTRAL SAANICH</td>
+            <td class="amount">$2,529,825.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF NEW WESTMINSTER</td>
+            <td class="amount">$2,525,088.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TUMBLER RIDGE</td>
+            <td class="amount">$2,475,167.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGIONAL DISTRICT</td>
+            <td class="amount">$2,452,294.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF RICHMOND</td>
+            <td class="amount">$2,406,379.00</td>
+        </tr>
+        <tr>
+            <td>S.U.C.C.E.S.S. (A/K/A UNITED CHINESE COMMUNITY ENRICHMENT SERVICES SOCIETY)</td>
+            <td class="amount">$2,290,450.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$2,272,085.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CHILLIWACK</td>
+            <td class="amount">$2,116,364.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ABBOTSFORD</td>
+            <td class="amount">$2,038,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TAYLOR</td>
+            <td class="amount">$1,997,839.00</td>
+        </tr>
+        <tr>
+            <td>WITSET FIRST NATION</td>
+            <td class="amount">$1,883,663.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VICTORIA</td>
+            <td class="amount">$1,877,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF VALEMOUNT</td>
+            <td class="amount">$1,807,680.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY REGIONAL LIBRARY</td>
+            <td class="amount">$1,637,715.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE DISTRICT OF SAANICH</td>
+            <td class="amount">$1,610,630.00</td>
+        </tr>
+        <tr>
+            <td>DOUGLAS COLLEGE</td>
+            <td class="amount">$1,588,719.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF POUCE COUPE</td>
+            <td class="amount">$1,576,400.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF PEMBERTON</td>
+            <td class="amount">$1,567,046.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DELTA</td>
+            <td class="amount">$1,547,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND REGIONAL LIBRARY</td>
+            <td class="amount">$1,466,354.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PRINCE GEORGE</td>
+            <td class="amount">$1,440,494.00</td>
+        </tr>
+        <tr>
+            <td>MOSAIC MULTI–LINGUAL ORIENTATION SERVICE ASSOCIATION FOR IMMIGRANT COMMUNITIES</td>
+            <td class="amount">$1,402,325.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER PUBLIC LIBRARY FOUNDATION</td>
+            <td class="amount">$1,358,114.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COQUITLAM</td>
+            <td class="amount">$1,322,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT ALBERNI</td>
+            <td class="amount">$1,285,301.00</td>
+        </tr>
+        <tr>
+            <td>RESORT MUNICIPALITY OF WHISTLER</td>
+            <td class="amount">$1,284,347.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE TOWNSHIP OF LANGLEY</td>
+            <td class="amount">$1,281,858.00</td>
+        </tr>
+        <tr>
+            <td>DIVERSECITY COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$1,278,770.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NANAIMO</td>
+            <td class="amount">$1,137,000.00</td>
+        </tr>
+        <tr>
+            <td>SURREY PUBLIC LIBRARY</td>
+            <td class="amount">$1,124,786.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF OAK BAY</td>
+            <td class="amount">$1,118,790.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN REGIONAL LIBRARY</td>
+            <td class="amount">$1,081,582.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KAMLOOPS</td>
+            <td class="amount">$1,059,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HUDSON'S HOPE</td>
+            <td class="amount">$1,030,458.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF TRAIL</td>
+            <td class="amount">$1,017,240.00</td>
+        </tr>
+        <tr>
+            <td>OPTIONS COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$960,250.00</td>
+        </tr>
+        <tr>
+            <td>ARCHWAY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$958,731.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SQUAMISH</td>
+            <td class="amount">$953,814.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF ENDERBY</td>
+            <td class="amount">$951,025.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF MAPLE RIDGE</td>
+            <td class="amount">$883,000.00</td>
+        </tr>
+        <tr>
+            <td>TLA'AMIN NATION</td>
+            <td class="amount">$827,284.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LOGAN LAKE</td>
+            <td class="amount">$826,840.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA SHUSWAP REGIONAL DISTRICT</td>
+            <td class="amount">$822,781.00</td>
+        </tr>
+        <tr>
+            <td>THE CITY OF CASTLEGAR</td>
+            <td class="amount">$791,377.00</td>
+        </tr>
+        <tr>
+            <td>M.O.S.A.I.C. MULTI–LINGUAL ORIENTATION SERVICE ASSOC. FOR IMMIGRANT COMMUNITIES</td>
+            <td class="amount">$762,729.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF GOLDEN</td>
+            <td class="amount">$744,203.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF SUMMERLAND</td>
+            <td class="amount">$743,848.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF FERNIE</td>
+            <td class="amount">$739,998.00</td>
+        </tr>
+        <tr>
+            <td>PROGRESSIVE INTER – CULTURAL COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$722,884.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VICTORIA PUBLIC LIBRARY</td>
+            <td class="amount">$718,467.00</td>
+        </tr>
+        <tr>
+            <td>THE AFFILIATION OF MULTICULTURAL SOCIETIES & AGENCIES OF BRITISH COLUMBIA</td>
+            <td class="amount">$717,763.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF TAHSIS</td>
+            <td class="amount">$717,026.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF NAKUSP</td>
+            <td class="amount">$697,163.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF WEST VANCOUVER</td>
+            <td class="amount">$696,904.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NORTH VANCOUVER</td>
+            <td class="amount">$683,650.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF CUMBERLAND</td>
+            <td class="amount">$677,446.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF MERRITT</td>
+            <td class="amount">$676,039.00</td>
+        </tr>
+        <tr>
+            <td>BACK IN MOTION REHAB INC.</td>
+            <td class="amount">$665,855.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HOPE</td>
+            <td class="amount">$665,854.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF CRESTON</td>
+            <td class="amount">$662,700.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF QUESNEL</td>
+            <td class="amount">$653,100.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF PORT HARDY</td>
+            <td class="amount">$649,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF MACKENZIE</td>
+            <td class="amount">$630,679.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF VERNON</td>
+            <td class="amount">$623,711.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF DUNCAN</td>
+            <td class="amount">$617,100.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ARMSTRONG</td>
+            <td class="amount">$617,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SPARWOOD</td>
+            <td class="amount">$615,581.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OLIVER</td>
+            <td class="amount">$614,921.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF LUMBY</td>
+            <td class="amount">$613,566.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF MCBRIDE</td>
+            <td class="amount">$611,916.00</td>
+        </tr>
+        <tr>
+            <td>THE LITTLE MOUNTAIN NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$605,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE TOWNSHIP OF SPALLUMCHEEN</td>
+            <td class="amount">$602,800.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF GRAND FORKS</td>
+            <td class="amount">$598,767.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OSOYOOS</td>
+            <td class="amount">$592,800.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF KEREMEOS</td>
+            <td class="amount">$587,404.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$583,507.00</td>
+        </tr>
+        <tr>
+            <td>DZAWADA'ENUXW FIRST NATION</td>
+            <td class="amount">$582,865.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF METCHOSIN</td>
+            <td class="amount">$581,200.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF PEACHLAND</td>
+            <td class="amount">$566,200.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF NELSON</td>
+            <td class="amount">$560,300.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ROSSLAND</td>
+            <td class="amount">$558,400.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF GIBSONS</td>
+            <td class="amount">$555,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF PORT COQUITLAM</td>
+            <td class="amount">$555,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PORT MOODY</td>
+            <td class="amount">$545,681.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF FRUITVALE</td>
+            <td class="amount">$543,456.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF REVELSTOKE</td>
+            <td class="amount">$538,900.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY PUBLIC LIBRARY</td>
+            <td class="amount">$535,892.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF PORT MCNEILL</td>
+            <td class="amount">$530,868.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF HARRISON HOT SPRINGS</td>
+            <td class="amount">$530,350.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF LAKE COWICHAN</td>
+            <td class="amount">$528,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF BARRIERE</td>
+            <td class="amount">$525,826.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF PRINCETON</td>
+            <td class="amount">$511,900.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF NORTH VANCOUVER</td>
+            <td class="amount">$510,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LANTZVILLE</td>
+            <td class="amount">$509,927.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF INVERMERE</td>
+            <td class="amount">$509,700.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LILLOOET</td>
+            <td class="amount">$508,970.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF LANGLEY</td>
+            <td class="amount">$504,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF MISSION</td>
+            <td class="amount">$502,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF WARFIELD</td>
+            <td class="amount">$500,900.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF SALMO</td>
+            <td class="amount">$498,600.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE TOWNSHIP OF ESQUIMALT</td>
+            <td class="amount">$493,800.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN ISLAND MUNICIPALITY</td>
+            <td class="amount">$484,300.00</td>
+        </tr>
+        <tr>
+            <td>QATHET REGIONAL DISTRICT</td>
+            <td class="amount">$481,147.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SECHELT</td>
+            <td class="amount">$480,400.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF QUALICUM BEACH</td>
+            <td class="amount">$477,600.00</td>
+        </tr>
+        <tr>
+            <td>7188 WESTMINSTER HIGHWAY INC.</td>
+            <td class="amount">$475,256.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CHASE</td>
+            <td class="amount">$474,300.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF POWELL RIVER</td>
+            <td class="amount">$473,492.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF PORT ALICE</td>
+            <td class="amount">$452,200.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF LYTTON</td>
+            <td class="amount">$451,100.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF ELKFORD</td>
+            <td class="amount">$451,100.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF 100 MILE HOUSE</td>
+            <td class="amount">$450,994.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF MONTROSE</td>
+            <td class="amount">$446,700.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CACHE CREEK</td>
+            <td class="amount">$445,057.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SICAMOUS</td>
+            <td class="amount">$444,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF WELLS</td>
+            <td class="amount">$442,300.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF COLDSTREAM</td>
+            <td class="amount">$440,500.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF SIDNEY</td>
+            <td class="amount">$438,600.00</td>
+        </tr>
+        <tr>
+            <td>NORTH SHORE MULTICULTURAL SOCIETY</td>
+            <td class="amount">$437,250.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON–NICOLA REGIONAL DISTRICT LIBRARY SYSTEM</td>
+            <td class="amount">$435,736.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND PUBLIC LIBRARY</td>
+            <td class="amount">$434,722.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF GREENWOOD</td>
+            <td class="amount">$434,500.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF ALERT BAY</td>
+            <td class="amount">$432,300.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF VIEW ROYAL</td>
+            <td class="amount">$430,200.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF HIGHLANDS</td>
+            <td class="amount">$430,100.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CANAL FLATS</td>
+            <td class="amount">$429,313.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF KASLO</td>
+            <td class="amount">$426,064.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF UCLUELET</td>
+            <td class="amount">$420,876.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LANGFORD</td>
+            <td class="amount">$419,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF ZEBALLOS</td>
+            <td class="amount">$419,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF CLINTON</td>
+            <td class="amount">$416,800.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PARKSVILLE</td>
+            <td class="amount">$409,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF ANMORE</td>
+            <td class="amount">$401,400.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF NORTH SAANICH</td>
+            <td class="amount">$400,400.00</td>
+        </tr>
+        <tr>
+            <td>SUN PEAKS MOUNTAIN RESORT MUNICIPALITY</td>
+            <td class="amount">$389,897.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF MIDWAY</td>
+            <td class="amount">$382,600.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF PENTICTON</td>
+            <td class="amount">$381,409.00</td>
+        </tr>
+        <tr>
+            <td>INTER–CULTURAL ASSOCIATION OF GREATER VICTORIA</td>
+            <td class="amount">$379,343.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA IMMIGRANT AND REFUGEE CENTRE SOCIETY</td>
+            <td class="amount">$374,780.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF COMOX</td>
+            <td class="amount">$372,700.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF SAYWARD</td>
+            <td class="amount">$368,200.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF LIONS BAY</td>
+            <td class="amount">$360,472.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SALMON ARM</td>
+            <td class="amount">$357,405.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF NEW DENVER</td>
+            <td class="amount">$356,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF SLOCAN</td>
+            <td class="amount">$356,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF SOOKE</td>
+            <td class="amount">$353,800.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE DISTRICT OF NORTH COWICHAN</td>
+            <td class="amount">$335,554.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF LAKE COUNTRY</td>
+            <td class="amount">$334,900.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS–CARIBOO REGIONAL IMMIGRANTS SOCIETY</td>
+            <td class="amount">$328,500.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO REGIONAL DISTRICT LIBRARY</td>
+            <td class="amount">$323,816.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF RADIUM HOT SPRINGS</td>
+            <td class="amount">$321,700.00</td>
+        </tr>
+        <tr>
+            <td>COQUITLAM PUBLIC LIBRARY BOARD</td>
+            <td class="amount">$320,961.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE VILLAGE OF SILVERTON</td>
+            <td class="amount">$320,600.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL VANCOUVER ISLAND MULTICULTURAL SOCIETY</td>
+            <td class="amount">$318,225.00</td>
+        </tr>
+        <tr>
+            <td>SECHELT INDIAN GOVERNMENT DISTRICT</td>
+            <td class="amount">$317,300.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF NEIGHBOURHOOD HOUSES OF BRITISH COLUMBIA</td>
+            <td class="amount">$315,257.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF PITT MEADOWS</td>
+            <td class="amount">$314,900.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COLWOOD</td>
+            <td class="amount">$314,300.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO ENERGY CORPORATION</td>
+            <td class="amount">$305,124.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF FRASER–FORT GEORGE</td>
+            <td class="amount">$301,144.00</td>
+        </tr>
+        <tr>
+            <td>LONSDALE ENERGY CORP.</td>
+            <td class="amount">$300,065.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF CAMPBELL RIVER</td>
+            <td class="amount">$299,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF BELCARRA</td>
+            <td class="amount">$298,600.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON & DISTRICT MULTICULTURAL SOCIETY</td>
+            <td class="amount">$282,500.00</td>
+        </tr>
+        <tr>
+            <td>METRO VANCOUVER REGIONAL DISTRICT</td>
+            <td class="amount">$282,260.00</td>
+        </tr>
+        <tr>
+            <td>BAMFIELD COMMUNITY HALL</td>
+            <td class="amount">$277,581.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF WEST KELOWNA</td>
+            <td class="amount">$260,000.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA BASIN ALLIANCE FOR LITERACY</td>
+            <td class="amount">$251,610.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE PUBLIC LIBRARY</td>
+            <td class="amount">$251,395.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF ALBERNI–CLAYOQUOT</td>
+            <td class="amount">$249,107.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL COAST REGIONAL DISTRICT</td>
+            <td class="amount">$243,640.00</td>
+        </tr>
+        <tr>
+            <td>CREATIVE ENERGY VANCOUVER PLATFORMS INC.</td>
+            <td class="amount">$242,416.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK COMMUNITY SERVICES</td>
+            <td class="amount">$239,500.00</td>
+        </tr>
+        <tr>
+            <td>MULTICULTURAL AND IMMIGRANT SERVICES ASSOCIATION OF NORTH VANCOUVER ISLAND</td>
+            <td class="amount">$238,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF WHITE ROCK</td>
+            <td class="amount">$237,000.00</td>
+        </tr>
+        <tr>
+            <td>IMMIGRANT AND MULTICULTURAL SERVICES SOCIETY OF PRINCE GEORGE</td>
+            <td class="amount">$233,500.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$231,237.00</td>
+        </tr>
+        <tr>
+            <td>CAPILANO UNIVERSITY</td>
+            <td class="amount">$229,020.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF COURTENAY</td>
+            <td class="amount">$229,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF MOUNT WADDINGTON</td>
+            <td class="amount">$226,700.00</td>
+        </tr>
+        <tr>
+            <td>SUNSHINE COAST REGIONAL DISTRICT</td>
+            <td class="amount">$224,386.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH–LILLOOET REGIONAL DISTRICT</td>
+            <td class="amount">$221,100.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON–NICOLA REGIONAL DISTRICT</td>
+            <td class="amount">$216,615.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER AIRPORT AUTHORITY</td>
+            <td class="amount">$216,545.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL KOOTENAY</td>
+            <td class="amount">$202,535.00</td>
+        </tr>
+        <tr>
+            <td>ISLANDS TRUST</td>
+            <td class="amount">$199,000.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO REGIONAL DISTRICT</td>
+            <td class="amount">$196,755.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF EAST KOOTENAY</td>
+            <td class="amount">$191,627.00</td>
+        </tr>
+        <tr>
+            <td>STRATHCONA REGIONAL DISTRICT</td>
+            <td class="amount">$188,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA LIBRARY ASSOCIATION</td>
+            <td class="amount">$187,000.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$186,900.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF OKANAGAN–SIMILKAMEEN</td>
+            <td class="amount">$186,900.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER PUBLIC LIBRARY</td>
+            <td class="amount">$186,455.00</td>
+        </tr>
+        <tr>
+            <td>TK'EMLUPS TE SECWEPEMC</td>
+            <td class="amount">$178,270.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER SEWERAGE & DRAINAGE DISTRICT</td>
+            <td class="amount">$172,548.00</td>
+        </tr>
+        <tr>
+            <td>VERNON AND DISTRICT IMMIGRANT AND COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$169,193.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO–CHILCOTIN PARTNERS FOR LITERACY SOCIETY</td>
+            <td class="amount">$163,250.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF CENTRAL OKANAGAN</td>
+            <td class="amount">$162,662.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY REGIONAL DISTRICT</td>
+            <td class="amount">$154,800.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER CITY LIBRARY</td>
+            <td class="amount">$151,274.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL HOUSING MANAGEMENT ASSN</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSEMBLY OF FIRST NATIONS</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON PUBLIC LIBRARY</td>
+            <td class="amount">$147,441.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST JOHN PUBLIC LIBRARY</td>
+            <td class="amount">$146,327.00</td>
+        </tr>
+        <tr>
+            <td>LA COOPERATIVE D'IMMIGRATION LE RELAIS FRANCOPHONE DE LA COLOMBIE–BRITANNIQUE</td>
+            <td class="amount">$140,762.00</td>
+        </tr>
+        <tr>
+            <td>WEST VANCOUVER MEMORIAL LIBRARY</td>
+            <td class="amount">$133,344.00</td>
+        </tr>
+        <tr>
+            <td>PORT MOODY PUBLIC LIBRARY</td>
+            <td class="amount">$131,902.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY INTERCULTURAL AND IMMIGRANT AID SOCIETY</td>
+            <td class="amount">$128,000.00</td>
+        </tr>
+        <tr>
+            <td>CRANBROOK PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$120,100.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY LIBRARY FEDERATION</td>
+            <td class="amount">$117,000.00</td>
+        </tr>
+        <tr>
+            <td>TERRACE PUBLIC LIBRARY</td>
+            <td class="amount">$115,079.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH PUBLIC LIBRARY</td>
+            <td class="amount">$113,966.00</td>
+        </tr>
+        <tr>
+            <td>NELSON MUNICIPAL LIBRARY</td>
+            <td class="amount">$108,045.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER MUNICIPAL LIBRARY</td>
+            <td class="amount">$107,914.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$104,500.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT LIBRARY</td>
+            <td class="amount">$101,042.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC LIBRARY INTERLINK</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON CREEK MUNICIPAL LIBRARY</td>
+            <td class="amount">$99,366.00</td>
+        </tr>
+        <tr>
+            <td>SECHELT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$98,486.00</td>
+        </tr>
+        <tr>
+            <td>CASTLEGAR & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$88,811.00</td>
+        </tr>
+        <tr>
+            <td>LHEIDLI T'ENNEH BAND</td>
+            <td class="amount">$88,538.00</td>
+        </tr>
+        <tr>
+            <td>GIBSONS & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$79,340.00</td>
+        </tr>
+        <tr>
+            <td>CRESTON PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$77,610.00</td>
+        </tr>
+        <tr>
+            <td>SHAWNIGAN LAKE HISTORICAL SOCIETY</td>
+            <td class="amount">$75,837.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY BRITISH COLUMBIA</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>MINISTER OF FINANCE OF SASKATCHEWAN</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER PUBLIC LIBRARY</td>
+            <td class="amount">$71,715.00</td>
+        </tr>
+        <tr>
+            <td>TRAIL & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$71,263.00</td>
+        </tr>
+        <tr>
+            <td>SIMPCW FIRST NATION</td>
+            <td class="amount">$71,162.00</td>
+        </tr>
+        <tr>
+            <td>SMITHERS PUBLIC LIBRARY</td>
+            <td class="amount">$70,924.00</td>
+        </tr>
+        <tr>
+            <td>SALT SPRING ISLAND PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$70,360.00</td>
+        </tr>
+        <tr>
+            <td>ISLANDLINK LIBRARY FEDERATION</td>
+            <td class="amount">$70,000.00</td>
+        </tr>
+        <tr>
+            <td>KITIMAT PUBLIC LIBRARY</td>
+            <td class="amount">$69,503.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF GREENWOOD</td>
+            <td class="amount">$67,554.00</td>
+        </tr>
+        <tr>
+            <td>FERNIE PUBLIC LIBRARY</td>
+            <td class="amount">$64,854.00</td>
+        </tr>
+        <tr>
+            <td>SKEENA DIVERSITY SOCIETY</td>
+            <td class="amount">$64,250.00</td>
+        </tr>
+        <tr>
+            <td>SMITHERS COMMUNITY SERVICES ASSOCIATION</td>
+            <td class="amount">$64,250.00</td>
+        </tr>
+        <tr>
+            <td>KIMBERLEY PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$63,799.00</td>
+        </tr>
+        <tr>
+            <td>INVERMERE PUBLIC LIBRARY</td>
+            <td class="amount">$63,541.00</td>
+        </tr>
+        <tr>
+            <td>GRAND FORKS & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$61,432.00</td>
+        </tr>
+        <tr>
+            <td>MULTICULTURAL HELPING HOUSE SOCIETY</td>
+            <td class="amount">$60,250.00</td>
+        </tr>
+        <tr>
+            <td>PENDER ISLAND PUBLIC LIBRARY</td>
+            <td class="amount">$60,078.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP IMMIGRANT SERVICES SOCIETY</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>OSOYOOS INDIAN BAND ADMINISTRATION PROGRAMS</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>VANDERHOOF PUBLIC LIBRARY</td>
+            <td class="amount">$59,707.00</td>
+        </tr>
+        <tr>
+            <td>GITSEGUKLA FIRST NATION</td>
+            <td class="amount">$59,096.00</td>
+        </tr>
+        <tr>
+            <td>BOOTHROYD INDIAN BAND</td>
+            <td class="amount">$59,083.00</td>
+        </tr>
+        <tr>
+            <td>BURNS LAKE PUBLIC LIBRARY</td>
+            <td class="amount">$56,505.00</td>
+        </tr>
+        <tr>
+            <td>HAZELTON DISTRICT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$56,124.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON PUBLIC LIBRARY</td>
+            <td class="amount">$51,233.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET AREA PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$50,597.00</td>
+        </tr>
+        <tr>
+            <td>THE KITIMAT COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$50,500.00</td>
+        </tr>
+        <tr>
+            <td>HECATE STRAIT EMPLOYMENT DEVELOPMENT SOCIETY</td>
+            <td class="amount">$49,152.00</td>
+        </tr>
+        <tr>
+            <td>LYTTON FIRST NATION</td>
+            <td class="amount">$47,252.00</td>
+        </tr>
+        <tr>
+            <td>UNION BAR INDIAN BAND</td>
+            <td class="amount">$47,010.00</td>
+        </tr>
+        <tr>
+            <td>CHETWYND PUBLIC LIBRARY</td>
+            <td class="amount">$46,400.00</td>
+        </tr>
+        <tr>
+            <td>PEMBERTON AND DISTRICT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$46,339.00</td>
+        </tr>
+        <tr>
+            <td>MACKENZIE PUBLIC LIBRARY</td>
+            <td class="amount">$46,176.00</td>
+        </tr>
+        <tr>
+            <td>YOUNG WOMEN'S CHRISTIAN ASSOCIATION</td>
+            <td class="amount">$45,675.00</td>
+        </tr>
+        <tr>
+            <td>SPARWOOD PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$43,760.00</td>
+        </tr>
+        <tr>
+            <td>BEAVER VALLEY PUBLIC LIBRARY</td>
+            <td class="amount">$43,401.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$43,241.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JAMES PUBLIC LIBRARY</td>
+            <td class="amount">$42,308.00</td>
+        </tr>
+        <tr>
+            <td>THE SPO7EZ CULTURAL CENTRE AND COMMUNITY SOCIETY</td>
+            <td class="amount">$40,959.00</td>
+        </tr>
+        <tr>
+            <td>KITSELAS BAND COUNCIL</td>
+            <td class="amount">$39,783.00</td>
+        </tr>
+        <tr>
+            <td>ASHCROFT INDIAN BAND</td>
+            <td class="amount">$39,602.00</td>
+        </tr>
+        <tr>
+            <td>BOSTON BAR FIRST NATION</td>
+            <td class="amount">$39,266.00</td>
+        </tr>
+        <tr>
+            <td>FRASER LAKE PUBLIC LIBRARY</td>
+            <td class="amount">$38,543.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$36,313.00</td>
+        </tr>
+        <tr>
+            <td>GITWANGAK FIRST NATION</td>
+            <td class="amount">$36,212.00</td>
+        </tr>
+        <tr>
+            <td>ROSSLAND PUBLIC LIBRARY</td>
+            <td class="amount">$35,015.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN ISLAND PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$34,942.00</td>
+        </tr>
+        <tr>
+            <td>DZE L K'ANT FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$33,829.00</td>
+        </tr>
+        <tr>
+            <td>KANAKA BAR INDIAN BAND</td>
+            <td class="amount">$33,755.00</td>
+        </tr>
+        <tr>
+            <td>NAKUSP PUBLIC LIBRARY</td>
+            <td class="amount">$32,349.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA LIBRARY TRUSTEES ASSOCIATION</td>
+            <td class="amount">$31,593.00</td>
+        </tr>
+        <tr>
+            <td>TUMBLER RIDGE PUBLIC LIBRARY</td>
+            <td class="amount">$31,503.00</td>
+        </tr>
+        <tr>
+            <td>SALMO PUBLIC LIBRARY</td>
+            <td class="amount">$30,929.00</td>
+        </tr>
+        <tr>
+            <td>ELKFORD PUBLIC LIBRARY</td>
+            <td class="amount">$29,300.00</td>
+        </tr>
+        <tr>
+            <td>KASLO & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$28,183.00</td>
+        </tr>
+        <tr>
+            <td>HUU–AY–AHT FIRST NATIONS</td>
+            <td class="amount">$27,966.00</td>
+        </tr>
+        <tr>
+            <td>XENI GWET'IN FIRST NATIONS GOVERNMENT</td>
+            <td class="amount">$27,678.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER PUBLIC LIBRARY BOARD</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>VALEMOUNT PUBLIC LIBRARY</td>
+            <td class="amount">$25,774.00</td>
+        </tr>
+        <tr>
+            <td>MCBRIDE & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$25,354.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA CONSERVATORY OF MUSIC</td>
+            <td class="amount">$24,769.00</td>
+        </tr>
+        <tr>
+            <td>SHXW'OW'HAMEL FIRST NATION</td>
+            <td class="amount">$24,278.00</td>
+        </tr>
+        <tr>
+            <td>THE VICTORIA COOL AID SOCIETY</td>
+            <td class="amount">$24,230.00</td>
+        </tr>
+        <tr>
+            <td>SKEETCHESTN INDIAN BAND</td>
+            <td class="amount">$21,699.00</td>
+        </tr>
+        <tr>
+            <td>CHEAM INDIAN BAND</td>
+            <td class="amount">$20,003.00</td>
+        </tr>
+        <tr>
+            <td>NICOMEN INDIAN BAND</td>
+            <td class="amount">$19,518.00</td>
+        </tr>
+        <tr>
+            <td>COOK'S FERRY INDIAN BAND</td>
+            <td class="amount">$18,821.00</td>
+        </tr>
+        <tr>
+            <td>SCOWLITZ INDIAN BAND</td>
+            <td class="amount">$18,754.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN FIRST NATION</td>
+            <td class="amount">$18,137.00</td>
+        </tr>
+        <tr>
+            <td>STELLAT'EN FIRST NATION</td>
+            <td class="amount">$17,015.00</td>
+        </tr>
+        <tr>
+            <td>SISKA INDIAN BAND</td>
+            <td class="amount">$15,363.00</td>
+        </tr>
+        <tr>
+            <td>LHTAKO DENE NATION</td>
+            <td class="amount">$14,053.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN FIRST NATION</td>
+            <td class="amount">$12,299.00</td>
+        </tr>
+        <tr>
+            <td>MATSQUI FIRST NATION</td>
+            <td class="amount">$12,112.00</td>
+        </tr>
+        <tr>
+            <td>YALE FIRST NATION</td>
+            <td class="amount">$11,956.00</td>
+        </tr>
+        <tr>
+            <td>TS'KW'AYLAXW FIRST NATION</td>
+            <td class="amount">$10,592.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON OKANAGAN TOURISM ASSOCIATION</td>
+            <td class="amount">$9,867.00</td>
+        </tr>
+        <tr>
+            <td>DOWNTOWN EASTSIDE NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$8,811.00</td>
+        </tr>
+        <tr>
+            <td>PETERS INDIAN BAND</td>
+            <td class="amount">$8,521.00</td>
+        </tr>
+        <tr>
+            <td>NADLEH WHUT'EN INDIAN BAND</td>
+            <td class="amount">$8,439.00</td>
+        </tr>
+        <tr>
+            <td>SALT SPRING ISLAND FARMLAND TRUST SOCIETY</td>
+            <td class="amount">$8,265.00</td>
+        </tr>
+        <tr>
+            <td>KITSUMKALUM INDIAN BAND</td>
+            <td class="amount">$7,950.00</td>
+        </tr>
+        <tr>
+            <td>POPKUM FIRST NATION</td>
+            <td class="amount">$7,859.00</td>
+        </tr>
+        <tr>
+            <td>SKAWAHLOOK FIRST NATION</td>
+            <td class="amount">$7,699.00</td>
+        </tr>
+        <tr>
+            <td>TS'IL KAZ KOH</td>
+            <td class="amount">$5,550.00</td>
+        </tr>
+        <tr>
+            <td>SQUIALA FIRST NATION</td>
+            <td class="amount">$3,851.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT NATION</td>
+            <td class="amount">$2,457.00</td>
+        </tr>
+        <tr>
+            <td>WHISPERING PINES/CLINTON INDIAN BAND</td>
+            <td class="amount">$1,980.00</td>
+        </tr>
+        <tr>
+            <td>WATARI COUNSELLING & SUPPORT SERVICES SOCIETY</td>
+            <td class="amount">$1,500.00</td>
+        </tr>
+        <tr>
+            <td>THE DOWNTOWN EASTSIDE WOMEN'S CENTRE ASSOCIATION</td>
+            <td class="amount">$1,500.00</td>
+        </tr>
+        <tr>
+            <td>WISH DROP–IN CENTRE SOCIETY</td>
+            <td class="amount">$1,500.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE FIRST NATION</td>
+            <td class="amount">$353.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

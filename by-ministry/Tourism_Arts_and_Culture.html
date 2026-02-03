@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourism, Arts and Culture - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Tourism, Arts and Culture</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Tourism, Arts and Culture
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$462.44M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">729</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Tourism, Arts and Culture</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>DESTINATION BC CORP.</td>
+            <td class="amount">$133,996,019.00</td>
+        </tr>
+        <tr>
+            <td>B.C. PAVILION CORPORATION</td>
+            <td class="amount">$54,385,428.00</td>
+        </tr>
+        <tr>
+            <td>VIASPORT BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$38,832,000.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL BRITISH COLUMBIA MUSEUM</td>
+            <td class="amount">$33,713,066.00</td>
+        </tr>
+        <tr>
+            <td>CREATIVE BC SOCIETY</td>
+            <td class="amount">$32,875,000.00</td>
+        </tr>
+        <tr>
+            <td>RESORT MUNICIPALITY OF WHISTLER</td>
+            <td class="amount">$20,570,874.00</td>
+        </tr>
+        <tr>
+            <td>KNOWLEDGE NETWORK CORPORATION</td>
+            <td class="amount">$16,719,531.00</td>
+        </tr>
+        <tr>
+            <td>CHINESE CANADIAN MUSEUM SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$10,020,000.00</td>
+        </tr>
+        <tr>
+            <td>ART GALLERY OF GREATER VICTORIA</td>
+            <td class="amount">$6,976,600.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ASSOCIATION OF ABORIGINAL FRIENDSHIP CENTRES</td>
+            <td class="amount">$5,211,400.00</td>
+        </tr>
+        <tr>
+            <td>BC GAMES SOCIETY</td>
+            <td class="amount">$4,221,000.00</td>
+        </tr>
+        <tr>
+            <td>THE ART STARTS IN SCHOOLS SOCIETY</td>
+            <td class="amount">$4,123,397.00</td>
+        </tr>
+        <tr>
+            <td>VANCITY COMMUNITY FOUNDATION</td>
+            <td class="amount">$3,900,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST PEOPLES' HERITAGE, LANGUAGE AND CULTURE COUNCIL</td>
+            <td class="amount">$3,835,000.00</td>
+        </tr>
+        <tr>
+            <td>SPORT B.C.</td>
+            <td class="amount">$2,950,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER SYMPHONY SOCIETY</td>
+            <td class="amount">$2,862,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF TOFINO</td>
+            <td class="amount">$2,622,449.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA TOURING COUNCIL</td>
+            <td class="amount">$2,520,766.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER ART GALLERY ASSOCIATION</td>
+            <td class="amount">$2,314,600.00</td>
+        </tr>
+        <tr>
+            <td>HOCKEY CANADA</td>
+            <td class="amount">$2,300,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA RECREATION AND PARKS ASSOCIATION</td>
+            <td class="amount">$1,990,110.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF REVELSTOKE</td>
+            <td class="amount">$1,898,907.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF GOLDEN</td>
+            <td class="amount">$1,884,526.00</td>
+        </tr>
+        <tr>
+            <td>TOWN OF OSOYOOS</td>
+            <td class="amount">$1,176,397.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF HARRISON HOT SPRINGS</td>
+            <td class="amount">$1,147,556.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD COMMUNITY FOUNDATION</td>
+            <td class="amount">$1,140,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER OPERA ASSOCIATION</td>
+            <td class="amount">$1,116,447.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF VANCOUVER</td>
+            <td class="amount">$1,006,300.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER SYMPHONY ORCHESTRA SCHOOL</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ARTSCAPE SOCIETY</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>SUN PEAKS MOUNTAIN RESORT MUNICIPALITY</td>
+            <td class="amount">$981,918.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF FERNIE</td>
+            <td class="amount">$971,706.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA MUSEUMS ASSOCIATION</td>
+            <td class="amount">$896,367.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF UCLUELET</td>
+            <td class="amount">$849,134.00</td>
+        </tr>
+        <tr>
+            <td>THE ARTS CLUB OF VANCOUVER THEATRE SOCIETY</td>
+            <td class="amount">$827,650.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA SYMPHONY SOCIETY</td>
+            <td class="amount">$678,533.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER MUSEUM SOCIETY</td>
+            <td class="amount">$660,000.00</td>
+        </tr>
+        <tr>
+            <td>PUSH INTERNATIONAL PERFORMING ARTS FESTIVAL SOCIETY</td>
+            <td class="amount">$653,700.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC BALLET BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$612,500.00</td>
+        </tr>
+        <tr>
+            <td>VDC DANCE CENTRE SOCIETY</td>
+            <td class="amount">$514,205.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC OPERA VICTORIA ASSOCIATION</td>
+            <td class="amount">$501,590.00</td>
+        </tr>
+        <tr>
+            <td>THE GREEN THUMB PLAYERS SOCIETY</td>
+            <td class="amount">$499,775.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF INVERMERE</td>
+            <td class="amount">$496,602.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL CHILDREN'S FESTIVAL SOCIETY</td>
+            <td class="amount">$475,400.00</td>
+        </tr>
+        <tr>
+            <td>THE BELFRY THEATRE SOCIETY</td>
+            <td class="amount">$445,025.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA PHOTOGRAPHY AND MEDIA ARTS SOCIETY</td>
+            <td class="amount">$438,890.00</td>
+        </tr>
+        <tr>
+            <td>SURREY ART GALLERY</td>
+            <td class="amount">$436,028.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN CANADA THEATRE COMPANY SOCIETY</td>
+            <td class="amount">$426,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 36 SURREY</td>
+            <td class="amount">$414,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 57 PRINCE GEORGE</td>
+            <td class="amount">$411,500.00</td>
+        </tr>
+        <tr>
+            <td>CAG CONTEMPORARY ART GALLERY SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$407,128.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 73 KAMLOOPS-THOMPSON</td>
+            <td class="amount">$405,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF RADIUM HOT SPRINGS</td>
+            <td class="amount">$403,635.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER INTERNATIONAL FILM FESTIVAL SOCIETY</td>
+            <td class="amount">$402,100.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC CINEMATHEQUE PACIFIQUE</td>
+            <td class="amount">$388,415.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS ART GALLERY</td>
+            <td class="amount">$371,408.00</td>
+        </tr>
+        <tr>
+            <td>SALMON ARM FOLK MUSIC SOCIETY</td>
+            <td class="amount">$370,435.00</td>
+        </tr>
+        <tr>
+            <td>U'MISTA CULTURAL SOCIETY</td>
+            <td class="amount">$370,175.00</td>
+        </tr>
+        <tr>
+            <td>FRASER–FORT GEORGE MUSEUM SOCIETY</td>
+            <td class="amount">$365,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 39 VANCOUVER</td>
+            <td class="amount">$360,000.00</td>
+        </tr>
+        <tr>
+            <td>VISIBLE ART SOCIETY</td>
+            <td class="amount">$359,600.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER FOUNDATION</td>
+            <td class="amount">$350,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. SENIORS GAMES SOCIETY</td>
+            <td class="amount">$350,000.00</td>
+        </tr>
+        <tr>
+            <td>THE COASTAL JAZZ AND BLUES SOCIETY</td>
+            <td class="amount">$346,700.00</td>
+        </tr>
+        <tr>
+            <td>VILLAGE OF VALEMOUNT</td>
+            <td class="amount">$346,278.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 68 NANAIMO-LADYSMITH</td>
+            <td class="amount">$335,750.00</td>
+        </tr>
+        <tr>
+            <td>FULL CIRCLE: FIRST NATIONS' PERFORMANCE SOCIETY</td>
+            <td class="amount">$333,600.00</td>
+        </tr>
+        <tr>
+            <td>HAIDA GWAII MUSEUM SOCIETY</td>
+            <td class="amount">$331,350.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER 2010 SPORT LEGACIES SOCIETY</td>
+            <td class="amount">$330,000.00</td>
+        </tr>
+        <tr>
+            <td>FRIENDS OF VICTORIA BASKETBALL</td>
+            <td class="amount">$325,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CAMPBELL RIVER AND DISTRICT MUSEUM AND ARCHIVES SOCIETY</td>
+            <td class="amount">$311,900.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER EAST CULTURAL CENTRE</td>
+            <td class="amount">$304,870.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA CONSERVATORY OF MUSIC</td>
+            <td class="amount">$303,600.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE REGIONAL ART GALLERY ASSOCIATION</td>
+            <td class="amount">$300,940.00</td>
+        </tr>
+        <tr>
+            <td>ORCA BOOK PUBLISHERS LTD.</td>
+            <td class="amount">$300,448.00</td>
+        </tr>
+        <tr>
+            <td>THE COUNCIL FOR BUSINESS & THE ARTS IN CANADA</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO–CHILCOTIN–COAST TOURISM ASSOCIATION</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>BC WHEELCHAIR SPORTS ASSOCIATION</td>
+            <td class="amount">$297,000.00</td>
+        </tr>
+        <tr>
+            <td>THEATRE REPLACEMENT SOCIETY</td>
+            <td class="amount">$295,910.00</td>
+        </tr>
+        <tr>
+            <td>THE WESTERN FRONT SOCIETY</td>
+            <td class="amount">$293,310.00</td>
+        </tr>
+        <tr>
+            <td>KIDD PIVOT PERFORMING ARTS SOCIETY</td>
+            <td class="amount">$286,000.00</td>
+        </tr>
+        <tr>
+            <td>NEWORLD THEATRE SOCIETY</td>
+            <td class="amount">$285,350.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KIMBERLEY</td>
+            <td class="amount">$277,671.00</td>
+        </tr>
+        <tr>
+            <td>SAVAGE PRODUCTION SOCIETY</td>
+            <td class="amount">$267,500.00</td>
+        </tr>
+        <tr>
+            <td>INTREPID THEATRE COMPANY SOCIETY</td>
+            <td class="amount">$265,470.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA IMMIGRANT AND REFUGEE CENTRE SOCIETY</td>
+            <td class="amount">$265,000.00</td>
+        </tr>
+        <tr>
+            <td>SATELLITE VIDEO EXCHANGE SOCIETY</td>
+            <td class="amount">$262,625.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ALLIANCE FOR ARTS AND CULTURE SOCIETY</td>
+            <td class="amount">$260,000.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO ART GALLERY SOCIETY</td>
+            <td class="amount">$259,600.00</td>
+        </tr>
+        <tr>
+            <td>BASS COAST PROJECT LTD.</td>
+            <td class="amount">$255,450.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF ROSSLAND</td>
+            <td class="amount">$250,268.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER FIREWORKS FESTIVAL SOCIETY</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER & BLACKCOMB MOUNTAIN RESORTS LIMITED</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA DRAMA ASSOCIATION/THEATRE B.C.</td>
+            <td class="amount">$244,652.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND MOUNTAIN ARTS SOCIETY</td>
+            <td class="amount">$239,900.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA FOREST MUSEUM</td>
+            <td class="amount">$238,500.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA MUSEUMS SOCIETY</td>
+            <td class="amount">$233,200.00</td>
+        </tr>
+        <tr>
+            <td>PRIDE IN ART SOCIETY</td>
+            <td class="amount">$230,500.00</td>
+        </tr>
+        <tr>
+            <td>UBC MUSEUM OF ANTHROPOLOGY</td>
+            <td class="amount">$228,000.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER OUT ON SCREEN FILM AND VIDEO SOCIETY</td>
+            <td class="amount">$227,510.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON OKANAGAN TOURISM ASSOCIATION</td>
+            <td class="amount">$225,000.00</td>
+        </tr>
+        <tr>
+            <td>AXIS THEATRE SOCIETY</td>
+            <td class="amount">$224,750.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY ROCKIES TOURISM ASSOCIATION</td>
+            <td class="amount">$222,500.00</td>
+        </tr>
+        <tr>
+            <td>TALON BOOKS LTD.</td>
+            <td class="amount">$220,600.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ACADEMY OF MUSIC</td>
+            <td class="amount">$219,750.00</td>
+        </tr>
+        <tr>
+            <td>HARBOUR PUBLISHING CO. LTD.</td>
+            <td class="amount">$218,723.00</td>
+        </tr>
+        <tr>
+            <td>OPEN SPACE ARTS SOCIETY</td>
+            <td class="amount">$218,640.00</td>
+        </tr>
+        <tr>
+            <td>ALBERNI VALLEY MUSEUM</td>
+            <td class="amount">$218,200.00</td>
+        </tr>
+        <tr>
+            <td>THE RICHMOND ART GALLERY ASSOCIATION</td>
+            <td class="amount">$218,100.00</td>
+        </tr>
+        <tr>
+            <td>URBAN INK PRODUCTION SOCIETY</td>
+            <td class="amount">$217,720.00</td>
+        </tr>
+        <tr>
+            <td>INTERPROVINCIAL SPORT AND RECREATION COUNCIL</td>
+            <td class="amount">$217,389.00</td>
+        </tr>
+        <tr>
+            <td>CARAVAN FARM THEATRE SOCIETY</td>
+            <td class="amount">$215,150.00</td>
+        </tr>
+        <tr>
+            <td>EPONYMOUS PRODUCTIONS AND MANAGEMENT INCORPORATED</td>
+            <td class="amount">$214,000.00</td>
+        </tr>
+        <tr>
+            <td>PLAYWRIGHTS THEATRE CENTRE</td>
+            <td class="amount">$212,270.00</td>
+        </tr>
+        <tr>
+            <td>THE OR GALLERY SOCIETY</td>
+            <td class="amount">$208,280.00</td>
+        </tr>
+        <tr>
+            <td>ASSEMBLY OF BRITISH COLUMBIA ARTS COUNCILS</td>
+            <td class="amount">$205,900.00</td>
+        </tr>
+        <tr>
+            <td>WIDEGLIDE ENTERTAINMENT LTD.</td>
+            <td class="amount">$199,788.00</td>
+        </tr>
+        <tr>
+            <td>NATIONAL NIKKEI MUSEUM & HERITAGE CENTRE</td>
+            <td class="amount">$199,750.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER MARITIME MUSEUM SOCIETY</td>
+            <td class="amount">$195,300.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 70 ALBERNI</td>
+            <td class="amount">$192,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN CURLING ASSOCIATION</td>
+            <td class="amount">$191,700.00</td>
+        </tr>
+        <tr>
+            <td>221A ARTIST RUN CENTRE SOCIETY</td>
+            <td class="amount">$187,160.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER INTERNATIONAL WRITERS FESTIVAL SOCIETY</td>
+            <td class="amount">$186,300.00</td>
+        </tr>
+        <tr>
+            <td>BRITANNIA MINE MUSEUM SOCIETY</td>
+            <td class="amount">$181,620.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA ART GALLERY ASSOCIATION</td>
+            <td class="amount">$181,250.00</td>
+        </tr>
+        <tr>
+            <td>INDIAN SUMMER ARTS SOCIETY</td>
+            <td class="amount">$180,340.00</td>
+        </tr>
+        <tr>
+            <td>TOIT EVENTS INC.</td>
+            <td class="amount">$180,000.00</td>
+        </tr>
+        <tr>
+            <td>JEUXF C VICTORIA 2020</td>
+            <td class="amount">$180,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADA MEN'S INTERNATIONAL SEVENS LIMITED PARTNERSHIP</td>
+            <td class="amount">$180,000.00</td>
+        </tr>
+        <tr>
+            <td>THE 605 COLLECTIVE DANCE SOCIETY</td>
+            <td class="amount">$178,950.00</td>
+        </tr>
+        <tr>
+            <td>TNW THEATRE NORTH WEST SOCIETY</td>
+            <td class="amount">$177,300.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER FOLK MUSIC FESTIVAL SOCIETY</td>
+            <td class="amount">$175,050.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL CENTRE FOR CONTEMPORARY ASIAN ART</td>
+            <td class="amount">$174,090.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ACCESS ARTIST RUN CENTRE</td>
+            <td class="amount">$172,731.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MUSIC CENTRE–BC REGION</td>
+            <td class="amount">$172,715.00</td>
+        </tr>
+        <tr>
+            <td>CAITLIN PRESS</td>
+            <td class="amount">$172,490.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$171,000.00</td>
+        </tr>
+        <tr>
+            <td>KOKORO DANCE THEATRE SOCIETY</td>
+            <td class="amount">$168,000.00</td>
+        </tr>
+        <tr>
+            <td>THEATRE SKAM ASSOCIATION</td>
+            <td class="amount">$167,246.00</td>
+        </tr>
+        <tr>
+            <td>CAROUSEL THEATRE SOCIETY</td>
+            <td class="amount">$166,585.00</td>
+        </tr>
+        <tr>
+            <td>CINEWORKS INDEPENDENT FILMMAKERS SOCIETY</td>
+            <td class="amount">$164,790.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER SOCIETY FOR EARLY MUSIC</td>
+            <td class="amount">$161,400.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN ALLIANCE OF DANCE ARTISTS – BRITISH COLUMBIA CHAPTERS</td>
+            <td class="amount">$158,790.00</td>
+        </tr>
+        <tr>
+            <td>ARSENAL PULP PRESS LTD.</td>
+            <td class="amount">$158,252.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL MARATHON SOCIETY</td>
+            <td class="amount">$157,500.00</td>
+        </tr>
+        <tr>
+            <td>VINES ART FESTIVAL SOCIETY</td>
+            <td class="amount">$157,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER CHAMBER CHOIR</td>
+            <td class="amount">$155,300.00</td>
+        </tr>
+        <tr>
+            <td>DANCERS OF DAMELAHAMID SOCIETY</td>
+            <td class="amount">$155,200.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 50 HAIDA GWAII</td>
+            <td class="amount">$153,150.00</td>
+        </tr>
+        <tr>
+            <td>CRIMSON COAST DANCE SOCIETY</td>
+            <td class="amount">$152,500.00</td>
+        </tr>
+        <tr>
+            <td>URBAN NATIVE YOUTH ASSOCIATION</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN AMATEUR SPORT SOCIETY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$149,996.00</td>
+        </tr>
+        <tr>
+            <td>NELSON AND DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$148,906.00</td>
+        </tr>
+        <tr>
+            <td>MADE IN BC – DANCE ON TOUR SOCIETY</td>
+            <td class="amount">$147,900.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST FEMINIST LITERARY MAGAZINE</td>
+            <td class="amount">$147,772.00</td>
+        </tr>
+        <tr>
+            <td>NEW PATHWAYS TO GOLD SOCIETY</td>
+            <td class="amount">$147,600.00</td>
+        </tr>
+        <tr>
+            <td>REEL TO REAL: A CELEBRATION OF MOVING IMAGES FOR YOUTH SOCIETY</td>
+            <td class="amount">$146,819.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH ARTS COUNCIL</td>
+            <td class="amount">$146,205.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER MOVING THEATRE SOCIETY</td>
+            <td class="amount">$145,750.00</td>
+        </tr>
+        <tr>
+            <td>SCREAMING WEENIE PRODUCTIONS</td>
+            <td class="amount">$144,500.00</td>
+        </tr>
+        <tr>
+            <td>ANVIL PRESS PUBLISHERS INC.</td>
+            <td class="amount">$143,181.00</td>
+        </tr>
+        <tr>
+            <td>STILL MOON ARTS SOCIETY</td>
+            <td class="amount">$140,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC REGION INTERNATIONAL SUMMER MUSIC ACADEMY ASSOC.</td>
+            <td class="amount">$137,925.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 82 COAST MOUNTAIN</td>
+            <td class="amount">$137,910.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER MUSEUM & ARCHIVES</td>
+            <td class="amount">$137,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS MUSEUM & ARCHIVES</td>
+            <td class="amount">$136,300.00</td>
+        </tr>
+        <tr>
+            <td>NIGHTWOOD EDITIONS LTD.</td>
+            <td class="amount">$136,296.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY CENTENNIAL MUSEUM & NATIONAL EXHIBITION CENTRE</td>
+            <td class="amount">$136,200.00</td>
+        </tr>
+        <tr>
+            <td>NELSON AND DISTRICT MUSEUM, ARCHIVES, ART GALLERY AND HISTORICAL SOCIETY</td>
+            <td class="amount">$135,095.00</td>
+        </tr>
+        <tr>
+            <td>JFLNW COMEDY LTD.</td>
+            <td class="amount">$135,000.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH CONSTELLATION FESTIVAL INC.</td>
+            <td class="amount">$135,000.00</td>
+        </tr>
+        <tr>
+            <td>ELECTRIC COMPANY THEATRE SOCIETY</td>
+            <td class="amount">$133,775.00</td>
+        </tr>
+        <tr>
+            <td>POWELL STREET FESTIVAL SOCIETY</td>
+            <td class="amount">$132,558.00</td>
+        </tr>
+        <tr>
+            <td>TOUCHWOOD EDITIONS LTD.</td>
+            <td class="amount">$131,801.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY ART GALLERY</td>
+            <td class="amount">$131,560.00</td>
+        </tr>
+        <tr>
+            <td>WOMEN IN FILM AND TELEVISION VANCOUVER SOCIETY</td>
+            <td class="amount">$130,625.00</td>
+        </tr>
+        <tr>
+            <td>MUSIC ON MAIN SOCIETY</td>
+            <td class="amount">$130,470.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON ART GALLERY SOCIETY</td>
+            <td class="amount">$129,580.00</td>
+        </tr>
+        <tr>
+            <td>RUMBLE PRODUCTIONS SOCIETY</td>
+            <td class="amount">$128,880.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER FRINGE THEATRE SOCIETY</td>
+            <td class="amount">$128,625.00</td>
+        </tr>
+        <tr>
+            <td>TOUCHSTONE THEATRE SOCIETY</td>
+            <td class="amount">$128,250.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER SOCIETY TO BRIDGE ARTS AND COMMUNITY</td>
+            <td class="amount">$127,000.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER INTER–CULTURAL ORCHESTRA SOCIETY</td>
+            <td class="amount">$126,490.00</td>
+        </tr>
+        <tr>
+            <td>CALEDONIA NORDIC SKI CLUB</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>SKATE CANADA–BRITISH COLUMBIA/YUKON SECTION</td>
+            <td class="amount">$125,000.00</td>
+        </tr>
+        <tr>
+            <td>GREYSTONE BOOKS LTD.</td>
+            <td class="amount">$124,701.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 33 CHILLIWACK</td>
+            <td class="amount">$124,100.00</td>
+        </tr>
+        <tr>
+            <td>THEATRE LA SEIZIEME</td>
+            <td class="amount">$123,500.00</td>
+        </tr>
+        <tr>
+            <td>CRAFT COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$119,870.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS ARTS COUNCIL</td>
+            <td class="amount">$118,799.00</td>
+        </tr>
+        <tr>
+            <td>BILL REID FOUNDATION</td>
+            <td class="amount">$118,040.00</td>
+        </tr>
+        <tr>
+            <td>THE I.E. ARTSPEAK GALLERY SOCIETY</td>
+            <td class="amount">$117,720.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN BRITISH COLUMBIA MUSEUM ASSOCIATION</td>
+            <td class="amount">$117,500.00</td>
+        </tr>
+        <tr>
+            <td>OTHER SIGHTS FOR ARTISTS' PROJECTS ASSOCIATION</td>
+            <td class="amount">$117,000.00</td>
+        </tr>
+        <tr>
+            <td>THE COURTENAY AND DISTRICT HISTORICAL SOCIETY</td>
+            <td class="amount">$117,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER POETRY HOUSE SOCIETY</td>
+            <td class="amount">$115,560.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA JAZZ SOCIETY</td>
+            <td class="amount">$113,880.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER LATIN AMERICAN FILM FESTIVAL</td>
+            <td class="amount">$113,670.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC RIM ARTS SOCIETY</td>
+            <td class="amount">$113,597.00</td>
+        </tr>
+        <tr>
+            <td>QUALICUM BEACH HISTORICAL & MUSEUM SOCIETY</td>
+            <td class="amount">$113,500.00</td>
+        </tr>
+        <tr>
+            <td>ROCKY MOUNTAIN BOOKS LTD.</td>
+            <td class="amount">$113,194.00</td>
+        </tr>
+        <tr>
+            <td>MISCELLANEOUS PRODUCTIONS SOCIETY</td>
+            <td class="amount">$113,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF B C PRESS</td>
+            <td class="amount">$112,336.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN INTERNATIONAL DRAGON BOAT FESTIVAL SOCIETY</td>
+            <td class="amount">$111,750.00</td>
+        </tr>
+        <tr>
+            <td>GEIST FOUNDATION</td>
+            <td class="amount">$111,300.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA LEGACY ART GALLERIES</td>
+            <td class="amount">$111,225.00</td>
+        </tr>
+        <tr>
+            <td>REALWHEELS SOCIETY</td>
+            <td class="amount">$111,000.00</td>
+        </tr>
+        <tr>
+            <td>AERIOSA DANCE SOCIETY</td>
+            <td class="amount">$111,000.00</td>
+        </tr>
+        <tr>
+            <td>THEYTUS BOOKS LTD.</td>
+            <td class="amount">$110,934.00</td>
+        </tr>
+        <tr>
+            <td>THE DOCUMENTARY MEDIA SOCIETY</td>
+            <td class="amount">$108,500.00</td>
+        </tr>
+        <tr>
+            <td>HERITAGE HOUSE PUBLISHING COMPANY LIMITED</td>
+            <td class="amount">$108,419.00</td>
+        </tr>
+        <tr>
+            <td>SUNSHINE COAST FESTIVAL OF THE WRITTEN ARTS</td>
+            <td class="amount">$108,300.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VANCOUVER PROFESSIONAL THEATRE ALLIANCE SOCIETY</td>
+            <td class="amount">$108,000.00</td>
+        </tr>
+        <tr>
+            <td>KAREN JAMIESON DANCE SOCIETY</td>
+            <td class="amount">$105,530.00</td>
+        </tr>
+        <tr>
+            <td>SURREY MUSEUM</td>
+            <td class="amount">$105,480.00</td>
+        </tr>
+        <tr>
+            <td>NEW PERFORMANCE WORKS SOCIETY</td>
+            <td class="amount">$105,400.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD CULTURAL CENTRE</td>
+            <td class="amount">$104,800.00</td>
+        </tr>
+        <tr>
+            <td>WEN WEI DANCE SOCIETY</td>
+            <td class="amount">$103,900.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY ARTS COUNCIL OF VANCOUVER</td>
+            <td class="amount">$103,600.00</td>
+        </tr>
+        <tr>
+            <td>GABRIOLA ARTS COUNCIL</td>
+            <td class="amount">$103,554.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY ARTS COUNCIL OF PRINCE GEORGE AND DISTRICT</td>
+            <td class="amount">$101,778.00</td>
+        </tr>
+        <tr>
+            <td>SOOKE REGION MUSEUM</td>
+            <td class="amount">$100,400.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN SPORT INSTITUTE PACIFIC SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA MEMORIAL CUP 2020 SOCIETY</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>CURL BC</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. LIONS FOOTBALL CLUB INC.</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN SYMPHONY SOCIETY</td>
+            <td class="amount">$99,965.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ASIAN CANADIAN THEATRE</td>
+            <td class="amount">$99,600.00</td>
+        </tr>
+        <tr>
+            <td>ZEEZEE THEATRE SOCIETY</td>
+            <td class="amount">$99,300.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY ARTS COUNCIL</td>
+            <td class="amount">$99,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER AND DISTRICT PUBLIC ART GALLERY</td>
+            <td class="amount">$98,000.00</td>
+        </tr>
+        <tr>
+            <td>PINK INK THEATRE PRODUCTIONS ASSOCIATION</td>
+            <td class="amount">$97,900.00</td>
+        </tr>
+        <tr>
+            <td>THE NANAIMO & DISTRICT MUSEUM SOCIETY</td>
+            <td class="amount">$97,800.00</td>
+        </tr>
+        <tr>
+            <td>HARRISON FESTIVAL SOCIETY</td>
+            <td class="amount">$97,220.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD ARTS COUNCIL</td>
+            <td class="amount">$97,097.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA ARTS COUNCIL</td>
+            <td class="amount">$96,250.00</td>
+        </tr>
+        <tr>
+            <td>THE FIREHALL THEATRE SOCIETY</td>
+            <td class="amount">$95,800.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL DANCE FESTIVAL SOCIETY</td>
+            <td class="amount">$94,250.00</td>
+        </tr>
+        <tr>
+            <td>WEST KOOTENAY REGIONAL ARTS COUNCIL</td>
+            <td class="amount">$93,800.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND MUSEUM SOCIETY</td>
+            <td class="amount">$93,040.00</td>
+        </tr>
+        <tr>
+            <td>CORTES ISLAND MUSEUM AND ARCHIVES SOCIETY</td>
+            <td class="amount">$93,000.00</td>
+        </tr>
+        <tr>
+            <td>MALASPINA PRINTMAKERS SOCIETY</td>
+            <td class="amount">$91,600.00</td>
+        </tr>
+        <tr>
+            <td>THE PLASTIC ORCHID FACTORY SOCIETY</td>
+            <td class="amount">$90,050.00</td>
+        </tr>
+        <tr>
+            <td>SKATE CANADA</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>FWT MANAGEMENT SA</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>ARTS COUNCIL OF NEW WESTMINSTER</td>
+            <td class="amount">$89,868.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER ARTS COUNCIL</td>
+            <td class="amount">$89,637.00</td>
+        </tr>
+        <tr>
+            <td>BARD ON THE BEACH THEATRE SOCIETY</td>
+            <td class="amount">$88,500.00</td>
+        </tr>
+        <tr>
+            <td>NORTH OKANAGAN SOCIAL PLANNING SOCIETY</td>
+            <td class="amount">$88,000.00</td>
+        </tr>
+        <tr>
+            <td>MOVING IMAGES DISTRIBUTION SOCIETY</td>
+            <td class="amount">$87,700.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 58 NICOLA-SIMILKAMEEN</td>
+            <td class="amount">$87,480.00</td>
+        </tr>
+        <tr>
+            <td>DANCE VICTORIA SOCIETY</td>
+            <td class="amount">$87,350.00</td>
+        </tr>
+        <tr>
+            <td>RONSDALE PRESS</td>
+            <td class="amount">$87,202.00</td>
+        </tr>
+        <tr>
+            <td>PEACE – LIARD REGIONAL ARTS COUNCIL</td>
+            <td class="amount">$86,700.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN ARTISTS ALTERNATIVE ASSOCIATION</td>
+            <td class="amount">$86,350.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE SYMPHONY ORCHESTRA SOCIETY</td>
+            <td class="amount">$86,080.00</td>
+        </tr>
+        <tr>
+            <td>OUT INNERSPACE DANCE THEATRE AND FILM SOCIETY</td>
+            <td class="amount">$85,975.00</td>
+        </tr>
+        <tr>
+            <td>ALLEY THEATRE ASSOCIATION</td>
+            <td class="amount">$84,300.00</td>
+        </tr>
+        <tr>
+            <td>ARTS COUNCIL OF SURREY</td>
+            <td class="amount">$84,000.00</td>
+        </tr>
+        <tr>
+            <td>NOW OR NEVER PUBLISHING COMPANY</td>
+            <td class="amount">$83,823.00</td>
+        </tr>
+        <tr>
+            <td>ARTS UMBRELLA ASSOCIATION</td>
+            <td class="amount">$83,000.00</td>
+        </tr>
+        <tr>
+            <td>THE SPO7EZ CULTURAL CENTRE AND COMMUNITY SOCIETY</td>
+            <td class="amount">$83,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 74 GOLD TRAIL</td>
+            <td class="amount">$82,500.00</td>
+        </tr>
+        <tr>
+            <td>CARVING ON THE EDGE FESTIVAL SOCIETY</td>
+            <td class="amount">$81,667.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER BACH CHOIR</td>
+            <td class="amount">$81,310.00</td>
+        </tr>
+        <tr>
+            <td>BIG WHITE SKI RESORT LTD.</td>
+            <td class="amount">$81,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$80,940.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 67 OKANAGAN SKAHA</td>
+            <td class="amount">$80,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 08 KOOTENAY LAKE</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>TURNING POINT ENSEMBLE</td>
+            <td class="amount">$79,600.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 51 BOUNDARY</td>
+            <td class="amount">$79,376.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 61 GREATER VICTORIA</td>
+            <td class="amount">$79,300.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK MUSEUM AND HISTORICAL SOCIETY</td>
+            <td class="amount">$79,100.00</td>
+        </tr>
+        <tr>
+            <td>RAVEN SPIRIT DANCE SOCIETY</td>
+            <td class="amount">$79,000.00</td>
+        </tr>
+        <tr>
+            <td>MAPLE RIDGE AND PITT MEADOWS ARTS COUNCIL</td>
+            <td class="amount">$78,760.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN THEATRE CONSPIRACY ARTS SOCIETY</td>
+            <td class="amount">$78,400.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER NEW MUSIC SOCIETY</td>
+            <td class="amount">$77,340.00</td>
+        </tr>
+        <tr>
+            <td>CAPILANO REVIEW CONTEMPORARY ARTS SOCIETY</td>
+            <td class="amount">$77,100.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS SYMPHONY SOCIETY</td>
+            <td class="amount">$76,739.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA CHORAL FEDERATION</td>
+            <td class="amount">$76,685.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA INDEPENDENT FILM & VIDEO FESTIVAL</td>
+            <td class="amount">$76,500.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY GALLERY OF ART HISTORY & SCIENCE</td>
+            <td class="amount">$75,800.00</td>
+        </tr>
+        <tr>
+            <td>WEST SHORE ARTS COUNCIL</td>
+            <td class="amount">$75,346.00</td>
+        </tr>
+        <tr>
+            <td>INDEPENDENT MEDIA PRODUCERS NETWORK SOCIETY</td>
+            <td class="amount">$74,540.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 28 QUESNEL</td>
+            <td class="amount">$74,500.00</td>
+        </tr>
+        <tr>
+            <td>REVELSTOKE ARTS COUNCIL</td>
+            <td class="amount">$74,000.00</td>
+        </tr>
+        <tr>
+            <td>COMPANY ERASGA SOCIETY</td>
+            <td class="amount">$73,986.00</td>
+        </tr>
+        <tr>
+            <td>PTARMIGAN MUSIC & THEATRE SOCIETY</td>
+            <td class="amount">$72,897.00</td>
+        </tr>
+        <tr>
+            <td>ARTS COUNCIL FOR THE SOUTH SHUSWAP SOCIETY</td>
+            <td class="amount">$72,500.00</td>
+        </tr>
+        <tr>
+            <td>CAPTURE PHOTOGRAPHY FESTIVAL SOCIETY</td>
+            <td class="amount">$72,500.00</td>
+        </tr>
+        <tr>
+            <td>THE FEDERATION OF BRITISH COLUMBIA WRITERS</td>
+            <td class="amount">$72,400.00</td>
+        </tr>
+        <tr>
+            <td>DEER CROSSING – THE ART FARM SOCIETY</td>
+            <td class="amount">$72,400.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA MARATHON SOCIETY</td>
+            <td class="amount">$72,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 46 SUNSHINE COAST</td>
+            <td class="amount">$72,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN ADULT RECREATIONAL HOCKEY ASSOCIATION</td>
+            <td class="amount">$72,000.00</td>
+        </tr>
+        <tr>
+            <td>2 RIVERS REMIX SOCIETY</td>
+            <td class="amount">$72,000.00</td>
+        </tr>
+        <tr>
+            <td>SEMIAHMOO ARTS SOCIETY</td>
+            <td class="amount">$71,812.00</td>
+        </tr>
+        <tr>
+            <td>FIRST PACIFIC THEATRE SOCIETY</td>
+            <td class="amount">$71,150.00</td>
+        </tr>
+        <tr>
+            <td>SEISMIC SHIFT ARTS SOCIETY</td>
+            <td class="amount">$71,056.00</td>
+        </tr>
+        <tr>
+            <td>CASTLEREIGH THEATRE PROJECT SOCIETY</td>
+            <td class="amount">$71,000.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$70,988.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE FOLKFEST SOCIETY</td>
+            <td class="amount">$70,700.00</td>
+        </tr>
+        <tr>
+            <td>KAS CULTURAL SOCIETY</td>
+            <td class="amount">$70,500.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$70,354.00</td>
+        </tr>
+        <tr>
+            <td>SALT SPRING ARTS COUNCIL</td>
+            <td class="amount">$70,100.00</td>
+        </tr>
+        <tr>
+            <td>EDAM PERFORMING ARTS SOCIETY</td>
+            <td class="amount">$70,010.00</td>
+        </tr>
+        <tr>
+            <td>COMPAIGNI V'NI DANSI SOCIETY</td>
+            <td class="amount">$69,500.00</td>
+        </tr>
+        <tr>
+            <td>BOCA DEL LUPO THEATRE</td>
+            <td class="amount">$67,500.00</td>
+        </tr>
+        <tr>
+            <td>GRAND FORKS ART GALLERY</td>
+            <td class="amount">$67,400.00</td>
+        </tr>
+        <tr>
+            <td>CHOR LEONI MEN'S CHOIR</td>
+            <td class="amount">$67,000.00</td>
+        </tr>
+        <tr>
+            <td>CRESTON AND DISTRICT HISTORICAL AND MUSEUM SOCIETY</td>
+            <td class="amount">$66,215.00</td>
+        </tr>
+        <tr>
+            <td>UP IN THE AIR THEATRE SOCIETY</td>
+            <td class="amount">$66,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 52 PRINCE RUPERT</td>
+            <td class="amount">$65,600.00</td>
+        </tr>
+        <tr>
+            <td>TRAIL AND DISTRICT COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$65,078.00</td>
+        </tr>
+        <tr>
+            <td>KITIMAT MUSEUM & ARCHIVES</td>
+            <td class="amount">$64,590.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY COMMUNITY MUSIC SCHOOL</td>
+            <td class="amount">$63,575.00</td>
+        </tr>
+        <tr>
+            <td>WEST VANCOUVER COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$63,356.00</td>
+        </tr>
+        <tr>
+            <td>NELSON FINE ARTS CENTRE SOCIETY</td>
+            <td class="amount">$63,300.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND GATEWAY THEATRE SOCIETY</td>
+            <td class="amount">$63,250.00</td>
+        </tr>
+        <tr>
+            <td>TOURISM DAWSON CREEK</td>
+            <td class="amount">$63,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$62,702.00</td>
+        </tr>
+        <tr>
+            <td>ESK'ETEMC FIRST NATION</td>
+            <td class="amount">$62,500.00</td>
+        </tr>
+        <tr>
+            <td>MUSICA INTIMA SOCIETY</td>
+            <td class="amount">$62,000.00</td>
+        </tr>
+        <tr>
+            <td>VERNON PUBLIC ART GALLERY SOCIETY</td>
+            <td class="amount">$61,800.00</td>
+        </tr>
+        <tr>
+            <td>GOLDEN DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$61,046.00</td>
+        </tr>
+        <tr>
+            <td>9018344 CANADA SOCIETY</td>
+            <td class="amount">$60,830.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD INTERNATIONAL AIRSHOW SOCIETY</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>SALMON ARM MUSEUM AND HERITAGE ASSOCIATION</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>REGIONAL DISTRICT OF KITIMAT–STIKINE</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADA SNOWBOARD</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>HOLMES, MARISA</td>
+            <td class="amount">$59,765.00</td>
+        </tr>
+        <tr>
+            <td>EARTHAND GLEANERS SOCIETY</td>
+            <td class="amount">$59,100.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH PEACE ART SOCIETY</td>
+            <td class="amount">$59,000.00</td>
+        </tr>
+        <tr>
+            <td>PRESENTATION HOUSE CULTURAL SOCIETY</td>
+            <td class="amount">$58,870.00</td>
+        </tr>
+        <tr>
+            <td>GASTON, CONNOR</td>
+            <td class="amount">$58,575.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY ARTS COUNCIL</td>
+            <td class="amount">$57,900.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA BALLET SOCIETY</td>
+            <td class="amount">$57,300.00</td>
+        </tr>
+        <tr>
+            <td>AFRICAN DESCENT SOCIETY BRITISH COLUMBIA</td>
+            <td class="amount">$57,000.00</td>
+        </tr>
+        <tr>
+            <td>CUMBERLAND AND DISTRICT HISTORICAL SOCIETY</td>
+            <td class="amount">$57,000.00</td>
+        </tr>
+        <tr>
+            <td>NEW ORCHESTRA WORKSHOP SOCIETY</td>
+            <td class="amount">$55,000.00</td>
+        </tr>
+        <tr>
+            <td>ARTS COUNCIL OF THE NORTH OKANAGAN</td>
+            <td class="amount">$54,544.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY ARTS COUNCIL</td>
+            <td class="amount">$54,500.00</td>
+        </tr>
+        <tr>
+            <td>ARTS COUNCIL OF THE CENTRAL OKANAGAN</td>
+            <td class="amount">$54,484.00</td>
+        </tr>
+        <tr>
+            <td>THE SUNSHINE COAST ARTS COUNCIL</td>
+            <td class="amount">$54,296.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN SNOWBOARD FEDERATION</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>CHANG, WEIYI</td>
+            <td class="amount">$53,800.00</td>
+        </tr>
+        <tr>
+            <td>COLUMBIA VALLEY ARTS COUNCIL</td>
+            <td class="amount">$53,581.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VERNON MUSEUM & ARCHIVES</td>
+            <td class="amount">$53,340.00</td>
+        </tr>
+        <tr>
+            <td>TRADEWIND BOOKS LTD.</td>
+            <td class="amount">$53,180.00</td>
+        </tr>
+        <tr>
+            <td>CONSEIL CULTUREL ET ARTISTIQUE FRANCOPHONE DE LA C–B</td>
+            <td class="amount">$53,000.00</td>
+        </tr>
+        <tr>
+            <td>ITSAZOO PRODUCTIONS SOCIETY</td>
+            <td class="amount">$52,650.00</td>
+        </tr>
+        <tr>
+            <td>VISCERAL VISIONS SOCIETY</td>
+            <td class="amount">$52,550.00</td>
+        </tr>
+        <tr>
+            <td>BOCA DEL LUPO THEATRE SOCIETY</td>
+            <td class="amount">$51,750.00</td>
+        </tr>
+        <tr>
+            <td>THE ONLY ANIMAL THEATRE SOCIETY</td>
+            <td class="amount">$51,600.00</td>
+        </tr>
+        <tr>
+            <td>NEW STAR BOOKS LTD.</td>
+            <td class="amount">$51,122.00</td>
+        </tr>
+        <tr>
+            <td>TTS THEATRE TERRIFIC SOCIETY</td>
+            <td class="amount">$51,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER BALLET SOCIETY</td>
+            <td class="amount">$51,000.00</td>
+        </tr>
+        <tr>
+            <td>DANSTABAT PERFORMANCE SOCIETY</td>
+            <td class="amount">$50,500.00</td>
+        </tr>
+        <tr>
+            <td>MACHINENOISY DANCE SOCIETY</td>
+            <td class="amount">$50,500.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA BC SKA & REGGAE SOCIETY</td>
+            <td class="amount">$50,500.00</td>
+        </tr>
+        <tr>
+            <td>RADIX THEATRE SOCIETY</td>
+            <td class="amount">$50,200.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF KELOWNA</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA RUGBY UNION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SOME ASSEMBLY ARTS SOCIETY</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>HOPKINS, ALLAN</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN VOLLEYBALL ASSOCIATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>STRONG, AMANDA J</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF MISSION ARTS COUNCIL</td>
+            <td class="amount">$49,966.00</td>
+        </tr>
+        <tr>
+            <td>HORNBY ISLAND ARTS COUNCIL</td>
+            <td class="amount">$49,400.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND SYMPHONY</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>SUNSET THEATRE SOCIETY</td>
+            <td class="amount">$47,500.00</td>
+        </tr>
+        <tr>
+            <td>RUBY SLIPPERS PRODUCTIONS SOCIETY</td>
+            <td class="amount">$47,300.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY ARTS COUNCIL OF THE ALBERNI VALLEY</td>
+            <td class="amount">$47,172.00</td>
+        </tr>
+        <tr>
+            <td>SYMPHONY OF THE KOOTENAYS ASSOCIATION</td>
+            <td class="amount">$47,000.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER CANTATA SOCIETY</td>
+            <td class="amount">$47,000.00</td>
+        </tr>
+        <tr>
+            <td>CINEVIC SOCIETY OF INDEPENDENT FILMMAKERS</td>
+            <td class="amount">$46,780.00</td>
+        </tr>
+        <tr>
+            <td>BATTERY OPERA PERFORMING ARTS SOCIETY</td>
+            <td class="amount">$46,500.00</td>
+        </tr>
+        <tr>
+            <td>THICK AS THIEVES ENTERTAINMENT INC.</td>
+            <td class="amount">$45,788.00</td>
+        </tr>
+        <tr>
+            <td>BULKLEY VALLEY HISTORICAL AND MUSEUM SOCIETY</td>
+            <td class="amount">$45,500.00</td>
+        </tr>
+        <tr>
+            <td>KIMBERLEY ARTS COUNCIL – CENTRE 64</td>
+            <td class="amount">$45,498.00</td>
+        </tr>
+        <tr>
+            <td>AXEL MERCKX EVENTS INC.</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 85 VANCOUVER ISLAND NORTH</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>THE BOWEN ISLAND ARTS COUNCIL</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>CENTRE CULTUREL FRANCOPHONE DE VANCOUVER</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS 2020 CANADA 55+ GAMES SOCIETY</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>ACCESS TO MEDIA EDUCATION SOCIETY</td>
+            <td class="amount">$44,880.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY ARTS COUNCIL OF FORT ST. JOHN</td>
+            <td class="amount">$44,568.00</td>
+        </tr>
+        <tr>
+            <td>JOE INK PERFORMANCE SOCIETY</td>
+            <td class="amount">$44,500.00</td>
+        </tr>
+        <tr>
+            <td>ROSARIO ANCER FLAMENCO ARTS SOCIETY</td>
+            <td class="amount">$44,500.00</td>
+        </tr>
+        <tr>
+            <td>CREATE VANCOUVER SOCIETY</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>PUENTE THEATRE SOCIETY</td>
+            <td class="amount">$44,000.00</td>
+        </tr>
+        <tr>
+            <td>THE MASCALL DANCE SOCIETY</td>
+            <td class="amount">$43,500.00</td>
+        </tr>
+        <tr>
+            <td>SUB–TERRAIN LITERARY COLLECTIVE SOCIETY</td>
+            <td class="amount">$43,300.00</td>
+        </tr>
+        <tr>
+            <td>RICE AND BEANS THEATRE SOCIETY</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>INFORMATION OFFICE</td>
+            <td class="amount">$43,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN HERITAGE ARTS SOCIETY</td>
+            <td class="amount">$42,875.00</td>
+        </tr>
+        <tr>
+            <td>BALLET VICTORIA SOCIETY</td>
+            <td class="amount">$40,550.00</td>
+        </tr>
+        <tr>
+            <td>DANCING ON THE EDGE FESTIVAL SOCIETY</td>
+            <td class="amount">$40,100.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA MILITARY SPORTS SOCIETY</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>DOIG RIVER FIRST NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>BC SNOWBOARD ASSOCIATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>DELINQUENT THEATRE SOCIETY</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 59 PEACE RIVER SOUTH</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>HOPE & DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY ARTS COUNCIL OF FORT ST. JAMES</td>
+            <td class="amount">$39,672.00</td>
+        </tr>
+        <tr>
+            <td>HARD RUBBER NEW MUSIC SOCIETY</td>
+            <td class="amount">$39,500.00</td>
+        </tr>
+        <tr>
+            <td>FOX, WILLIAM J</td>
+            <td class="amount">$38,718.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$38,569.00</td>
+        </tr>
+        <tr>
+            <td>RUNNYMEDE ENHANCEMENT SOCIETY</td>
+            <td class="amount">$37,775.00</td>
+        </tr>
+        <tr>
+            <td>JAMES BAY COMMUNITY SCHOOL SOCIETY</td>
+            <td class="amount">$37,450.00</td>
+        </tr>
+        <tr>
+            <td>HARVEY, KIMBERLY S</td>
+            <td class="amount">$37,000.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL ACADEMY OF BHANGRA SOCIETY</td>
+            <td class="amount">$37,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER LATIN AMERICAN CULTURAL CENTRE SOCIETY</td>
+            <td class="amount">$37,000.00</td>
+        </tr>
+        <tr>
+            <td>LIVE BIENNIAL OF PERFORMANCE ART SOCIETY</td>
+            <td class="amount">$36,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF WEST VANCOUVER</td>
+            <td class="amount">$36,000.00</td>
+        </tr>
+        <tr>
+            <td>VICKRUCK, SARA</td>
+            <td class="amount">$35,169.00</td>
+        </tr>
+        <tr>
+            <td>HISTORIC JOY KOGAWA HOUSE SOCIETY</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>LIL'WAT NATION CULTURAL SOCIETY</td>
+            <td class="amount">$34,000.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY GALLERY</td>
+            <td class="amount">$33,000.00</td>
+        </tr>
+        <tr>
+            <td>SQX DANZA</td>
+            <td class="amount">$33,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. CHINESE MUSIC ASSOCIATION</td>
+            <td class="amount">$32,910.00</td>
+        </tr>
+        <tr>
+            <td>THE PENTICTON AND DISTRICT COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$32,239.00</td>
+        </tr>
+        <tr>
+            <td>RUNAWAY MOON THEATRE ARTS SOCIETY</td>
+            <td class="amount">$32,000.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF NEIGHBOURHOOD HOUSES OF BRITISH COLUMBIA</td>
+            <td class="amount">$32,000.00</td>
+        </tr>
+        <tr>
+            <td>KUO, WILLIAM L</td>
+            <td class="amount">$31,740.00</td>
+        </tr>
+        <tr>
+            <td>RUN VANCOUVER HOLDINGS ULC</td>
+            <td class="amount">$31,500.00</td>
+        </tr>
+        <tr>
+            <td>CALDERON, DAVEY</td>
+            <td class="amount">$31,400.00</td>
+        </tr>
+        <tr>
+            <td>CITY OPERA OF VANCOUVER SOCIETY</td>
+            <td class="amount">$31,280.00</td>
+        </tr>
+        <tr>
+            <td>THE WHISTLER WRITING SOCIETY</td>
+            <td class="amount">$30,500.00</td>
+        </tr>
+        <tr>
+            <td>SUMMERLAND COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$30,410.00</td>
+        </tr>
+        <tr>
+            <td>SOPOTIUK, JONATHON W</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ASTROLABE MUSIK THEATRE SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>SQILXW APNA SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>STEWART, KRISTA BELLE</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>BOUCHER, MARIA–MARGARETTA</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THE GARTH HOMER SOCIETY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>CEPIC, TEODORA</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>AMIRAULT, MALLORY</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ADOPTIVE FAMILIES ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>KENNEDY, KATHRYN</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>MCISAAC, JULIE</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>LEGRANDE, CHEYENNE RAIN</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ZANNIER, LIANNE</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NATIONAL ASSOCIATION OF JAPANESE CANADIANS</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>OLIVER, ELIZABETH R</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>CHEN, RAYMOND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>BLAIS, SIMONE</td>
+            <td class="amount">$29,956.00</td>
+        </tr>
+        <tr>
+            <td>SHAY KUEBLER RADICAL SYSTEM ARTS SOCIETY</td>
+            <td class="amount">$29,550.00</td>
+        </tr>
+        <tr>
+            <td>LIM, MILTON</td>
+            <td class="amount">$29,525.00</td>
+        </tr>
+        <tr>
+            <td>IMMIGRANT AND MULTICULTURAL SERVICES SOCIETY OF PRINCE GEORGE</td>
+            <td class="amount">$29,500.00</td>
+        </tr>
+        <tr>
+            <td>TIDES CANADA INITIATIVES SOCIETY</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>POIRIER, TERRA</td>
+            <td class="amount">$28,860.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL BHANGRA CELEBRATION</td>
+            <td class="amount">$28,097.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER WEST SIDE THEATRE SOCIETY</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>ERMACORA, RYAN</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY FAMILY LIFE INSTITUTE</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON MUSEUM & ARCHIVES</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>MULTICULTURAL AND IMMIGRANT SERVICES ASSOCIATION OF NORTH VANCOUVER ISLAND</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>HEALTH ARTS SOCIETY</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>MOVEMENT ENTERPRISES SOCIETY</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>CHOKHANI, ROHIT</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>CYR, DONALD C</td>
+            <td class="amount">$28,000.00</td>
+        </tr>
+        <tr>
+            <td>S.U.C.C.E.S.S. (A/K/A UNITED CHINESE COMMUNITY ENRICHMENT SERVICES SOCIETY)</td>
+            <td class="amount">$27,814.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN VALLEY INTERCULTURAL AND IMMIGRANT AID SOCIETY</td>
+            <td class="amount">$27,565.00</td>
+        </tr>
+        <tr>
+            <td>MOCHIZUKI, CINDY NAMI</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>CINE–VIC SOCIETY OF INDEPENDENT FILMMAKERS</td>
+            <td class="amount">$27,300.00</td>
+        </tr>
+        <tr>
+            <td>CHANG, DERRICK C</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>CHARTERS, ELIZABETH</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL CITY COMIC ENTHUSIASTS SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>METTEN, KATHERINE</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>LANGHAM CULTURAL SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>MARTINEZ, GUADALUPE</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>THE LITTLE CHAMBER MUSIC SERIES THAT COULD SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>DE MONTREUIL, CATHERINE</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>TAH'LUM INDIGENOUS ARTISTS COLLECTIVE SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>RAHI, GEORGE</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>SHRUMM, REGAN</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, HEATHER KAI</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>AVENTA NEW MUSIC SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>BRIDGE RIVER INDIAN BAND</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>SNAFU DANCE THEATRE SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INDEPENDENT MUSIC CENTRE SOCIETY</td>
+            <td class="amount">$27,000.00</td>
+        </tr>
+        <tr>
+            <td>HILL, GABRIELLE</td>
+            <td class="amount">$26,975.00</td>
+        </tr>
+        <tr>
+            <td>KWAN, JEAN ZIYIAN</td>
+            <td class="amount">$26,700.00</td>
+        </tr>
+        <tr>
+            <td>ANAND, SIMRANPREET</td>
+            <td class="amount">$26,415.00</td>
+        </tr>
+        <tr>
+            <td>FERNIE & DISTRICT HISTORICAL SOCIETY</td>
+            <td class="amount">$26,000.00</td>
+        </tr>
+        <tr>
+            <td>NEEL, EDWIN</td>
+            <td class="amount">$26,000.00</td>
+        </tr>
+        <tr>
+            <td>SUDDENLY DANCE THEATRE SOCIETY</td>
+            <td class="amount">$26,000.00</td>
+        </tr>
+        <tr>
+            <td>FERNIE & DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$25,780.00</td>
+        </tr>
+        <tr>
+            <td>PROJECTILE PUBLISHING SOCIETY</td>
+            <td class="amount">$25,600.00</td>
+        </tr>
+        <tr>
+            <td>ELLIS, ELIZABETH ANNE</td>
+            <td class="amount">$25,515.00</td>
+        </tr>
+        <tr>
+            <td>CARSON, NOAH</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL VANCOUVER ISLAND MULTICULTURAL SOCIETY</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>O'BRIEN, KEELY</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>GRAUMAN, TAI AMY</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>ICAZA–LARGAESPADA, ANDREA</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>ISOMURA, ERICA</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>DERRICK–TREMBLAY, MAIA</td>
+            <td class="amount">$25,500.00</td>
+        </tr>
+        <tr>
+            <td>SENCHENKO, ALINA</td>
+            <td class="amount">$25,460.00</td>
+        </tr>
+        <tr>
+            <td>MARQUIS, JEAN–PHILIPPE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TZADOK, ELAD M</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TRAN, RON</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAM HEAD ON STAGE THEATRE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MANNINGS, JASON E</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MACK, TREVOR R</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>LIM, ARNOLD</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>LAM, CHIEW YUEN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MAIER, LUKAS</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>LEE, KARIN L</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MACKENZIE, ALEX</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KIROUAC, ISABELLE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KISSINGER, MICHAEL JAMES</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KARMAN, JASON</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>MOLLER, RUBEN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NORTH VANCOUVER COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HAYS, ROBIN L</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN BRITISH COLUMBIA TOURISM ASSOCIATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER MUSEUM & ARCHIVES</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CITTON, NICOLAS J</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CISNEROS–NEUMANN, JUAN</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HOOD, JESSICA</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>TOURISM ASSOCIATION OF VANCOUVER ISLAND</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>JACKSON, DENVER EARL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>STRUTHERS, ANDREW</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>JACKSON, KELLEN R</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GLADSTONE, AMIEL</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GILLINGHAM, ANDREW M</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>QAYUMI, TARIQUE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>RENASCENCE ARTS AND SUSTAINABILITY SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HARWOOD, NICOLA</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHUETZE, BENJAMIN B</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>GRAY, HAYLEY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>HAMA–BROWN, MEREDITH Y</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>FASCINATOR MANAGEMENT</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>FIORE, ANDREW</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DRLJACA, IGOR</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>SMITH, SCOTT</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>ANTHONY, JESSIE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DEXTRAS, NICOLE</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BASKETBALL B.C.</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BILLINGS, SCOTT</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KLIEWER, MARCUS</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WEPRESS COMMUNITY ARTS SPACE SOCIETY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>KNOX, JAMES S</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>VILLENEUVE, JAY C</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN GOLD THEATRE SOCIETY</td>
+            <td class="amount">$24,000.00</td>
+        </tr>
+        <tr>
+            <td>TURNER, JENNIFER M</td>
+            <td class="amount">$24,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF WEST VANCOUVER</td>
+            <td class="amount">$23,600.00</td>
+        </tr>
+        <tr>
+            <td>SHAMELESS HUSSY PRODUCTION SOCIETY</td>
+            <td class="amount">$23,000.00</td>
+        </tr>
+        <tr>
+            <td>ROSSLAND COUNCIL FOR ARTS AND CULTURE</td>
+            <td class="amount">$23,000.00</td>
+        </tr>
+        <tr>
+            <td>THE NANAIMO ARTS COUNCIL</td>
+            <td class="amount">$22,891.00</td>
+        </tr>
+        <tr>
+            <td>CRANBROOK AND DISTRICT RESTORATIVE JUSTICE SOCIETY</td>
+            <td class="amount">$22,500.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND ARTS CENTRE SOCIETY</td>
+            <td class="amount">$22,500.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON CREEK LITERACY SOCIETY</td>
+            <td class="amount">$22,500.00</td>
+        </tr>
+        <tr>
+            <td>THE CRANBROOK AND DISTRICT ARTS COUNCIL</td>
+            <td class="amount">$21,260.00</td>
+        </tr>
+        <tr>
+            <td>SKEENA DIVERSITY SOCIETY</td>
+            <td class="amount">$21,200.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER BRAIN INJURY SOCIETY</td>
+            <td class="amount">$21,200.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER ACADEMY OF MUSIC</td>
+            <td class="amount">$21,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST VANCOUVER YOUTH BAND SOCIETY</td>
+            <td class="amount">$21,000.00</td>
+        </tr>
+        <tr>
+            <td>THE TAMITIK STATUS OF WOMEN ASSOCIATION</td>
+            <td class="amount">$21,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND YOUTH DANCE THEATRE ASSOCIATION</td>
+            <td class="amount">$21,000.00</td>
+        </tr>
+        <tr>
+            <td>ELEKTRA WOMEN'S CHOIR</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>PORT ALBERNI FRIENDSHIP CENTER</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>FLYING ARROW PRODUCTIONS SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>ROSSLAND HISTORICAL MUSEUM AND ARCHIVES ASSOCIATION</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON LINK TO LEARNING SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CARIBOO FAMILY ENRICHMENT CENTRE SOCIETY</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>FREE REIN ASSOCIATES TRAINING LTD.</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER INDIAN BAND</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>MOSAIC MULTI–LINGUAL ORIENTATION SERVICE ASSOCIATION FOR IMMIGRANT COMMUNITIES</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN COLLEGE</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>THIS IS BLUEPRINT MANAGEMENT LTD.</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>DELTASSIST FAMILY & COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$19,500.00</td>
+        </tr>
+        <tr>
+            <td>BULKLEY VALLEY FOLK MUSIC SOCIETY</td>
+            <td class="amount">$19,000.00</td>
+        </tr>
+        <tr>
+            <td>LEAKY HEAVEN PERFORMANCE SOCIETY</td>
+            <td class="amount">$18,900.00</td>
+        </tr>
+        <tr>
+            <td>REDSHIFT MUSIC SOCIETY</td>
+            <td class="amount">$18,800.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA WOMENS TRANSITION HOUSE SOCIETY</td>
+            <td class="amount">$18,800.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD COMMUNITY SERVICES</td>
+            <td class="amount">$17,000.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND MULTICULTURAL COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$17,000.00</td>
+        </tr>
+        <tr>
+            <td>ASIAN–CANADIAN SPECIAL EVENTS ASSOCIATION</td>
+            <td class="amount">$16,600.00</td>
+        </tr>
+        <tr>
+            <td>PRO MUSICA SOCIETY OF VANCOUVER</td>
+            <td class="amount">$16,000.00</td>
+        </tr>
+        <tr>
+            <td>LATINCOUVER CULTURAL & BUSINESS SOCIETY</td>
+            <td class="amount">$15,897.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA CURLING CLUB</td>
+            <td class="amount">$15,750.00</td>
+        </tr>
+        <tr>
+            <td>UCLUELET FIRST NATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN MENTAL HEALTH ASSOCIATION – CARIBOO CHILCOTIN BRANCH</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>GITANYOW HUWILP SOCIETY</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK NATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>THE STORY THEATRE PRODUCTIONS SOCIETY</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>TSILHQOT'IN NATIONAL GOVERNMENT</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>DZE L K'ANT FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA VISUAL & PERFORMING ARTS CENTRE SOCIETY</td>
+            <td class="amount">$14,097.00</td>
+        </tr>
+        <tr>
+            <td>DZAWADA'ENUXW FIRST NATION</td>
+            <td class="amount">$14,000.00</td>
+        </tr>
+        <tr>
+            <td>GOOD SAMARITAN CANADA (A LUTHERAN SOCIAL SERVICE ORGANIZATION)</td>
+            <td class="amount">$14,000.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT CURRIE INDIAN BAND</td>
+            <td class="amount">$14,000.00</td>
+        </tr>
+        <tr>
+            <td>KALEIDOSCOPE THEATRE PRODUCTIONS SOCIETY</td>
+            <td class="amount">$13,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 91 NECHAKO LAKES</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>UPPER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>CHESLATTA CARRIER NATION</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>OSOYOOS INDIAN BAND</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>ALEXIS CREEK FIRST NATION</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>O'KEEFE RANCH & INTERIOR HERITAGE SOCIETY</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>T'IT'Q'ET NATION</td>
+            <td class="amount">$13,000.00</td>
+        </tr>
+        <tr>
+            <td>HORNBY FESTIVAL SOCIETY</td>
+            <td class="amount">$12,700.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL COALITION TO END HOMELESSNESS SOCIETY</td>
+            <td class="amount">$12,500.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$12,500.00</td>
+        </tr>
+        <tr>
+            <td>MUSQUEAM INDIAN BAND</td>
+            <td class="amount">$12,500.00</td>
+        </tr>
+        <tr>
+            <td>WITSET FIRST NATION</td>
+            <td class="amount">$12,500.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER CHERRY BLOSSOM FESTIVAL SOCIETY</td>
+            <td class="amount">$12,097.00</td>
+        </tr>
+        <tr>
+            <td>ASHCROFT INDIAN BAND</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND BAND</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>AKISQNUK FIRST NATION</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>NLAKA'PAMUX SERVICES SOCIETY</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>ALL BODIES DANCE SOCIETY</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPITAL REGIONAL DISTRICT</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT FIRST NATION</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>KA:'YU:'K'T'H'/CHE:K'TLES7ET'H' FIRST NATIONS</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>CONNAUGHT YOUTH CENTRE</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER REGION ABORIGINAL FRIENDSHIP CENTRE ASSOCIATION</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>HOLLYBURN FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$12,000.00</td>
+        </tr>
+        <tr>
+            <td>LA SOCIETE FRANCOPHONE DE VICTORIA</td>
+            <td class="amount">$11,936.00</td>
+        </tr>
+        <tr>
+            <td>PATRICK STREET PRODUCTION SOCIETY</td>
+            <td class="amount">$11,900.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON INDIAN BAND</td>
+            <td class="amount">$11,500.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 41 BURNABY</td>
+            <td class="amount">$11,450.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO FIRST NATION</td>
+            <td class="amount">$11,000.00</td>
+        </tr>
+        <tr>
+            <td>MCLEOD LAKE INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>KWADACHA NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>WACHIAY FRIENDSHIP CENTRE SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL TOURISM ASSOCIATION OF CANADA</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SPECTRUM SOCIETY FOR COMMUNITY LIVING</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>RED FOX HEALTHY LIVING SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>KLAHOOSE FIRST NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>TSESHAHT FIRST NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP LAKE INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>HOMALCO INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE COUNTRY ART GALLERY SOCIETY</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>TOOSEY INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON COMMUNITY SERVICES ASSOCIATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY YOUTH MUSIC CENTRE</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>OLD MASSETT VILLAGE COUNCIL</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN BAND COUNCIL</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC PEOPLES' PARTNERSHIP ASSOCIATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>MISSION FOLK MUSIC FESTIVAL SOCIETY</td>
+            <td class="amount">$9,900.00</td>
+        </tr>
+        <tr>
+            <td>SKIDEGATE BAND COUNCIL</td>
+            <td class="amount">$9,500.00</td>
+        </tr>
+        <tr>
+            <td>SOCIETE FRANCOPHONE DE MAILLARDVILLE</td>
+            <td class="amount">$9,500.00</td>
+        </tr>
+        <tr>
+            <td>LAX KW'ALAAMS BUSINESS DEVELOPMENT LTD.</td>
+            <td class="amount">$9,500.00</td>
+        </tr>
+        <tr>
+            <td>LHTAKO DENE NATION</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>PROJECT X THEATRE PRODUCTIONS SOCIETY</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>THE VICTORIA COOL AID SOCIETY</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>THE UPPER SKEENA DEVELOPMENT CENTRE SOCIETY</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 71 COMOX VALLEY</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>KI–LOW–NA FRIENDSHIP SOCIETY</td>
+            <td class="amount">$9,000.00</td>
+        </tr>
+        <tr>
+            <td>NELSON CIVIC THEATRE SOCIETY</td>
+            <td class="amount">$8,800.00</td>
+        </tr>
+        <tr>
+            <td>SIMPCW FIRST NATION</td>
+            <td class="amount">$8,500.00</td>
+        </tr>
+        <tr>
+            <td>ARCHWAY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$8,500.00</td>
+        </tr>
+        <tr>
+            <td>ABORIGINAL TOURISM ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$8,500.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY FAMILY PLACE</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL SCULPTURE BIENNALE</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>SMITHERS COMMUNITY SERVICES ASSOCIATION</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>XENI GWET'IN FIRST NATIONS GOVERNMENT</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>TZEACHTEN FIRST NATION</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>SEA TO SKY COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>SURREY PUBLIC LIBRARY</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>THE DOWNTOWN EASTSIDE WOMEN'S CENTRE ASSOCIATION</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A VILLAGE OF LAXGALTS'AP</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>INTER–CULTURAL ASSOCIATION OF GREATER VICTORIA</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO–CHILCOTIN PARTNERS FOR LITERACY SOCIETY</td>
+            <td class="amount">$8,000.00</td>
+        </tr>
+        <tr>
+            <td>MISTY RIVERS COMMUNITY ARTS COUNCIL</td>
+            <td class="amount">$7,900.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO LITERACY ASSOCIATION</td>
+            <td class="amount">$7,750.00</td>
+        </tr>
+        <tr>
+            <td>GALLERY 7 THEATRE AND PERFORMING ARTS SOCIETY</td>
+            <td class="amount">$7,500.00</td>
+        </tr>
+        <tr>
+            <td>DISTRICT OF STEWART</td>
+            <td class="amount">$7,500.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN FOLK GUILD</td>
+            <td class="amount">$7,097.00</td>
+        </tr>
+        <tr>
+            <td>THE COMMUNITY JUSTICE CENTRE OF THE COMOX VALLEY SOCIETY</td>
+            <td class="amount">$6,800.00</td>
+        </tr>
+        <tr>
+            <td>STELLAT'EN FIRST NATION</td>
+            <td class="amount">$6,500.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS–CARIBOO REGIONAL IMMIGRANTS SOCIETY</td>
+            <td class="amount">$6,500.00</td>
+        </tr>
+        <tr>
+            <td>LIFT COMMUNITY SERVICES OF QATHET SOCIETY</td>
+            <td class="amount">$6,000.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO FIRST NATION</td>
+            <td class="amount">$6,000.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS MUSIC COLLECTIVE SOCIETY</td>
+            <td class="amount">$6,000.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION COUNCIL</td>
+            <td class="amount">$6,000.00</td>
+        </tr>
+        <tr>
+            <td>NEALE, JENNIFER</td>
+            <td class="amount">$6,000.00</td>
+        </tr>
+        <tr>
+            <td>CITY OF SURREY</td>
+            <td class="amount">$5,500.00</td>
+        </tr>
+        <tr>
+            <td>THE MARITIME MUSEUM OF BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE VILLAGE OF KEREMEOS</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>OOKNAKANE FRIENDSHIP CENTRE</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF THE FRASER VALLEY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>HUBLE HOMESTEAD/GISCOME PORTAGE HERITAGE SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER INTERNATIONAL MOUNTAIN FILM FESTIVAL SOCIETY</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH FIRST NATION</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON & DISTRICT MULTICULTURAL SOCIETY</td>
+            <td class="amount">$4,500.00</td>
+        </tr>
+        <tr>
+            <td>KIWASSA NEIGHBOURHOOD SERVICES ASSOCIATION</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>ARNICA ARTIST RUN CENTRE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>BIG BEAR CHILD AND YOUTH ADVOCACY CENTRE (SOCIETY)</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST KOOTENAY WOMEN'S ASSOCIATION</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>EYA ENVIRONMENTAL YOUTH ALLIANCE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>YOUNG WOMEN'S CHRISTIAN ASSOCIATION</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND FAMILY PLACE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>DREAMRIDER PRODUCTIONS SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>VANTAGE POINT STRATEGIES SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER CANTONESE OPERA</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>BE THE CHANGE EARTH ALLIANCE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER HOLOCAUST CENTRE SOCIETY FOR REMEMBRANCE & EDUCATION</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH ISLAND COLLEGE</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY ABORIGINAL CHILDREN AND FAMILY SERVICES SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>GALIANO CONSERVANCY ASSOCIATION</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>THE FAMILY EDUCATION AND SUPPORT CENTRE</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>PROGRESSIVE INTER – CULTURAL COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>PROVIDING ADVOCACY COUNSELLING & EDUCATION SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>COQUITLAM HERITAGE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>PARKGATE COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>THE LOWER MAINLAND PURPOSE SOCIETY FOR YOUTH AND FAMILIES</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>B.C. ASSOCIATION OF FAMILY RESOURCE PROGRAMS</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>HOME IS WHERE WE LIVE–LIFE CYCLES PROJECT SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>JEWISH SENIORS ALLIANCE OF GREATER VANCOUVER</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>JEWISH HISTORICAL SOCIETY OF B C</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON NICOLA CARIBOO UNITED WAY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>CHECK YOUR HEAD: THE YOUTH GLOBAL EDUCATION NETWORK</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK COMMUNITY SERVICES</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>COLLINGWOOD NEIGHBOURHOOD HOUSE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>V C VOLUNTEER COWICHAN</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>KIWANIS ARTS CENTRE SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPILANO COMMUNITY SERVICES SOCIETY</td>
+            <td class="amount">$4,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST MOBERLY FIRST NATIONS</td>
+            <td class="amount">$3,000.00</td>
+        </tr>
+        <tr>
+            <td>WILDSIGHT</td>
+            <td class="amount">$2,654.00</td>
+        </tr>
+        <tr>
+            <td>MUSEUM OF THE CARIBOO CHILCOTIN SOCIETY</td>
+            <td class="amount">$2,500.00</td>
+        </tr>
+        <tr>
+            <td>CAETANI CULTURAL CENTRE SOCIETY</td>
+            <td class="amount">$1,678.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN HISTORICAL SOCIETY</td>
+            <td class="amount">$1,300.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

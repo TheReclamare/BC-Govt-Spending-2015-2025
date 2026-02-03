@@ -1,0 +1,2796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Education</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Education
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$53.84B</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">555</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Education</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>SCHOOL DISTRICT NO 36 SURREY</td>
+            <td class="amount">$6,053,665,109.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 39 VANCOUVER</td>
+            <td class="amount">$4,579,763,394.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 43 COQUITLAM</td>
+            <td class="amount">$2,665,701,781.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 41 BURNABY</td>
+            <td class="amount">$2,039,090,467.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 23 CENTRAL OKANAGAN</td>
+            <td class="amount">$1,891,152,711.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 35 LANGLEY</td>
+            <td class="amount">$1,800,054,877.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 38 RICHMOND</td>
+            <td class="amount">$1,774,422,100.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 61 GREATER VICTORIA</td>
+            <td class="amount">$1,694,376,413.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 34 ABBOTSFORD</td>
+            <td class="amount">$1,553,434,845.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 44 NORTH VANCOUVER</td>
+            <td class="amount">$1,375,333,928.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 73 KAMLOOPS-THOMPSON</td>
+            <td class="amount">$1,291,013,748.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 37 DELTA</td>
+            <td class="amount">$1,284,855,844.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 57 PRINCE GEORGE</td>
+            <td class="amount">$1,230,528,661.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 33 CHILLIWACK</td>
+            <td class="amount">$1,193,182,308.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 68 NANAIMO-LADYSMITH</td>
+            <td class="amount">$1,158,673,812.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 62 SOOKE</td>
+            <td class="amount">$1,121,160,644.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 71 COMOX VALLEY</td>
+            <td class="amount">$797,123,564.00</td>
+        </tr>
+        <tr>
+            <td>CONSEIL SCOLAIRE FRANCOPHONE DE LA COLOMBIE–BRITANNIQUE</td>
+            <td class="amount">$747,006,698.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 22 VERNON</td>
+            <td class="amount">$719,235,593.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 40 NEW WESTMINSTER</td>
+            <td class="amount">$707,719,860.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 79 COWICHAN VALLEY</td>
+            <td class="amount">$670,420,790.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 60 PEACE RIVER NORTH</td>
+            <td class="amount">$625,982,937.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 63 SAANICH</td>
+            <td class="amount">$620,947,182.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 83 NORTH OKANAGAN-SHUSWAP</td>
+            <td class="amount">$598,039,532.00</td>
+        </tr>
+        <tr>
+            <td>THE CATHOLIC INDEPENDENT SCHOOLS OF VANCOUVER ARCHDIOCESE</td>
+            <td class="amount">$550,430,953.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 42 MAPLE RIDGE- PITT MEADOWS</td>
+            <td class="amount">$534,534,221.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 75 MISSION</td>
+            <td class="amount">$531,772,221.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 45 WEST VANCOUVER</td>
+            <td class="amount">$530,476,488.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 05 SOUTHEAST KOOTENAY</td>
+            <td class="amount">$523,842,046.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 67 OKANAGAN SKAHA</td>
+            <td class="amount">$495,030,850.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 72 CAMPBELL RIVER</td>
+            <td class="amount">$477,626,000.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 08 KOOTENAY LAKE</td>
+            <td class="amount">$474,760,991.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 27 CARIBOO-CHILCOTIN</td>
+            <td class="amount">$474,509,512.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 48 SEA TO SKY</td>
+            <td class="amount">$448,541,342.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 91 NECHAKO LAKES</td>
+            <td class="amount">$434,884,180.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 82 COAST MOUNTAIN</td>
+            <td class="amount">$423,633,967.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 59 PEACE RIVER SOUTH</td>
+            <td class="amount">$394,558,104.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 69 QUALICUM</td>
+            <td class="amount">$386,295,827.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 46 SUNSHINE COAST</td>
+            <td class="amount">$364,231,237.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 20 KOOTENAY-COLUMBIA</td>
+            <td class="amount">$354,599,314.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 42 MAPLE RIDGE-PITT MEADOWS</td>
+            <td class="amount">$354,297,280.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 28 QUESNEL</td>
+            <td class="amount">$343,865,462.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 42 MAPLE RIDGE & PITT MEADOWS</td>
+            <td class="amount">$343,424,057.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 06 ROCKY MOUNTAIN</td>
+            <td class="amount">$329,865,432.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$265,009,034.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 70 ALBERNI</td>
+            <td class="amount">$243,287,075.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 53 OKANAGAN-SIMILKAMEEN</td>
+            <td class="amount">$238,721,176.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 47 POWELL RIVER</td>
+            <td class="amount">$237,979,357.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 54 BULKLEY VALLEY</td>
+            <td class="amount">$228,636,397.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 52 PRINCE RUPERT</td>
+            <td class="amount">$227,691,460.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 58 NICOLA-SIMILKAMEEN</td>
+            <td class="amount">$211,941,577.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 64 GULF ISLANDS</td>
+            <td class="amount">$189,696,556.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 74 GOLD TRAIL</td>
+            <td class="amount">$177,740,590.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 85 VANCOUVER ISLAND NORTH</td>
+            <td class="amount">$174,049,512.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA CHRISTIAN CENTER SOCIETY</td>
+            <td class="amount">$173,467,947.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 78 FRASER-CASCADE</td>
+            <td class="amount">$164,971,985.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 51 BOUNDARY</td>
+            <td class="amount">$154,009,765.00</td>
+        </tr>
+        <tr>
+            <td>SELFDESIGN LEARNING FOUNDATION</td>
+            <td class="amount">$151,222,052.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC EDUCATION BENEFITS TRUST FUND</td>
+            <td class="amount">$141,297,680.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 70 PACIFIC RIM</td>
+            <td class="amount">$121,240,379.00</td>
+        </tr>
+        <tr>
+            <td>TELUS COMMUNICATIONS INC.</td>
+            <td class="amount">$110,327,911.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA TEACHERS' FEDERATION</td>
+            <td class="amount">$105,041,850.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 19 REVELSTOKE</td>
+            <td class="amount">$104,905,355.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 81 FORT NELSON</td>
+            <td class="amount">$91,796,721.00</td>
+        </tr>
+        <tr>
+            <td>SATNAM EDUCATION SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$89,434,864.00</td>
+        </tr>
+        <tr>
+            <td>TELUS COMMUNICATIONS COMPANY</td>
+            <td class="amount">$81,889,190.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 93 FRANCOPHONE EDUCATION</td>
+            <td class="amount">$81,383,496.00</td>
+        </tr>
+        <tr>
+            <td>CATHOLIC INDEPENDENT SCHOOLS DIOCESE OF PRINCE GEORGE</td>
+            <td class="amount">$77,311,558.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 10 ARROW LAKES</td>
+            <td class="amount">$74,250,098.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 50 HAIDA GWAII</td>
+            <td class="amount">$72,338,856.00</td>
+        </tr>
+        <tr>
+            <td>REGENT CHRISTIAN ACADEMY SOCIETY</td>
+            <td class="amount">$69,365,525.00</td>
+        </tr>
+        <tr>
+            <td>THE TRADITIONAL LEARNING SOCIETY OF BRITISH COLUMBIA</td>
+            <td class="amount">$67,959,972.00</td>
+        </tr>
+        <tr>
+            <td>THE CATHOLIC INDEPENDENT SCHOOLS OF THE DIOCESE OF VICTORIA</td>
+            <td class="amount">$59,985,199.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 84 VANCOUVER ISLAND WEST</td>
+            <td class="amount">$59,536,526.00</td>
+        </tr>
+        <tr>
+            <td>CATHOLIC INDEPENDENT SCHOOLS OF NELSON DIOCESE</td>
+            <td class="amount">$56,235,280.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC PENTECOSTAL EDUCATION AND COMMUNICATION SOCIETY</td>
+            <td class="amount">$55,556,732.00</td>
+        </tr>
+        <tr>
+            <td>MENNONITE EDUCATIONAL INSTITUTE SOCIETY</td>
+            <td class="amount">$54,256,716.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 93 CONSEIL SCOLAIRE FRANCOPHONE</td>
+            <td class="amount">$53,334,470.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 87 STIKINE</td>
+            <td class="amount">$51,127,375.00</td>
+        </tr>
+        <tr>
+            <td>LANGLEY CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$45,968,327.00</td>
+        </tr>
+        <tr>
+            <td>SURREY CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$44,134,825.00</td>
+        </tr>
+        <tr>
+            <td>THE CATHOLIC INDEPENDENT SCHOOLS OF KAMLOOPS DIOCESE</td>
+            <td class="amount">$42,284,428.00</td>
+        </tr>
+        <tr>
+            <td>ABBOTSFORD CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$42,052,259.00</td>
+        </tr>
+        <tr>
+            <td>THE RICHMOND CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$41,746,750.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER COLLEGE LIMITED</td>
+            <td class="amount">$40,807,943.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 49 CENTRAL COAST</td>
+            <td class="amount">$40,331,264.00</td>
+        </tr>
+        <tr>
+            <td>VICTORIA CHRISTIAN EDUCATION SOCIETY</td>
+            <td class="amount">$35,786,644.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA PUBLIC SCHOOL EMPLOYERS' ASSOCIATION</td>
+            <td class="amount">$35,137,260.00</td>
+        </tr>
+        <tr>
+            <td>ANCHOR ACADEMY SOCIETY</td>
+            <td class="amount">$34,905,846.00</td>
+        </tr>
+        <tr>
+            <td>IBM CANADA LIMITED</td>
+            <td class="amount">$34,415,078.00</td>
+        </tr>
+        <tr>
+            <td>INDEPENDENT MAGNET SCHOOLS</td>
+            <td class="amount">$31,499,346.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$30,129,399.00</td>
+        </tr>
+        <tr>
+            <td>COLLINGWOOD SCHOOL SOCIETY</td>
+            <td class="amount">$29,160,204.00</td>
+        </tr>
+        <tr>
+            <td>CATHOLIC INDEPENDENT SCHOOLS OF KAMLOOPS DIOCESE</td>
+            <td class="amount">$26,838,654.00</td>
+        </tr>
+        <tr>
+            <td>SEVENTH–DAY ADVENTIST CHURCH</td>
+            <td class="amount">$26,561,167.00</td>
+        </tr>
+        <tr>
+            <td>DASMESH PUNJABI EDUCATIONAL ASSOCIATION</td>
+            <td class="amount">$26,107,400.00</td>
+        </tr>
+        <tr>
+            <td>ST. THOMAS MORE COLLEGIATE LTD.</td>
+            <td class="amount">$25,569,978.00</td>
+        </tr>
+        <tr>
+            <td>ST. GEORGE'S SCHOOL</td>
+            <td class="amount">$24,523,343.00</td>
+        </tr>
+        <tr>
+            <td>WEST POINT GREY INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$23,604,681.00</td>
+        </tr>
+        <tr>
+            <td>CROFTON HOUSE SCHOOL</td>
+            <td class="amount">$22,206,305.00</td>
+        </tr>
+        <tr>
+            <td>SIMON FRASER UNIVERSITY</td>
+            <td class="amount">$22,188,295.00</td>
+        </tr>
+        <tr>
+            <td>NANAIMO CHRISTIAN SCHOOL (1988) SOCIETY</td>
+            <td class="amount">$21,322,622.00</td>
+        </tr>
+        <tr>
+            <td>MULGRAVE INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$21,176,222.00</td>
+        </tr>
+        <tr>
+            <td>GURU NANAK EDUCATION SOCIETY OF B.C.</td>
+            <td class="amount">$20,519,966.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA CHRISTIAN SCHOOL</td>
+            <td class="amount">$19,625,421.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN REFORMED SCHOOL ASSOCIATION OF LANGLEY, B.C.</td>
+            <td class="amount">$19,379,119.00</td>
+        </tr>
+        <tr>
+            <td>CHILLIWACK CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$19,060,531.00</td>
+        </tr>
+        <tr>
+            <td>PALS SOCIETY OF CANADA</td>
+            <td class="amount">$19,023,455.00</td>
+        </tr>
+        <tr>
+            <td>THE B. C. MUSLIM ASSOCIATION</td>
+            <td class="amount">$18,723,878.00</td>
+        </tr>
+        <tr>
+            <td>SEVENTH DAY ADVENTIST CHURCH (BRITISH COLUMBIA CONFERENCE)</td>
+            <td class="amount">$18,601,499.00</td>
+        </tr>
+        <tr>
+            <td>DECODA LITERACY SOLUTIONS SOCIETY</td>
+            <td class="amount">$18,425,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS EDUCATION STEERING COMMITTEE SOCIETY</td>
+            <td class="amount">$17,938,397.00</td>
+        </tr>
+        <tr>
+            <td>THE SOCIETY FOR THE EDUCATION OF CHILDREN WITH SPECIFIC LEARNING DISABILITIES</td>
+            <td class="amount">$17,198,457.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH SURREY INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$17,138,815.00</td>
+        </tr>
+        <tr>
+            <td>GLENLYON NORFOLK SCHOOL</td>
+            <td class="amount">$16,927,098.00</td>
+        </tr>
+        <tr>
+            <td>JANE ROWAN SOCIETY</td>
+            <td class="amount">$16,872,489.00</td>
+        </tr>
+        <tr>
+            <td>YORK HOUSE SCHOOL SOCIETY</td>
+            <td class="amount">$16,821,989.00</td>
+        </tr>
+        <tr>
+            <td>CHRISTIAN HOME E–SCHOOL SOCIETY</td>
+            <td class="amount">$16,775,317.00</td>
+        </tr>
+        <tr>
+            <td>CITY LIFE CHURCH</td>
+            <td class="amount">$16,582,462.00</td>
+        </tr>
+        <tr>
+            <td>VERNON CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$16,367,350.00</td>
+        </tr>
+        <tr>
+            <td>BIOREGIONAL EDUCATION ASSOCIATION</td>
+            <td class="amount">$16,306,137.00</td>
+        </tr>
+        <tr>
+            <td>KAMLOOPS CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$15,892,902.00</td>
+        </tr>
+        <tr>
+            <td>WHITE ROCK CHRISTIAN ACADEMY</td>
+            <td class="amount">$15,447,311.00</td>
+        </tr>
+        <tr>
+            <td>M.L.E. TRAINING AND RESEARCH SOCIETY</td>
+            <td class="amount">$15,393,383.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER TALMUD TORAH ASSOCIATION</td>
+            <td class="amount">$14,710,069.00</td>
+        </tr>
+        <tr>
+            <td>CHRISTIAN SCHOOL ASSOCIATION OF BURNABY</td>
+            <td class="amount">$14,435,540.00</td>
+        </tr>
+        <tr>
+            <td>FRASER ACADEMY ASSOCIATION</td>
+            <td class="amount">$14,286,925.00</td>
+        </tr>
+        <tr>
+            <td>IQRA EDUCATION SOCIETY</td>
+            <td class="amount">$14,173,298.00</td>
+        </tr>
+        <tr>
+            <td>GROUP ABA CHILDREN'S SOCIETY</td>
+            <td class="amount">$14,147,335.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CHRISTIAN ACADEMY SOCIETY</td>
+            <td class="amount">$13,856,267.00</td>
+        </tr>
+        <tr>
+            <td>SJS ST. JOHN'S SCHOOL SOCIETY</td>
+            <td class="amount">$13,617,872.00</td>
+        </tr>
+        <tr>
+            <td>MEADOWRIDGE SCHOOL SOCIETY</td>
+            <td class="amount">$13,372,335.00</td>
+        </tr>
+        <tr>
+            <td>STRATFORD HALL (SCHOOL) SOCIETY</td>
+            <td class="amount">$13,203,596.00</td>
+        </tr>
+        <tr>
+            <td>HANEY–PITT MEADOWS CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$13,174,138.00</td>
+        </tr>
+        <tr>
+            <td>MOUNTAIN CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$13,172,132.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT CHEAM CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$13,050,343.00</td>
+        </tr>
+        <tr>
+            <td>LIONS GATE CHRISTIAN ACADEMY ASSOCIATION</td>
+            <td class="amount">$12,996,152.00</td>
+        </tr>
+        <tr>
+            <td>BULKLEY VALLEY CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$12,826,727.00</td>
+        </tr>
+        <tr>
+            <td>TSAWWASSEN INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$12,791,458.00</td>
+        </tr>
+        <tr>
+            <td>INTERNATIONAL ASSOCIATION OF PROGRESSIVE MONTESSORIANS</td>
+            <td class="amount">$12,773,106.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP CHRISTIAN EDUCATION SOCIETY</td>
+            <td class="amount">$12,666,191.00</td>
+        </tr>
+        <tr>
+            <td>VFA CANADA CORPORATION</td>
+            <td class="amount">$12,593,194.00</td>
+        </tr>
+        <tr>
+            <td>HOPE LUTHERAN CHURCH, PORT COQUITLAM</td>
+            <td class="amount">$12,439,689.00</td>
+        </tr>
+        <tr>
+            <td>THE FERNIE ACADEMY SOCIETY</td>
+            <td class="amount">$12,150,215.00</td>
+        </tr>
+        <tr>
+            <td>NELSON CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$11,990,930.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 92 NISGA'A</td>
+            <td class="amount">$11,285,783.00</td>
+        </tr>
+        <tr>
+            <td>FOCUS FOUNDATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$11,275,566.00</td>
+        </tr>
+        <tr>
+            <td>DUNCAN CHRISTIAN SCHOOL ASSOCIATION (1979)</td>
+            <td class="amount">$11,178,087.00</td>
+        </tr>
+        <tr>
+            <td>ST. MICHAELS UNIVERSITY SCHOOL SOCIETY</td>
+            <td class="amount">$11,168,197.00</td>
+        </tr>
+        <tr>
+            <td>NETHERLANDS REFORMED CONGREGATION OF CHILLIWACK, BRITISH COLUMBIA</td>
+            <td class="amount">$10,608,914.00</td>
+        </tr>
+        <tr>
+            <td>CAMPBELL RIVER CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$10,398,502.00</td>
+        </tr>
+        <tr>
+            <td>NAK'AL BUN EDUCATION SOCIETY</td>
+            <td class="amount">$10,220,029.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC MONTESSORI SOCIETY</td>
+            <td class="amount">$9,989,312.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN REFORMED SCHOOL ASSOCIATION OF SMITHERS</td>
+            <td class="amount">$9,987,334.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN REFORMED SCHOOL SOCIETY OF ABBOTSFORD, B.C.</td>
+            <td class="amount">$9,861,177.00</td>
+        </tr>
+        <tr>
+            <td>NORTHGATE CHRISTIAN EDUCATION SOCIETY</td>
+            <td class="amount">$9,838,879.00</td>
+        </tr>
+        <tr>
+            <td>CEDARS CHRISTIAN SCHOOL</td>
+            <td class="amount">$9,694,335.00</td>
+        </tr>
+        <tr>
+            <td>CORNERSTONE EVANGELICAL BAPTIST CHURCH</td>
+            <td class="amount">$8,935,149.00</td>
+        </tr>
+        <tr>
+            <td>MAIMONIDES SCHOOL SOCIETY</td>
+            <td class="amount">$8,830,622.00</td>
+        </tr>
+        <tr>
+            <td>ST MICHAELS UNIVERSITY SCHOOL SOCIETY</td>
+            <td class="amount">$8,718,124.00</td>
+        </tr>
+        <tr>
+            <td>BC LIBRARIES COOPERATIVE</td>
+            <td class="amount">$8,714,958.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY REGIONAL LIBRARY</td>
+            <td class="amount">$8,706,883.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION FOR CHRISTIAN EDUCATION OF PRINCE GEORGE</td>
+            <td class="amount">$8,653,483.00</td>
+        </tr>
+        <tr>
+            <td>TERRACE CALVIN CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$8,563,822.00</td>
+        </tr>
+        <tr>
+            <td>THE VANCOUVER WALDORF SCHOOL SOCIETY</td>
+            <td class="amount">$8,554,344.00</td>
+        </tr>
+        <tr>
+            <td>THE DISCOVERY SCHOOL SOCIETY</td>
+            <td class="amount">$8,495,463.00</td>
+        </tr>
+        <tr>
+            <td>KELOWNA SOCIETY FOR CHRISTIAN EDUCATION</td>
+            <td class="amount">$8,391,802.00</td>
+        </tr>
+        <tr>
+            <td>EVANGELICAL FREE CHURCH OF WILLIAMS LAKE</td>
+            <td class="amount">$8,381,748.00</td>
+        </tr>
+        <tr>
+            <td>FOCUSED EDUCATION RESOURCES SOCIETY</td>
+            <td class="amount">$8,317,369.00</td>
+        </tr>
+        <tr>
+            <td>HAAHUUPAYAK SOCIETY</td>
+            <td class="amount">$8,284,750.00</td>
+        </tr>
+        <tr>
+            <td>JOHN KNOX CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$8,119,365.00</td>
+        </tr>
+        <tr>
+            <td>THE LOWER MAINLAND PURPOSE SOCIETY FOR YOUTH AND FAMILIES</td>
+            <td class="amount">$8,095,866.00</td>
+        </tr>
+        <tr>
+            <td>CRANBROOK CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$8,069,815.00</td>
+        </tr>
+        <tr>
+            <td>DIVERSITY BY DESIGN SOCIETY</td>
+            <td class="amount">$8,067,971.00</td>
+        </tr>
+        <tr>
+            <td>ABERDEEN HALL SENIOR SCHOOL SOCIETY</td>
+            <td class="amount">$7,952,502.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER PUBLIC LIBRARY</td>
+            <td class="amount">$7,817,264.00</td>
+        </tr>
+        <tr>
+            <td>VALLEY CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$7,726,635.00</td>
+        </tr>
+        <tr>
+            <td>CHRIST CHURCH CATHEDRAL EDUCATIONAL SOCIETY</td>
+            <td class="amount">$7,724,313.00</td>
+        </tr>
+        <tr>
+            <td>BRENTWOOD COLLEGE ASSOCIATION</td>
+            <td class="amount">$7,718,026.00</td>
+        </tr>
+        <tr>
+            <td>SEABIRD ISLAND EDUCATION SOCIETY</td>
+            <td class="amount">$7,686,708.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND REGIONAL LIBRARY</td>
+            <td class="amount">$7,669,342.00</td>
+        </tr>
+        <tr>
+            <td>CHRISTIAN OUTREACH OF CANADA</td>
+            <td class="amount">$7,654,615.00</td>
+        </tr>
+        <tr>
+            <td>COLLEGE EDUCACENTRE COLLEGE</td>
+            <td class="amount">$7,578,103.00</td>
+        </tr>
+        <tr>
+            <td>URBAN ACADEMY</td>
+            <td class="amount">$7,558,090.00</td>
+        </tr>
+        <tr>
+            <td>THE ASSOCIATION OF PROFESSIONAL ENGINEERS & GEOSCIENTISTS OF THE PROVINCE OF B C</td>
+            <td class="amount">$7,512,585.00</td>
+        </tr>
+        <tr>
+            <td>QUEEN MARGARETS SCHOOL</td>
+            <td class="amount">$7,420,759.00</td>
+        </tr>
+        <tr>
+            <td>SHAWNIGAN LAKE SCHOOL</td>
+            <td class="amount">$7,297,868.00</td>
+        </tr>
+        <tr>
+            <td>CHIEF AND COUNCIL KAMLOOPS INDIAN BAND</td>
+            <td class="amount">$7,297,360.00</td>
+        </tr>
+        <tr>
+            <td>ABERDEEN HALL PREPARATORY SCHOOL SOCIETY</td>
+            <td class="amount">$7,228,160.00</td>
+        </tr>
+        <tr>
+            <td>THE CHRISTIAN SCHOOL SOCIETY OF HOUSTON</td>
+            <td class="amount">$7,218,454.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER WALDORF SCHOOL SOCIETY</td>
+            <td class="amount">$7,168,968.00</td>
+        </tr>
+        <tr>
+            <td>CHALO INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$7,164,597.00</td>
+        </tr>
+        <tr>
+            <td>STS'AILES</td>
+            <td class="amount">$7,081,339.00</td>
+        </tr>
+        <tr>
+            <td>NELSON AREA WALDORF SCHOOL ASSOCIATION</td>
+            <td class="amount">$7,065,380.00</td>
+        </tr>
+        <tr>
+            <td>LOWER KOOTENAY INDIAN BAND EDUCATION SOCIETY</td>
+            <td class="amount">$6,779,162.00</td>
+        </tr>
+        <tr>
+            <td>THE LIGHTHOUSE CHRISTIAN ACADEMY SOCIETY</td>
+            <td class="amount">$6,699,490.00</td>
+        </tr>
+        <tr>
+            <td>WILLOWSTONE ACADEMY</td>
+            <td class="amount">$6,368,408.00</td>
+        </tr>
+        <tr>
+            <td>I LEARN BC SCHOOL SOCIETY</td>
+            <td class="amount">$6,319,177.00</td>
+        </tr>
+        <tr>
+            <td>CENTRAL ISLAND INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$6,265,373.00</td>
+        </tr>
+        <tr>
+            <td>CHEHALIS INDIAN BAND</td>
+            <td class="amount">$6,181,428.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE FAMILY FELLOWSHIP SOCIETY</td>
+            <td class="amount">$6,142,296.00</td>
+        </tr>
+        <tr>
+            <td>BROCKTON PREPARATORY SCHOOL SOCIETY</td>
+            <td class="amount">$6,092,486.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN REGIONAL LIBRARY</td>
+            <td class="amount">$6,092,416.00</td>
+        </tr>
+        <tr>
+            <td>ACCESS COPYRIGHT</td>
+            <td class="amount">$6,071,904.00</td>
+        </tr>
+        <tr>
+            <td>THE SHIA MUSLIM COMMUNITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$6,047,887.00</td>
+        </tr>
+        <tr>
+            <td>FEDERATION OF INDEPENDENT SCHOOL ASSOCIATIONS IN BRITISH COLUMBIA</td>
+            <td class="amount">$6,041,237.00</td>
+        </tr>
+        <tr>
+            <td>SUNRISE EDUCATIONAL SOCIETY</td>
+            <td class="amount">$6,030,595.00</td>
+        </tr>
+        <tr>
+            <td>NORTHSIDE MENNONITE CHURCH SOCIETY</td>
+            <td class="amount">$6,013,004.00</td>
+        </tr>
+        <tr>
+            <td>DELTA CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$5,949,346.00</td>
+        </tr>
+        <tr>
+            <td>SURREY PUBLIC LIBRARY</td>
+            <td class="amount">$5,938,371.00</td>
+        </tr>
+        <tr>
+            <td>CHRISTIAN LIFE CENTRE OF FORT ST. JOHN</td>
+            <td class="amount">$5,876,318.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST CHRISTIAN FELLOWSHIP</td>
+            <td class="amount">$5,872,997.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK ACWSALCMALSLAYC ACADEMY OF LEARNING SOCIETY</td>
+            <td class="amount">$5,821,731.00</td>
+        </tr>
+        <tr>
+            <td>GOBIND MARG CHARITABLE TRUST SOCIETY</td>
+            <td class="amount">$5,777,046.00</td>
+        </tr>
+        <tr>
+            <td>ST. MARGARET'S SCHOOL</td>
+            <td class="amount">$5,710,800.00</td>
+        </tr>
+        <tr>
+            <td>RELEVANT SCHOOLS SOCIETY</td>
+            <td class="amount">$5,671,446.00</td>
+        </tr>
+        <tr>
+            <td>CASCADE CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$5,557,361.00</td>
+        </tr>
+        <tr>
+            <td>ARTEMIS PLACE SOCIETY</td>
+            <td class="amount">$5,493,016.00</td>
+        </tr>
+        <tr>
+            <td>STUDIO9 INDEPENDENT SCHOOL OF THE ARTS SOCIETY</td>
+            <td class="amount">$5,394,642.00</td>
+        </tr>
+        <tr>
+            <td>MORMON HILLS SCHOOL SOCIETY</td>
+            <td class="amount">$5,390,200.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–'NAKWAXDA'XW COUNCIL</td>
+            <td class="amount">$5,164,520.00</td>
+        </tr>
+        <tr>
+            <td>FRASER VALLEY ELEMENTARY SCHOOL SOCIETY</td>
+            <td class="amount">$5,113,269.00</td>
+        </tr>
+        <tr>
+            <td>THE KING'S CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$5,010,772.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE PREPARATORY SOCIETY</td>
+            <td class="amount">$4,915,577.00</td>
+        </tr>
+        <tr>
+            <td>THE WESTERN COMMUNITIES MONTESSORI SOCIETY</td>
+            <td class="amount">$4,899,005.00</td>
+        </tr>
+        <tr>
+            <td>SCHOOL DISTRICT NO 73 BUSINESS COMPANY</td>
+            <td class="amount">$4,885,900.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$4,859,631.00</td>
+        </tr>
+        <tr>
+            <td>OLD MASSETT VILLAGE COUNCIL</td>
+            <td class="amount">$4,757,328.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA SCHOOL SUPERINTENDENTS' ASSOCIATION</td>
+            <td class="amount">$4,574,500.00</td>
+        </tr>
+        <tr>
+            <td>MADRONA SCHOOL SOCIETY</td>
+            <td class="amount">$4,537,534.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON CREEK COMMUNITY CHRISTIAN EDUCATION SOCIETY</td>
+            <td class="amount">$4,515,325.00</td>
+        </tr>
+        <tr>
+            <td>CHIEF & COUNCILLORS OF THE LOWER NICOLA INDIAN BAND</td>
+            <td class="amount">$4,404,041.00</td>
+        </tr>
+        <tr>
+            <td>SENPOKCHIN EDUCATION SOCIETY</td>
+            <td class="amount">$4,374,196.00</td>
+        </tr>
+        <tr>
+            <td>THE VICTORIA FOUNDATION</td>
+            <td class="amount">$4,364,400.00</td>
+        </tr>
+        <tr>
+            <td>EVERGREEN INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$4,349,894.00</td>
+        </tr>
+        <tr>
+            <td>MAHARISHI AGE OF ENLIGHTENMENT SCHOOL SOCIETY</td>
+            <td class="amount">$4,263,310.00</td>
+        </tr>
+        <tr>
+            <td>LEARNINGSTORM EDUCATION SOCIETY</td>
+            <td class="amount">$4,112,476.00</td>
+        </tr>
+        <tr>
+            <td>CORNERSTONE MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$4,075,287.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$4,042,439.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$4,012,760.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH MONTESSORI SOCIETY</td>
+            <td class="amount">$3,991,438.00</td>
+        </tr>
+        <tr>
+            <td>CHOICE SCHOOL FOR GIFTED CHILDREN SOCIETY</td>
+            <td class="amount">$3,891,269.00</td>
+        </tr>
+        <tr>
+            <td>GREATER VICTORIA PUBLIC LIBRARY</td>
+            <td class="amount">$3,868,978.00</td>
+        </tr>
+        <tr>
+            <td>PUBLIC LIBRARY INTERLINK</td>
+            <td class="amount">$3,861,869.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND JEWISH DAY SCHOOL</td>
+            <td class="amount">$3,837,400.00</td>
+        </tr>
+        <tr>
+            <td>FUJITSU CONSULTING (CANADA) INC.</td>
+            <td class="amount">$3,823,305.00</td>
+        </tr>
+        <tr>
+            <td>AGASSIZ CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$3,800,885.00</td>
+        </tr>
+        <tr>
+            <td>KIMBERLEY INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$3,714,224.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION</td>
+            <td class="amount">$3,689,421.00</td>
+        </tr>
+        <tr>
+            <td>PALS AUTISM SOCIETY</td>
+            <td class="amount">$3,623,215.00</td>
+        </tr>
+        <tr>
+            <td>PYTHAGORAS ACADEMY SOCIETY</td>
+            <td class="amount">$3,566,582.00</td>
+        </tr>
+        <tr>
+            <td>COUSTEAU, L'ECOLE FRANCAISE INTERNATIONALE DE VANCOUVER SOCIETY</td>
+            <td class="amount">$3,495,836.00</td>
+        </tr>
+        <tr>
+            <td>ZION EVANGELICAL LUTHERAN CHURCH AND SCHOOL OF SURREY BRITISH COLUMBIA SOCIETY</td>
+            <td class="amount">$3,470,028.00</td>
+        </tr>
+        <tr>
+            <td>QUESNEL INTERDENOMINATIONAL CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$3,377,014.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$3,361,079.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER HEBREW ACADEMY SOCIETY</td>
+            <td class="amount">$3,306,988.00</td>
+        </tr>
+        <tr>
+            <td>ST GEORGE'S SCHOOL</td>
+            <td class="amount">$3,303,685.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA COUNCIL FOR INTERNATIONAL EDUCATION</td>
+            <td class="amount">$3,250,150.00</td>
+        </tr>
+        <tr>
+            <td>DIAMOND SCHOOL SOCIETY</td>
+            <td class="amount">$3,181,401.00</td>
+        </tr>
+        <tr>
+            <td>ARTSCALIBRE FOUNDATION</td>
+            <td class="amount">$3,076,451.00</td>
+        </tr>
+        <tr>
+            <td>STZ'UMINUS FIRST NATION</td>
+            <td class="amount">$3,015,640.00</td>
+        </tr>
+        <tr>
+            <td>THE FRASER VALLEY SOCIETY FOR CHILDREN WITH LEARNING DISABILITIES</td>
+            <td class="amount">$3,006,147.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY PUBLIC LIBRARY</td>
+            <td class="amount">$2,979,719.00</td>
+        </tr>
+        <tr>
+            <td>NEW LEARNING SOCIETY</td>
+            <td class="amount">$2,824,489.00</td>
+        </tr>
+        <tr>
+            <td>THE BELLA BELLA COMMUNITY SCHOOL SOCIETY</td>
+            <td class="amount">$2,812,477.00</td>
+        </tr>
+        <tr>
+            <td>COWICHAN TRIBES</td>
+            <td class="amount">$2,810,357.00</td>
+        </tr>
+        <tr>
+            <td>ST. ALCUIN COLLEGE FOR THE LIBERAL ARTS SOCIETY</td>
+            <td class="amount">$2,779,759.00</td>
+        </tr>
+        <tr>
+            <td>ST. MARY'S KITKIKCAMNAM SOCIETY</td>
+            <td class="amount">$2,756,106.00</td>
+        </tr>
+        <tr>
+            <td>KYNDRYL CANADA LIMITED</td>
+            <td class="amount">$2,745,366.00</td>
+        </tr>
+        <tr>
+            <td>DISCOVER MONTESSORI SOCIETY</td>
+            <td class="amount">$2,625,957.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH WALDORF SCHOOL ASSOCIATION</td>
+            <td class="amount">$2,622,756.00</td>
+        </tr>
+        <tr>
+            <td>BIBLEWAY CHRISTIAN ACADEMY FOUNDATION</td>
+            <td class="amount">$2,539,779.00</td>
+        </tr>
+        <tr>
+            <td>DOGWOOD INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$2,485,566.00</td>
+        </tr>
+        <tr>
+            <td>HAISLA NATION COUNCIL</td>
+            <td class="amount">$2,460,925.00</td>
+        </tr>
+        <tr>
+            <td>NORTH CARIBOO CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$2,445,413.00</td>
+        </tr>
+        <tr>
+            <td>RICHMOND PUBLIC LIBRARY</td>
+            <td class="amount">$2,386,092.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON–NICOLA REGIONAL DISTRICT LIBRARY SYSTEM</td>
+            <td class="amount">$2,365,654.00</td>
+        </tr>
+        <tr>
+            <td>ANSPAYAXW SCHOOL SOCIETY</td>
+            <td class="amount">$2,336,549.00</td>
+        </tr>
+        <tr>
+            <td>GANGES EDUCATIONAL SOCIETY</td>
+            <td class="amount">$2,325,443.00</td>
+        </tr>
+        <tr>
+            <td>KYAH WIGET EDUCATION SOCIETY</td>
+            <td class="amount">$2,302,413.00</td>
+        </tr>
+        <tr>
+            <td>MOUNTAIN VIEW CHRISTIAN ACADEMY</td>
+            <td class="amount">$2,290,405.00</td>
+        </tr>
+        <tr>
+            <td>THE BRIDGE EDUCATIONAL SOCIETY</td>
+            <td class="amount">$2,248,042.00</td>
+        </tr>
+        <tr>
+            <td>SENSISYUSTEN SCHOOL SOCIETY</td>
+            <td class="amount">$2,225,263.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN REFORMED SCHOOL ASSOCIATION</td>
+            <td class="amount">$2,223,266.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE MONTESSORI ACADEMY SOCIETY</td>
+            <td class="amount">$2,222,560.00</td>
+        </tr>
+        <tr>
+            <td>FREEDOM THINKERS EDUCATION PBL SOCIETY</td>
+            <td class="amount">$2,161,520.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST MONTESSORI SOCIETY</td>
+            <td class="amount">$2,091,413.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON INDIAN BAND</td>
+            <td class="amount">$2,091,070.00</td>
+        </tr>
+        <tr>
+            <td>COAST MOUNTAIN ACADEMY SOCIETY</td>
+            <td class="amount">$2,052,988.00</td>
+        </tr>
+        <tr>
+            <td>NA AKSA GYILAK'YOO SCHOOL BOARD</td>
+            <td class="amount">$1,981,227.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN OF INTEGRITY MONTESSORI ACADEMY OF LEARNING SOCIETY</td>
+            <td class="amount">$1,936,984.00</td>
+        </tr>
+        <tr>
+            <td>THE HANDS ON SUMMER CAMP SOCIETY</td>
+            <td class="amount">$1,915,313.00</td>
+        </tr>
+        <tr>
+            <td>CONCORDIA LUTHERAN CHURCH OF PENTICTON B C</td>
+            <td class="amount">$1,889,160.00</td>
+        </tr>
+        <tr>
+            <td>NORTH STAR MONTESSORI ELEMENTARY SOCIETY</td>
+            <td class="amount">$1,846,732.00</td>
+        </tr>
+        <tr>
+            <td>WALDORF SCHOOL ASSOCIATION OF KELOWNA</td>
+            <td class="amount">$1,844,171.00</td>
+        </tr>
+        <tr>
+            <td>WESTERN COMMUNITIES MONTESSORI SOCIETY</td>
+            <td class="amount">$1,839,954.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND PACIFIC SCHOOL SOCIETY</td>
+            <td class="amount">$1,830,970.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO REGIONAL DISTRICT LIBRARY</td>
+            <td class="amount">$1,802,461.00</td>
+        </tr>
+        <tr>
+            <td>MEADOW MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$1,775,688.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL BAND EDUCATION</td>
+            <td class="amount">$1,753,705.00</td>
+        </tr>
+        <tr>
+            <td>ZION LUTHERAN CHURCH & CHRISTIAN SCHOOL OF PRINCE GEORGE</td>
+            <td class="amount">$1,742,243.00</td>
+        </tr>
+        <tr>
+            <td>CHILDREN'S HEARING AND SPEECH CENTRE OF BC INC.</td>
+            <td class="amount">$1,729,239.00</td>
+        </tr>
+        <tr>
+            <td>COQUITLAM PUBLIC LIBRARY</td>
+            <td class="amount">$1,707,674.00</td>
+        </tr>
+        <tr>
+            <td>B.C. PRINCIPALS' & VICE–PRINCIPALS' ASSOCIATION</td>
+            <td class="amount">$1,704,000.00</td>
+        </tr>
+        <tr>
+            <td>STEIN VALLEY NLAKAPAMUX SCHOOL SOCIETY</td>
+            <td class="amount">$1,667,073.00</td>
+        </tr>
+        <tr>
+            <td>BEACHCOMBERS EDUCATION SOCIETY</td>
+            <td class="amount">$1,657,753.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH OKANAGAN MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$1,622,874.00</td>
+        </tr>
+        <tr>
+            <td>ISLAMIC HERITAGE SOCIETY</td>
+            <td class="amount">$1,588,118.00</td>
+        </tr>
+        <tr>
+            <td>QUEEN CHARLOTTE YOUTH EDUCATION SOCIETY</td>
+            <td class="amount">$1,575,080.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC COMMUNITY RESOURCES SOCIETY</td>
+            <td class="amount">$1,573,878.00</td>
+        </tr>
+        <tr>
+            <td>ARC FOUNDATION</td>
+            <td class="amount">$1,567,500.00</td>
+        </tr>
+        <tr>
+            <td>GLEN EDEN SCHOOL SOCIETY</td>
+            <td class="amount">$1,532,347.00</td>
+        </tr>
+        <tr>
+            <td>MIND MONTESSORI IN DELTA SOCIETY</td>
+            <td class="amount">$1,493,093.00</td>
+        </tr>
+        <tr>
+            <td>SIMPCW FIRST NATION</td>
+            <td class="amount">$1,491,845.00</td>
+        </tr>
+        <tr>
+            <td>FEDERATION DES PARENTS FRANCOPHONES DE COLOMBIE–BRITANNIQUE</td>
+            <td class="amount">$1,474,000.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN MONTESSORI ELEMENTARY SCHOOL SOCIETY</td>
+            <td class="amount">$1,468,671.00</td>
+        </tr>
+        <tr>
+            <td>SQUIALA FIRST NATION</td>
+            <td class="amount">$1,435,891.00</td>
+        </tr>
+        <tr>
+            <td>LIONS GATE MONTESSORI SOCIETY</td>
+            <td class="amount">$1,428,374.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF VICTORIA</td>
+            <td class="amount">$1,372,993.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE GEORGE PUBLIC LIBRARY</td>
+            <td class="amount">$1,370,684.00</td>
+        </tr>
+        <tr>
+            <td>THE B.C. CONFEDERATION OF PARENT ADVISORY COUNCILS</td>
+            <td class="amount">$1,368,000.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY OF THE LOWER MAINLAND</td>
+            <td class="amount">$1,365,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$1,298,037.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$1,281,243.00</td>
+        </tr>
+        <tr>
+            <td>NORTHERN LIGHTS COLLEGE FOUNDATION</td>
+            <td class="amount">$1,250,000.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC RIM MONTESSORI ACADEMY SOCIETY</td>
+            <td class="amount">$1,163,126.00</td>
+        </tr>
+        <tr>
+            <td>GLOBAL SCHOOL SOCIETY</td>
+            <td class="amount">$1,154,871.00</td>
+        </tr>
+        <tr>
+            <td>SALTWATER EDUCATION SOCIETY</td>
+            <td class="amount">$1,140,065.00</td>
+        </tr>
+        <tr>
+            <td>GWA'SALA–NAKWAXDA'XW COUNCIL</td>
+            <td class="amount">$1,103,968.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN FIRST NATION</td>
+            <td class="amount">$1,070,416.00</td>
+        </tr>
+        <tr>
+            <td>ARROWSMITH INDEPENDENT SCHOOL SOCIETY</td>
+            <td class="amount">$1,054,810.00</td>
+        </tr>
+        <tr>
+            <td>WE– CHARITY WESTERN CANADA OFFICE</td>
+            <td class="amount">$1,000,000.00</td>
+        </tr>
+        <tr>
+            <td>WEST KOOTENAY EDUCATIONAL RESOURCE SOCIETY</td>
+            <td class="amount">$985,119.00</td>
+        </tr>
+        <tr>
+            <td>CAMOSUN COLLEGE</td>
+            <td class="amount">$978,561.00</td>
+        </tr>
+        <tr>
+            <td>CHIEF & COUNCILLORS OF UPPER NICOLA BAND</td>
+            <td class="amount">$965,803.00</td>
+        </tr>
+        <tr>
+            <td>WSANEC SCHOOL BOARD</td>
+            <td class="amount">$932,189.00</td>
+        </tr>
+        <tr>
+            <td>NEW WESTMINSTER PUBLIC LIBRARY</td>
+            <td class="amount">$882,033.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE COUNCIL OF MINISTERS OF EDUCATION, CANADA</td>
+            <td class="amount">$826,762.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN INDIAN BAND</td>
+            <td class="amount">$819,458.00</td>
+        </tr>
+        <tr>
+            <td>SFU–BC ELECTRONIC LIBRARY NETWORK</td>
+            <td class="amount">$817,030.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH FIRST NATION</td>
+            <td class="amount">$815,982.00</td>
+        </tr>
+        <tr>
+            <td>ST. JOHN'S ACADEMY SHAWNIGAN LAKE SOCIETY</td>
+            <td class="amount">$806,802.00</td>
+        </tr>
+        <tr>
+            <td>THE AHOUSAT EDUCATION AUTHORITY</td>
+            <td class="amount">$806,215.00</td>
+        </tr>
+        <tr>
+            <td>ERAC–BCEM SERVICES SOCIETY</td>
+            <td class="amount">$800,000.00</td>
+        </tr>
+        <tr>
+            <td>QUATSINO BAND COUNCIL</td>
+            <td class="amount">$782,469.00</td>
+        </tr>
+        <tr>
+            <td>SKEETCHESTN INDIAN BAND</td>
+            <td class="amount">$766,407.00</td>
+        </tr>
+        <tr>
+            <td>NORTH VANCOUVER CITY LIBRARY</td>
+            <td class="amount">$752,006.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON PUBLIC LIBRARY</td>
+            <td class="amount">$751,486.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN PARENTS FOR FRENCH – BRITISH COLUMBIA BRANCH</td>
+            <td class="amount">$738,280.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST JOHN PUBLIC LIBRARY</td>
+            <td class="amount">$736,175.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC TORAH INSTITUTE SOCIETY</td>
+            <td class="amount">$722,426.00</td>
+        </tr>
+        <tr>
+            <td>CEDAR VALLEY WALDORF SCHOOL ASSOCIATION</td>
+            <td class="amount">$714,571.00</td>
+        </tr>
+        <tr>
+            <td>BROOKES WESTSHORE SCHOOL SOCIETY</td>
+            <td class="amount">$709,244.00</td>
+        </tr>
+        <tr>
+            <td>RADICALUS MONTESSORI SOCIETY</td>
+            <td class="amount">$707,778.00</td>
+        </tr>
+        <tr>
+            <td>NAMGIS EDUCATION SOCIETY</td>
+            <td class="amount">$704,398.00</td>
+        </tr>
+        <tr>
+            <td>PORT MOODY PUBLIC LIBRARY</td>
+            <td class="amount">$686,030.00</td>
+        </tr>
+        <tr>
+            <td>'NA AKSA GYILAK'YOO SCHOOL BOARD</td>
+            <td class="amount">$683,703.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF SCHOOL TRANSPORTATION SERVICES OF BRITISH COLUMBIA</td>
+            <td class="amount">$680,000.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY LIBRARY FEDERATION</td>
+            <td class="amount">$676,142.00</td>
+        </tr>
+        <tr>
+            <td>THE INTERNATIONAL HIGH SCHOOL AT VANCOUVER ISLAND UNIVERSITY ASSOCIATION</td>
+            <td class="amount">$663,968.00</td>
+        </tr>
+        <tr>
+            <td>WEST VANCOUVER MEMORIAL LIBRARY</td>
+            <td class="amount">$661,819.00</td>
+        </tr>
+        <tr>
+            <td>SEMINARY OF CHRIST THE KING</td>
+            <td class="amount">$639,031.00</td>
+        </tr>
+        <tr>
+            <td>COMOX VALLEY WALDORF SCHOOL SOCIETY</td>
+            <td class="amount">$635,328.00</td>
+        </tr>
+        <tr>
+            <td>SNUNEYMUXW FIRST NATION</td>
+            <td class="amount">$612,363.00</td>
+        </tr>
+        <tr>
+            <td>KWAKIUTL BAND COUNCIL</td>
+            <td class="amount">$604,112.00</td>
+        </tr>
+        <tr>
+            <td>CRANBROOK PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$602,591.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSOCIATION OF SCHOOL BUSINESS OFFICIALS</td>
+            <td class="amount">$587,000.00</td>
+        </tr>
+        <tr>
+            <td>TERRACE PUBLIC LIBRARY</td>
+            <td class="amount">$586,186.00</td>
+        </tr>
+        <tr>
+            <td>SAINT JOHN PAUL II ACADEMY SOCIETY</td>
+            <td class="amount">$585,104.00</td>
+        </tr>
+        <tr>
+            <td>GITSEGUKLA COMMUNITY EDUCATION DEVELOPMENT AUTHORITY ASSOCIATION</td>
+            <td class="amount">$581,998.00</td>
+        </tr>
+        <tr>
+            <td>ISLANDLINK LIBRARY FEDERATION</td>
+            <td class="amount">$565,191.00</td>
+        </tr>
+        <tr>
+            <td>UNISUS INTERNATIONAL SCHOOLS SOCIETY</td>
+            <td class="amount">$556,256.00</td>
+        </tr>
+        <tr>
+            <td>POWELL RIVER MUNICIPAL LIBRARY</td>
+            <td class="amount">$548,028.00</td>
+        </tr>
+        <tr>
+            <td>CASA MONTESSORI SOCIETY</td>
+            <td class="amount">$546,122.00</td>
+        </tr>
+        <tr>
+            <td>NORTH CENTRAL LIBRARY FEDERATION</td>
+            <td class="amount">$532,534.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA LIBRARY ASSOCIATION</td>
+            <td class="amount">$519,350.00</td>
+        </tr>
+        <tr>
+            <td>NELSON MUNICIPAL LIBRARY</td>
+            <td class="amount">$517,681.00</td>
+        </tr>
+        <tr>
+            <td>PRINCE RUPERT LIBRARY</td>
+            <td class="amount">$510,352.00</td>
+        </tr>
+        <tr>
+            <td>CLAREN ACADEMY SOCIETY</td>
+            <td class="amount">$502,879.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH PUBLIC LIBRARY</td>
+            <td class="amount">$501,488.00</td>
+        </tr>
+        <tr>
+            <td>QUEENSWOOD MONTESSORI SOCIETY</td>
+            <td class="amount">$496,915.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE INDIAN BAND</td>
+            <td class="amount">$496,364.00</td>
+        </tr>
+        <tr>
+            <td>DWIGHT SCHOOL CANADA SOCIETY</td>
+            <td class="amount">$491,354.00</td>
+        </tr>
+        <tr>
+            <td>DAWSON CREEK MUNICIPAL LIBRARY</td>
+            <td class="amount">$481,186.00</td>
+        </tr>
+        <tr>
+            <td>PERFECTWORLD INNOVATIONS INC.</td>
+            <td class="amount">$474,860.00</td>
+        </tr>
+        <tr>
+            <td>GITXAALA TRAINING AND EDUCATION SOCIETY</td>
+            <td class="amount">$473,447.00</td>
+        </tr>
+        <tr>
+            <td>COAST TSIMSHIAN ACADEMY OF LAX KW'ALAAMS</td>
+            <td class="amount">$441,201.00</td>
+        </tr>
+        <tr>
+            <td>ISLAND MONTESSORI HOUSE SOCIETY</td>
+            <td class="amount">$434,873.00</td>
+        </tr>
+        <tr>
+            <td>THEATRE LA SEIZIEME</td>
+            <td class="amount">$421,416.00</td>
+        </tr>
+        <tr>
+            <td>SECHELT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$419,156.00</td>
+        </tr>
+        <tr>
+            <td>CASTLEGAR & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$414,002.00</td>
+        </tr>
+        <tr>
+            <td>METIS NATION BRITISH COLUMBIA</td>
+            <td class="amount">$400,500.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA CONSTRUCTION ASSOCIATION</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>PORT ALBERNI CHRISTIAN SCHOOL ASSOCIATION</td>
+            <td class="amount">$394,851.00</td>
+        </tr>
+        <tr>
+            <td>THE SUN HAVEN EDUCATIONAL SOCIETY</td>
+            <td class="amount">$385,122.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRST NATION</td>
+            <td class="amount">$379,757.00</td>
+        </tr>
+        <tr>
+            <td>GRACE EVANGELICAL LUTHERAN CHURCH, OF OSOYOOS, B.C.</td>
+            <td class="amount">$367,081.00</td>
+        </tr>
+        <tr>
+            <td>NORTH EAST LIBRARY FEDERATION</td>
+            <td class="amount">$358,437.00</td>
+        </tr>
+        <tr>
+            <td>BURNABY MONTESSORI ELEMENTARY SCHOOL SOCIETY</td>
+            <td class="amount">$354,852.00</td>
+        </tr>
+        <tr>
+            <td>SMITHERS PUBLIC LIBRARY</td>
+            <td class="amount">$354,481.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA SCHOOL TRUSTEES ASSOCIATION</td>
+            <td class="amount">$353,000.00</td>
+        </tr>
+        <tr>
+            <td>L'ECOLE FRANCAISE INTERNATIONALE DE VANCOUVER SOCIETY</td>
+            <td class="amount">$347,888.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH NATION</td>
+            <td class="amount">$345,571.00</td>
+        </tr>
+        <tr>
+            <td>GIBSONS & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$344,780.00</td>
+        </tr>
+        <tr>
+            <td>CRESTON PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$337,621.00</td>
+        </tr>
+        <tr>
+            <td>JUNIOR ACHIEVEMENT OF BRITISH COLUMBIA</td>
+            <td class="amount">$333,000.00</td>
+        </tr>
+        <tr>
+            <td>UNITED WAY OF BRITISH COLUMBIA</td>
+            <td class="amount">$325,000.00</td>
+        </tr>
+        <tr>
+            <td>KITIMAT PUBLIC LIBRARY</td>
+            <td class="amount">$314,949.00</td>
+        </tr>
+        <tr>
+            <td>TRAIL & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$311,229.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$305,673.00</td>
+        </tr>
+        <tr>
+            <td>ZAWIYAH FOUNDATION</td>
+            <td class="amount">$304,022.00</td>
+        </tr>
+        <tr>
+            <td>EQUITAS – INTERNATIONAL CENTRE FOR HUMAN RIGHTS EDUCATION SOCIETY</td>
+            <td class="amount">$301,271.00</td>
+        </tr>
+        <tr>
+            <td>WHISTLER PUBLIC LIBRARY</td>
+            <td class="amount">$298,921.00</td>
+        </tr>
+        <tr>
+            <td>BC HOUSING MANAGEMENT COMMISSION</td>
+            <td class="amount">$298,254.00</td>
+        </tr>
+        <tr>
+            <td>CHEMAINUS NATIVE COLLEGE</td>
+            <td class="amount">$296,212.00</td>
+        </tr>
+        <tr>
+            <td>SALT SPRING ISLAND PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$284,794.00</td>
+        </tr>
+        <tr>
+            <td>KIMBERLEY PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$274,576.00</td>
+        </tr>
+        <tr>
+            <td>ISKUT FIRST NATIONS</td>
+            <td class="amount">$274,373.00</td>
+        </tr>
+        <tr>
+            <td>INVERMERE PUBLIC LIBRARY</td>
+            <td class="amount">$271,946.00</td>
+        </tr>
+        <tr>
+            <td>CANIM LAKE BAND</td>
+            <td class="amount">$269,699.00</td>
+        </tr>
+        <tr>
+            <td>FERNIE PUBLIC LIBRARY</td>
+            <td class="amount">$267,501.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$266,550.00</td>
+        </tr>
+        <tr>
+            <td>GRAND FORKS & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$264,885.00</td>
+        </tr>
+        <tr>
+            <td>MORNING GLORY EDUCATIONAL SOCIETY</td>
+            <td class="amount">$263,417.00</td>
+        </tr>
+        <tr>
+            <td>VANDERHOOF PUBLIC LIBRARY</td>
+            <td class="amount">$263,193.00</td>
+        </tr>
+        <tr>
+            <td>COLDWATER INDIAN BAND</td>
+            <td class="amount">$261,377.00</td>
+        </tr>
+        <tr>
+            <td>CONSEIL JEUNESSE FRANCOPHONE OF B C</td>
+            <td class="amount">$260,000.00</td>
+        </tr>
+        <tr>
+            <td>ASIA PACIFIC FOUNDATION OF CANADA</td>
+            <td class="amount">$253,750.00</td>
+        </tr>
+        <tr>
+            <td>NORTH WEST LIBRARY FEDERATION</td>
+            <td class="amount">$253,218.00</td>
+        </tr>
+        <tr>
+            <td>COUNCIL OF MINISTERS EDUCATION CANADA</td>
+            <td class="amount">$253,200.00</td>
+        </tr>
+        <tr>
+            <td>STEINER EDUCATIONAL SOCIETY</td>
+            <td class="amount">$251,078.00</td>
+        </tr>
+        <tr>
+            <td>HAZELTON DISTRICT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$250,027.00</td>
+        </tr>
+        <tr>
+            <td>FIRST ROBOTICS CANADA</td>
+            <td class="amount">$250,000.00</td>
+        </tr>
+        <tr>
+            <td>NOORUNISSA INTERNATIONAL MONTESSORI ACADEMY OF CANADA SOCIETY</td>
+            <td class="amount">$239,073.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF B C CONTINUING STUDIES</td>
+            <td class="amount">$233,106.00</td>
+        </tr>
+        <tr>
+            <td>TIMESING EDUCATION SOCIETY</td>
+            <td class="amount">$233,103.00</td>
+        </tr>
+        <tr>
+            <td>LILLOOET AREA PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$231,504.00</td>
+        </tr>
+        <tr>
+            <td>DIGIBC, THE INTERACTIVE & DIGITAL MEDIA INDUSTRY ASSOCIATION OF BC</td>
+            <td class="amount">$231,150.00</td>
+        </tr>
+        <tr>
+            <td>TSLEIL–WAUTUTH NATION</td>
+            <td class="amount">$226,985.00</td>
+        </tr>
+        <tr>
+            <td>BURNS LAKE PUBLIC LIBRARY</td>
+            <td class="amount">$223,191.00</td>
+        </tr>
+        <tr>
+            <td>LAKESIDE EDUCATIONAL SOCIETY OF KELOWNA</td>
+            <td class="amount">$213,428.00</td>
+        </tr>
+        <tr>
+            <td>YES SCHOOL SOCIETY</td>
+            <td class="amount">$210,712.00</td>
+        </tr>
+        <tr>
+            <td>EARLY CHILDHOOD EDUCATORS OF B C</td>
+            <td class="amount">$210,000.00</td>
+        </tr>
+        <tr>
+            <td>THE UNIVERSITY OF BRITISH COLUMBIA, UBC EXTENDED LEARNING</td>
+            <td class="amount">$206,116.00</td>
+        </tr>
+        <tr>
+            <td>THE GITKSAN–WET'SUWET'EN EDUCATION SOCIETY</td>
+            <td class="amount">$205,563.00</td>
+        </tr>
+        <tr>
+            <td>CVC NEWBRIDGE ACADEMY SOCIETY</td>
+            <td class="amount">$205,266.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL BRITISH COLUMBIA MUSEUM FOUNDATION</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN UNION OF PUBLIC EMPLOYEES</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>FREE THE CHILDREN</td>
+            <td class="amount">$200,000.00</td>
+        </tr>
+        <tr>
+            <td>MIA MONTESSORI ACADEMY SOCIETY</td>
+            <td class="amount">$197,544.00</td>
+        </tr>
+        <tr>
+            <td>ALEXIS CREEK INDIAN BAND</td>
+            <td class="amount">$197,301.00</td>
+        </tr>
+        <tr>
+            <td>FORT NELSON PUBLIC LIBRARY</td>
+            <td class="amount">$194,496.00</td>
+        </tr>
+        <tr>
+            <td>CHETWYND PUBLIC LIBRARY</td>
+            <td class="amount">$188,524.00</td>
+        </tr>
+        <tr>
+            <td>AVENIR SCHOOL SOCIETY</td>
+            <td class="amount">$188,334.00</td>
+        </tr>
+        <tr>
+            <td>ARC ACADEMY FOUNDATION</td>
+            <td class="amount">$186,156.00</td>
+        </tr>
+        <tr>
+            <td>SHALHEVET GIRLS HIGH SCHOOL SOCIETY</td>
+            <td class="amount">$184,560.00</td>
+        </tr>
+        <tr>
+            <td>CONSEIL JEUNESSE FRANCOPHONE DE LA COLOMBIE–BRITANNIQUE</td>
+            <td class="amount">$183,714.00</td>
+        </tr>
+        <tr>
+            <td>MACKENZIE PUBLIC LIBRARY</td>
+            <td class="amount">$176,868.00</td>
+        </tr>
+        <tr>
+            <td>B. C. ABORIGINAL CHILD CARE SOCIETY</td>
+            <td class="amount">$175,000.00</td>
+        </tr>
+        <tr>
+            <td>KITSUMKALUM INDIAN BAND</td>
+            <td class="amount">$174,795.00</td>
+        </tr>
+        <tr>
+            <td>CANYON SPRINGS MONTESSORI SOCIETY</td>
+            <td class="amount">$171,995.00</td>
+        </tr>
+        <tr>
+            <td>BEAVER VALLEY PUBLIC LIBRARY</td>
+            <td class="amount">$166,011.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$164,741.00</td>
+        </tr>
+        <tr>
+            <td>PEMBERTON AND DISTRICT PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$164,694.00</td>
+        </tr>
+        <tr>
+            <td>SPARWOOD PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$161,836.00</td>
+        </tr>
+        <tr>
+            <td>CHIEF & COUNCILLORS OF FORT WARE INDIAN BAND</td>
+            <td class="amount">$158,638.00</td>
+        </tr>
+        <tr>
+            <td>LANGARA COLLEGE</td>
+            <td class="amount">$155,849.00</td>
+        </tr>
+        <tr>
+            <td>RIGHT TO PLAY</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>FRONTIER COLLEGE</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>TAKE A HIKE, YOUTH AT RISK FOUNDATION</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF THE FRASER VALLEY</td>
+            <td class="amount">$148,321.00</td>
+        </tr>
+        <tr>
+            <td>FRASER LAKE PUBLIC LIBRARY</td>
+            <td class="amount">$140,044.00</td>
+        </tr>
+        <tr>
+            <td>ESK'ETEMC FIRST NATION</td>
+            <td class="amount">$136,820.00</td>
+        </tr>
+        <tr>
+            <td>BROOKES SCHOOL CANADA SOCIETY</td>
+            <td class="amount">$136,677.00</td>
+        </tr>
+        <tr>
+            <td>EPIPHYTE EDUCATIONAL SOCIETY</td>
+            <td class="amount">$136,043.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA COUNCIL OF ADMINISTRATORS OF INCLUSIVE SUPPORT IN EDUCATION</td>
+            <td class="amount">$135,000.00</td>
+        </tr>
+        <tr>
+            <td>JUNGLE MEDIA INC.</td>
+            <td class="amount">$134,508.00</td>
+        </tr>
+        <tr>
+            <td>PENDER ISLAND PUBLIC LIBRARY</td>
+            <td class="amount">$134,468.00</td>
+        </tr>
+        <tr>
+            <td>MINDUP THE GOLDIE HAWN FOUNDATION</td>
+            <td class="amount">$132,000.00</td>
+        </tr>
+        <tr>
+            <td>NESKONLITH INDIAN BAND</td>
+            <td class="amount">$131,493.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST JAMES PUBLIC LIBRARY</td>
+            <td class="amount">$128,002.00</td>
+        </tr>
+        <tr>
+            <td>SETON LAKE BAND</td>
+            <td class="amount">$127,320.00</td>
+        </tr>
+        <tr>
+            <td>UBC OKANAGAN</td>
+            <td class="amount">$122,472.00</td>
+        </tr>
+        <tr>
+            <td>THE BRITISH COLUMBIA LIBRARY TRUSTEES ASSOCIATION</td>
+            <td class="amount">$121,000.00</td>
+        </tr>
+        <tr>
+            <td>WIND AND TIDE KINDERGARTEN SOCIETY</td>
+            <td class="amount">$116,237.00</td>
+        </tr>
+        <tr>
+            <td>B.C. LIONS FOOTBALL CLUB INC.</td>
+            <td class="amount">$115,000.00</td>
+        </tr>
+        <tr>
+            <td>MOUNT CURRIE BAND COUNCIL</td>
+            <td class="amount">$111,964.00</td>
+        </tr>
+        <tr>
+            <td>SOCIETY FOR THE PROMOTION OF SOCIAL AND ACADEMIC SUCCESS FOR ALL STUDENTS</td>
+            <td class="amount">$109,000.00</td>
+        </tr>
+        <tr>
+            <td>ROSSLAND PUBLIC LIBRARY</td>
+            <td class="amount">$100,608.00</td>
+        </tr>
+        <tr>
+            <td>SCIENCE WORLD BRITISH COLUMBIA</td>
+            <td class="amount">$100,000.00</td>
+        </tr>
+        <tr>
+            <td>PENELAKUT ISLAND LEARNING CENTRE SOCIETY</td>
+            <td class="amount">$99,782.00</td>
+        </tr>
+        <tr>
+            <td>FRESHWORKS STUDIO INC.</td>
+            <td class="amount">$97,870.00</td>
+        </tr>
+        <tr>
+            <td>DOUGLAS COLLEGE</td>
+            <td class="amount">$94,199.00</td>
+        </tr>
+        <tr>
+            <td>OECD/IEA</td>
+            <td class="amount">$93,000.00</td>
+        </tr>
+        <tr>
+            <td>MCCARTHY TETRAULT LLP IN TRUST</td>
+            <td class="amount">$90,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH COAST LIBRARY FEDERATION</td>
+            <td class="amount">$86,383.00</td>
+        </tr>
+        <tr>
+            <td>THE UBC SOCIETY FOR THE EDUCATION OF YOUNG CHILDREN</td>
+            <td class="amount">$83,348.00</td>
+        </tr>
+        <tr>
+            <td>JOINT CONSORTIUM FOR SCHOOL HEALTH</td>
+            <td class="amount">$81,084.00</td>
+        </tr>
+        <tr>
+            <td>CENTER FOR SYSTEMS AWARENESS INC.</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>BODWELL ACADEMY SOCIETY</td>
+            <td class="amount">$74,708.00</td>
+        </tr>
+        <tr>
+            <td>IVY MONTESSORI SCHOOL SOCIETY</td>
+            <td class="amount">$60,128.00</td>
+        </tr>
+        <tr>
+            <td>B C SCHOOL TRUSTEES ASSOCIATION</td>
+            <td class="amount">$60,000.00</td>
+        </tr>
+        <tr>
+            <td>BOWEN ISLAND PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$57,462.00</td>
+        </tr>
+        <tr>
+            <td>STSWECEM'C XGAT'TEM FIRST NATION</td>
+            <td class="amount">$57,272.00</td>
+        </tr>
+        <tr>
+            <td>LES JEUX DE LA FRANCOPHONIE CANADIENNE VICTORIA 2020</td>
+            <td class="amount">$54,000.00</td>
+        </tr>
+        <tr>
+            <td>CAPILANO UNIVERSITY</td>
+            <td class="amount">$50,166.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC PEOPLES' PARTNERSHIP ASSOCIATION</td>
+            <td class="amount">$49,987.00</td>
+        </tr>
+        <tr>
+            <td>SCIENCE FAIR FOUNDATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$49,501.00</td>
+        </tr>
+        <tr>
+            <td>TL'AZT'EN NATION</td>
+            <td class="amount">$47,566.00</td>
+        </tr>
+        <tr>
+            <td>NAKUSP PUBLIC LIBRARY</td>
+            <td class="amount">$45,931.00</td>
+        </tr>
+        <tr>
+            <td>TUMBLER RIDGE PUBLIC LIBRARY</td>
+            <td class="amount">$41,810.00</td>
+        </tr>
+        <tr>
+            <td>PARTNERSHIPS BRITISH COLUMBIA INC.</td>
+            <td class="amount">$41,446.00</td>
+        </tr>
+        <tr>
+            <td>ELKFORD PUBLIC LIBRARY</td>
+            <td class="amount">$40,709.00</td>
+        </tr>
+        <tr>
+            <td>SALMO PUBLIC LIBRARY</td>
+            <td class="amount">$40,035.00</td>
+        </tr>
+        <tr>
+            <td>ROYAL BRITISH COLUMBIA MUSEUM</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>AL–MUSTAFA ISLAMIC ASSOCIATION</td>
+            <td class="amount">$38,921.00</td>
+        </tr>
+        <tr>
+            <td>HONGDE EDUCATION SOCIETY</td>
+            <td class="amount">$38,864.00</td>
+        </tr>
+        <tr>
+            <td>EDUDATA CANADA</td>
+            <td class="amount">$37,600.00</td>
+        </tr>
+        <tr>
+            <td>KASLO & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$37,010.00</td>
+        </tr>
+        <tr>
+            <td>VALEMOUNT PUBLIC LIBRARY</td>
+            <td class="amount">$36,126.00</td>
+        </tr>
+        <tr>
+            <td>CGI INFORMATION SYSTEMS AND MANAGEMENT CONSULTANTS INC.</td>
+            <td class="amount">$35,338.00</td>
+        </tr>
+        <tr>
+            <td>RICK HANSEN FOUNDATION</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>HUDSON'S HOPE PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$34,955.00</td>
+        </tr>
+        <tr>
+            <td>MCBRIDE & DISTRICT PUBLIC LIBRARY</td>
+            <td class="amount">$34,938.00</td>
+        </tr>
+        <tr>
+            <td>SEA TO SKY MONTESSORI SOCIETY</td>
+            <td class="amount">$33,560.00</td>
+        </tr>
+        <tr>
+            <td>GIBSONS CHRISTIAN SCHOOL SOCIETY</td>
+            <td class="amount">$32,884.00</td>
+        </tr>
+        <tr>
+            <td>FORT ST. JAMES PUBLIC LIBRARY</td>
+            <td class="amount">$32,569.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER ISLAND UNIVERSITY</td>
+            <td class="amount">$32,027.00</td>
+        </tr>
+        <tr>
+            <td>TAYLOR PUBLIC LIBRARY</td>
+            <td class="amount">$31,455.00</td>
+        </tr>
+        <tr>
+            <td>B & D MONTESSORI LEARNING ACADEMY</td>
+            <td class="amount">$30,223.00</td>
+        </tr>
+        <tr>
+            <td>SOCIETY OF CHRISTIAN SCHOOLS IN B C</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>STEWART PUBLIC LIBRARY</td>
+            <td class="amount">$29,909.00</td>
+        </tr>
+        <tr>
+            <td>FAMILY SUPPORT INSTITUTE OF BC SOCIETY</td>
+            <td class="amount">$29,000.00</td>
+        </tr>
+        <tr>
+            <td>GRANISLE PUBLIC LIBRARY</td>
+            <td class="amount">$28,502.00</td>
+        </tr>
+        <tr>
+            <td>ALERT BAY PUBLIC LIBRARY</td>
+            <td class="amount">$28,118.00</td>
+        </tr>
+        <tr>
+            <td>THE MIDWAY PUBLIC LIBRARY ASSOCIATION</td>
+            <td class="amount">$27,723.00</td>
+        </tr>
+        <tr>
+            <td>SOCIETE FRANCOPHONE DE MAILLARDVILLE</td>
+            <td class="amount">$27,500.00</td>
+        </tr>
+        <tr>
+            <td>GREENWOOD PUBLIC LIBRARY</td>
+            <td class="amount">$27,439.00</td>
+        </tr>
+        <tr>
+            <td>POUCE COUPE PUBLIC LIBRARY</td>
+            <td class="amount">$27,432.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$27,151.00</td>
+        </tr>
+        <tr>
+            <td>KWANTLEN POLYTECHNIC UNIVERSITY</td>
+            <td class="amount">$25,952.00</td>
+        </tr>
+        <tr>
+            <td>RADIUM HOT SPRINGS PUBLIC LIBRARY</td>
+            <td class="amount">$25,569.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST BOYS CLUB NETWORK FOUNDATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>DASH DIRECTORATE OF AGENCIES FOR SCHOOL HEALTH BRITISH COLUMBIA ASSOCIATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA COUNCIL OF ADMINISTRATORS OF SPECIAL EDUCATION</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>INDUSTRY TRAINING AUTHORITY</td>
+            <td class="amount">$25,000.00</td>
+        </tr>
+        <tr>
+            <td>METIS PROVINCIAL COUNCIL OF BRITISH COLUMBIA</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>THOMPSON RIVERS UNIVERSITY</td>
+            <td class="amount">$15,748.00</td>
+        </tr>
+        <tr>
+            <td>HUMAN EARLY LEARNING PARTNERSHIP (HELP)</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTH ISLAND COLLEGE</td>
+            <td class="amount">$11,580.00</td>
+        </tr>
+        <tr>
+            <td>EATON ARROWSMITH SCHOOL LTD.</td>
+            <td class="amount">$7,549.00</td>
+        </tr>
+        <tr>
+            <td>WESTSIDE MONTESSORI SCHOOL (2011) LTD.</td>
+            <td class="amount">$3,916.00</td>
+        </tr>
+        <tr>
+            <td>INCLUSION BC SOCIETY</td>
+            <td class="amount">$3,000.00</td>
+        </tr>
+        <tr>
+            <td>PROJECT LITERACY KELOWNA SOCIETY</td>
+            <td class="amount">$500.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN COLLEGE</td>
+            <td class="amount">$357.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>

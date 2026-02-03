@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy and Climate Solutions - BC Government Spending</title>
+    <style>
+    :root {
+        --primary: #1a365d;
+        --primary-light: #2b4a7c;
+        --accent: #d69e2e;
+        --bg: #f7fafc;
+        --card-bg: #ffffff;
+        --text: #2d3748;
+        --text-light: #718096;
+        --border: #e2e8f0;
+        --hover: #edf2f7;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+    
+    nav {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    nav a:hover, nav a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+    
+    .search-box {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    
+    .search-box:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: var(--primary-light);
+    }
+    
+    .clear-btn {
+        padding: 0.75rem 1rem;
+        background: var(--hover);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .clear-btn:hover {
+        background: var(--border);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        white-space: nowrap;
+    }
+    
+    th:hover {
+        background: var(--primary-light);
+    }
+    
+    th::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+        background: var(--hover);
+    }
+    
+    .amount {
+        font-family: 'Consolas', 'Monaco', monospace;
+        text-align: right;
+        white-space: nowrap;
+    }
+    
+    .year-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .year-link {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .year-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .year-link h3 {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .year-link .amount {
+        font-size: 1.1rem;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .year-link .count {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .file-list {
+        list-style: none;
+    }
+    
+    .file-list li {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-list li:hover {
+        background: var(--hover);
+    }
+    
+    .file-list a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .file-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .file-size {
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+        font-size: 0.875rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #b45309;
+    }
+    
+    .other-projects {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .other-projects h4 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .project-links a:hover {
+        text-decoration: underline;
+    }
+    
+    .disclaimer {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #92400e;
+    }
+    
+    .disclaimer strong {
+        color: #78350f;
+    }
+    
+    .footer-disclaimer {
+        max-width: 800px;
+        margin: 0 auto 1rem auto;
+        padding: 1rem;
+        background: var(--hover);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .breadcrumb {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .ministry-badge {
+        display: inline-block;
+        background: var(--hover);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+        }
+        
+        nav {
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+        
+        nav a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        main {
+            padding: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BC Government Spending</h1>
+        <p>Energy and Climate Solutions</p>
+    </header>
+    
+    <nav><a href="../index.html">Home</a><a href="../all-spending/index.html">All Spending</a><a href="../by-year/index.html">By Year</a><a href="../by-ministry/index.html" class="active">By Ministry</a><a href="../verbatim-data/index.html">Verbatim Data</a></nav>
+    
+    <main>
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &gt; <a href="index.html">By Ministry</a> &gt; Energy and Climate Solutions
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Spending</h3>
+                <div class="value">$248.93M</div>
+            </div>
+            <div class="stat-card">
+                <h3>Recipients</h3>
+                <div class="value">168</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Recipients from Energy and Climate Solutions</h2>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Enter recipient name...">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>CLEARESULT CANADA INC.</td>
+            <td class="amount">$65,500,000.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA HYDRO AND POWER AUTHORITY</td>
+            <td class="amount">$55,898,787.00</td>
+        </tr>
+        <tr>
+            <td>FORTISBC INC.</td>
+            <td class="amount">$11,052,427.00</td>
+        </tr>
+        <tr>
+            <td>WESTCOAST ENERGY INC.</td>
+            <td class="amount">$7,067,762.00</td>
+        </tr>
+        <tr>
+            <td>EVR OPERATIONS LIMITED</td>
+            <td class="amount">$6,934,283.00</td>
+        </tr>
+        <tr>
+            <td>TOURMALINE OIL CORP.</td>
+            <td class="amount">$6,761,681.00</td>
+        </tr>
+        <tr>
+            <td>TAKU RIVER TLINGIT FIRST NATION</td>
+            <td class="amount">$5,055,970.00</td>
+        </tr>
+        <tr>
+            <td>RECEIVER GENERAL FOR CANADA</td>
+            <td class="amount">$5,000,000.00</td>
+        </tr>
+        <tr>
+            <td>PETRONAS ENERGY CANADA LTD.</td>
+            <td class="amount">$4,347,447.00</td>
+        </tr>
+        <tr>
+            <td>FORTISBC ENERGY INC.</td>
+            <td class="amount">$4,045,627.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN NATURAL RESOURCES LIMITED</td>
+            <td class="amount">$3,450,890.00</td>
+        </tr>
+        <tr>
+            <td>FRASER BASIN COUNCIL SOCIETY</td>
+            <td class="amount">$3,321,125.00</td>
+        </tr>
+        <tr>
+            <td>HOME PERFORMANCE STAKEHOLDER COUNCIL ASSOCIATION</td>
+            <td class="amount">$2,600,000.00</td>
+        </tr>
+        <tr>
+            <td>NORTHRIVER MIDSTREAM INC.</td>
+            <td class="amount">$2,543,087.00</td>
+        </tr>
+        <tr>
+            <td>MNP LLP</td>
+            <td class="amount">$2,500,000.00</td>
+        </tr>
+        <tr>
+            <td>FOOTHILLS PIPE LINES (SOUTH B.C.) LTD.</td>
+            <td class="amount">$2,475,056.00</td>
+        </tr>
+        <tr>
+            <td>OVINTIV CANADA ULC</td>
+            <td class="amount">$2,411,124.00</td>
+        </tr>
+        <tr>
+            <td>PACIFIC CANBRIAM ENERGY LIMITED</td>
+            <td class="amount">$2,328,978.00</td>
+        </tr>
+        <tr>
+            <td>TECK METALS LTD.</td>
+            <td class="amount">$2,311,965.00</td>
+        </tr>
+        <tr>
+            <td>PARKLAND REFINING (B.C.) LTD.</td>
+            <td class="amount">$1,969,158.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF PENTICTON</td>
+            <td class="amount">$1,937,335.00</td>
+        </tr>
+        <tr>
+            <td>CONUMA RESOURCES LIMITED</td>
+            <td class="amount">$1,834,260.00</td>
+        </tr>
+        <tr>
+            <td>HEIDELBERG MATERIALS CANADA LIMITED / MATERIAUX HEIDELBERG CANADA LIMITEE</td>
+            <td class="amount">$1,780,960.00</td>
+        </tr>
+        <tr>
+            <td>ALTAGAS LTD.</td>
+            <td class="amount">$1,780,352.00</td>
+        </tr>
+        <tr>
+            <td>UNIVERSITY OF BRITISH COLUMBIA</td>
+            <td class="amount">$1,712,431.00</td>
+        </tr>
+        <tr>
+            <td>KTUNAXA NATION COUNCIL SOCIETY</td>
+            <td class="amount">$1,707,569.00</td>
+        </tr>
+        <tr>
+            <td>CONOCOPHILLIPS CANADA (BRC) PARTNERSHIP</td>
+            <td class="amount">$1,639,929.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF NEW WESTMINSTER</td>
+            <td class="amount">$1,583,092.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA INSTITUTE OF TECHNOLOGY</td>
+            <td class="amount">$1,475,000.00</td>
+        </tr>
+        <tr>
+            <td>FUTURI POWER INC.</td>
+            <td class="amount">$1,400,000.00</td>
+        </tr>
+        <tr>
+            <td>ARC RESOURCES LTD.</td>
+            <td class="amount">$1,342,953.00</td>
+        </tr>
+        <tr>
+            <td>SHELL CANADA LIMITED</td>
+            <td class="amount">$1,318,457.00</td>
+        </tr>
+        <tr>
+            <td>BRITISH COLUMBIA ASSEMBLY OF FIRST NATIONS</td>
+            <td class="amount">$1,225,000.00</td>
+        </tr>
+        <tr>
+            <td>DOIG RIVER BAND</td>
+            <td class="amount">$1,212,000.00</td>
+        </tr>
+        <tr>
+            <td>TECK HIGHLAND VALLEY COPPER PARTNERSHIP</td>
+            <td class="amount">$1,120,874.00</td>
+        </tr>
+        <tr>
+            <td>OKANAGAN NATION ALLIANCE</td>
+            <td class="amount">$1,073,479.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE CITY OF NELSON</td>
+            <td class="amount">$987,740.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP NATION TRIBAL COUNCIL SOCIETY</td>
+            <td class="amount">$978,412.00</td>
+        </tr>
+        <tr>
+            <td>NOVA GAS TRANSMISSION LTD.</td>
+            <td class="amount">$956,954.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS MAJOR PROJECTS COALITION SOCIETY</td>
+            <td class="amount">$828,500.00</td>
+        </tr>
+        <tr>
+            <td>LAFARGE CANADA INC.</td>
+            <td class="amount">$747,457.00</td>
+        </tr>
+        <tr>
+            <td>GREEN MATTERS TECHNOLOGIES INC.</td>
+            <td class="amount">$735,000.00</td>
+        </tr>
+        <tr>
+            <td>CORPORATION OF THE DISTRICT OF SUMMERLAND</td>
+            <td class="amount">$711,661.00</td>
+        </tr>
+        <tr>
+            <td>HOWE SOUND PULP & PAPER CORPORATION</td>
+            <td class="amount">$685,236.00</td>
+        </tr>
+        <tr>
+            <td>MIRU SMART TECHNOLOGIES CORP.</td>
+            <td class="amount">$685,000.00</td>
+        </tr>
+        <tr>
+            <td>GIBRALTAR MINES LTD.</td>
+            <td class="amount">$658,571.00</td>
+        </tr>
+        <tr>
+            <td>WEST FRASER MILLS LTD.</td>
+            <td class="amount">$627,772.00</td>
+        </tr>
+        <tr>
+            <td>PATES KRUGER KAMLOOPS S.E.C</td>
+            <td class="amount">$624,024.00</td>
+        </tr>
+        <tr>
+            <td>PROGRESSIVE PLANET SOLUTIONS INC.</td>
+            <td class="amount">$602,569.00</td>
+        </tr>
+        <tr>
+            <td>SISA ENERGY LTD.</td>
+            <td class="amount">$600,000.00</td>
+        </tr>
+        <tr>
+            <td>EVECTRIX EV SOLUTIONS LTD.</td>
+            <td class="amount">$600,000.00</td>
+        </tr>
+        <tr>
+            <td>RIO TINTO ALCAN INC.</td>
+            <td class="amount">$571,722.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN STANDARDS ASSOCIATION</td>
+            <td class="amount">$550,000.00</td>
+        </tr>
+        <tr>
+            <td>KPMG LLP</td>
+            <td class="amount">$506,750.00</td>
+        </tr>
+        <tr>
+            <td>INNOVATE BC</td>
+            <td class="amount">$500,000.00</td>
+        </tr>
+        <tr>
+            <td>TIDEWATER MIDSTREAM AND INFRASTRUCTURE LTD</td>
+            <td class="amount">$449,957.00</td>
+        </tr>
+        <tr>
+            <td>DOMTAR INC.</td>
+            <td class="amount">$445,991.00</td>
+        </tr>
+        <tr>
+            <td>CREATIVE ENERGY VANCOUVER PLATFORMS INC.</td>
+            <td class="amount">$435,033.00</td>
+        </tr>
+        <tr>
+            <td>COPPER MOUNTAIN MINE (BC) LTD.</td>
+            <td class="amount">$422,004.00</td>
+        </tr>
+        <tr>
+            <td>GITXAALA NATION</td>
+            <td class="amount">$420,000.00</td>
+        </tr>
+        <tr>
+            <td>PEMBINA EMPRESS NGL PARTNERSHIP</td>
+            <td class="amount">$403,362.00</td>
+        </tr>
+        <tr>
+            <td>VANCOUVER AIRPORT AUTHORITY</td>
+            <td class="amount">$400,000.00</td>
+        </tr>
+        <tr>
+            <td>MERCER CELGAR LIMITED PARTNERSHIP</td>
+            <td class="amount">$379,296.00</td>
+        </tr>
+        <tr>
+            <td>NEWCREST RED CHRIS MINING LIMITED</td>
+            <td class="amount">$373,519.00</td>
+        </tr>
+        <tr>
+            <td>TOLKO INDUSTRIES LTD.</td>
+            <td class="amount">$369,118.00</td>
+        </tr>
+        <tr>
+            <td>MOWACHAHT/MUCHALAHT BAND</td>
+            <td class="amount">$301,172.00</td>
+        </tr>
+        <tr>
+            <td>COMMUNITY ENERGY ASSOCIATION</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>GEOSCIENCE BC SOCIETY</td>
+            <td class="amount">$300,000.00</td>
+        </tr>
+        <tr>
+            <td>DEASE RIVER DEVELOPMENT CORPORATION</td>
+            <td class="amount">$297,504.00</td>
+        </tr>
+        <tr>
+            <td>MURPHY OIL COMPANY LTD.</td>
+            <td class="amount">$287,505.00</td>
+        </tr>
+        <tr>
+            <td>UPPER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$270,000.00</td>
+        </tr>
+        <tr>
+            <td>CENOVUS ENERGY INC.</td>
+            <td class="amount">$263,846.00</td>
+        </tr>
+        <tr>
+            <td>THE CORPORATION OF THE CITY OF GRAND FORKS</td>
+            <td class="amount">$237,492.00</td>
+        </tr>
+        <tr>
+            <td>WEST COAST REDUCTION LTD.</td>
+            <td class="amount">$228,719.00</td>
+        </tr>
+        <tr>
+            <td>DUNKLEY LUMBER LTD.</td>
+            <td class="amount">$227,658.00</td>
+        </tr>
+        <tr>
+            <td>LAVINGTON PELLET LIMITED PARTNERSHIP</td>
+            <td class="amount">$225,612.00</td>
+        </tr>
+        <tr>
+            <td>PRETIUM RESOURCES INC.</td>
+            <td class="amount">$220,064.00</td>
+        </tr>
+        <tr>
+            <td>LOWER SIMILKAMEEN INDIAN BAND</td>
+            <td class="amount">$220,000.00</td>
+        </tr>
+        <tr>
+            <td>VERESEN MIDSTREAM GENERAL PARTNER INC.</td>
+            <td class="amount">$215,777.00</td>
+        </tr>
+        <tr>
+            <td>YOHO RESOURCES INC.</td>
+            <td class="amount">$201,497.00</td>
+        </tr>
+        <tr>
+            <td>CANLIN ENERGY CORPORATION</td>
+            <td class="amount">$187,104.00</td>
+        </tr>
+        <tr>
+            <td>LANTIC INC.</td>
+            <td class="amount">$183,043.00</td>
+        </tr>
+        <tr>
+            <td>STRATHCONA RESOURCES LTD.</td>
+            <td class="amount">$173,708.00</td>
+        </tr>
+        <tr>
+            <td>CIPA LUMBER CO LTD</td>
+            <td class="amount">$168,305.00</td>
+        </tr>
+        <tr>
+            <td>EHATTESAHT INDIAN BAND</td>
+            <td class="amount">$150,000.00</td>
+        </tr>
+        <tr>
+            <td>CARIBOO PULP & PAPER CO.</td>
+            <td class="amount">$148,129.00</td>
+        </tr>
+        <tr>
+            <td>LHOIST NORTH AMERICA OF CANADA, INC.</td>
+            <td class="amount">$147,641.00</td>
+        </tr>
+        <tr>
+            <td>AITKEN CREEK GAS STORAGE ULC</td>
+            <td class="amount">$143,801.00</td>
+        </tr>
+        <tr>
+            <td>COASTLAND WOOD INDUSTRIES LTD.</td>
+            <td class="amount">$143,063.00</td>
+        </tr>
+        <tr>
+            <td>STK'EMLUPSEMC SHUSWAP NATION</td>
+            <td class="amount">$140,000.00</td>
+        </tr>
+        <tr>
+            <td>NEW GOLD INC.</td>
+            <td class="amount">$136,527.00</td>
+        </tr>
+        <tr>
+            <td>UNITED INITIATORS CANADA LTD.</td>
+            <td class="amount">$128,591.00</td>
+        </tr>
+        <tr>
+            <td>MOLYCOP LTD.</td>
+            <td class="amount">$124,905.00</td>
+        </tr>
+        <tr>
+            <td>CANOE FOREST PRODUCTS LTD.</td>
+            <td class="amount">$123,996.00</td>
+        </tr>
+        <tr>
+            <td>SMITHERS PELLET LIMITED PARTNERSHIP</td>
+            <td class="amount">$123,538.00</td>
+        </tr>
+        <tr>
+            <td>ASSOCIATION OF KOOTENAY AND BOUNDARY LOCAL GOVERNMENTS</td>
+            <td class="amount">$121,057.00</td>
+        </tr>
+        <tr>
+            <td>WEYERHAEUSER COMPANY LIMITED</td>
+            <td class="amount">$120,270.00</td>
+        </tr>
+        <tr>
+            <td>HUPACASATH FIRST NATION</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>TAHLTAN CENTRAL GOVERNMENT</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>SAULTEAU FIRST NATIONS</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>CAYOOSE CREEK INDIAN BAND</td>
+            <td class="amount">$120,000.00</td>
+        </tr>
+        <tr>
+            <td>TSILHQOT'IN NATIONAL GOVERNMENT</td>
+            <td class="amount">$110,000.00</td>
+        </tr>
+        <tr>
+            <td>CLEAN ENERGY ASSOCIATION OF BRITISH COLUMBIA</td>
+            <td class="amount">$110,000.00</td>
+        </tr>
+        <tr>
+            <td>VERMILION ENERGY INC.</td>
+            <td class="amount">$109,267.00</td>
+        </tr>
+        <tr>
+            <td>QUATSINO FIRST NATION</td>
+            <td class="amount">$108,000.00</td>
+        </tr>
+        <tr>
+            <td>FIRST NATIONS ENERGY AND MINING SOCIETY</td>
+            <td class="amount">$98,540.00</td>
+        </tr>
+        <tr>
+            <td>PINNACLE RENEWABLE ENERGY INC.</td>
+            <td class="amount">$98,073.00</td>
+        </tr>
+        <tr>
+            <td>INTERFOR CORPORATION</td>
+            <td class="amount">$95,994.00</td>
+        </tr>
+        <tr>
+            <td>BELIEVECO:PARTNERS LTD.</td>
+            <td class="amount">$89,000.00</td>
+        </tr>
+        <tr>
+            <td>HOUSTON PELLET LIMITED PARTNERSHIP</td>
+            <td class="amount">$82,868.00</td>
+        </tr>
+        <tr>
+            <td>CITXW NLAKA'PAMUX ASSEMBLY</td>
+            <td class="amount">$82,000.00</td>
+        </tr>
+        <tr>
+            <td>LOWER NICOLA INDIAN BAND</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>KOOTENAY ROCKIES TOURISM ASSOCIATION</td>
+            <td class="amount">$80,000.00</td>
+        </tr>
+        <tr>
+            <td>SOUTH COAST BRITISH COLUMBIA TRANSPORTATION AUTHORITY</td>
+            <td class="amount">$75,000.00</td>
+        </tr>
+        <tr>
+            <td>HALFWAY RIVER FIRST NATION</td>
+            <td class="amount">$74,800.00</td>
+        </tr>
+        <tr>
+            <td>BC HOUSING MANAGEMENT COMMISSION</td>
+            <td class="amount">$69,131.00</td>
+        </tr>
+        <tr>
+            <td>ALLIANCE PIPELINE LIMITED PARTNERSHIP</td>
+            <td class="amount">$64,778.00</td>
+        </tr>
+        <tr>
+            <td>HOUWELING NURSERIES LTD.</td>
+            <td class="amount">$64,582.00</td>
+        </tr>
+        <tr>
+            <td>BLUE SKY RESOURCES LTD.</td>
+            <td class="amount">$64,099.00</td>
+        </tr>
+        <tr>
+            <td>NISGA'A LISIMS GOVERNMENT</td>
+            <td class="amount">$62,000.00</td>
+        </tr>
+        <tr>
+            <td>HARVEST OPERATIONS CORP.</td>
+            <td class="amount">$60,787.00</td>
+        </tr>
+        <tr>
+            <td>WHITECAP RESOURCES INC.</td>
+            <td class="amount">$54,298.00</td>
+        </tr>
+        <tr>
+            <td>CANADIAN FOREST PRODUCTS LTD.</td>
+            <td class="amount">$53,133.00</td>
+        </tr>
+        <tr>
+            <td>TLL YAHDA ENERGY LTD.</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>MCLEOD LAKE INDIAN BAND</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>LIARD FIRST NATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>NUXALK NATION</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>DEASE RIVER BAND COUNCIL</td>
+            <td class="amount">$50,000.00</td>
+        </tr>
+        <tr>
+            <td>SODA CREEK INDIAN BAND</td>
+            <td class="amount">$49,000.00</td>
+        </tr>
+        <tr>
+            <td>TIDEWATER RENEWABLES LTD.</td>
+            <td class="amount">$48,189.00</td>
+        </tr>
+        <tr>
+            <td>SHUSWAP INDIAN BAND</td>
+            <td class="amount">$47,000.00</td>
+        </tr>
+        <tr>
+            <td>WILLIAMS LAKE FIRST NATION</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>HEILTSUK CLIMATE ACTION</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>WHISPERING PINES/CLINTON INDIAN BAND</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>HIGH BAR FIRST NATION</td>
+            <td class="amount">$45,000.00</td>
+        </tr>
+        <tr>
+            <td>ADAMS LAKE INDIAN BAND</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>PENTICTON INDIAN BAND</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO ECONOMIC DEVELOPMENT CORP.</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>LHTAKO DENE NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>SKWAH INDIAN BAND 4</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>TAKLA NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>CHESLATTA CARRIER NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>SPLATSIN FIRST NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>YEKOOCHE FIRST NATION</td>
+            <td class="amount">$40,000.00</td>
+        </tr>
+        <tr>
+            <td>DAYLU DENA COUNCIL</td>
+            <td class="amount">$35,000.00</td>
+        </tr>
+        <tr>
+            <td>WILDSIGHT</td>
+            <td class="amount">$31,924.00</td>
+        </tr>
+        <tr>
+            <td>KELT EXPLORATION (LNG) LTD.</td>
+            <td class="amount">$31,434.00</td>
+        </tr>
+        <tr>
+            <td>BONAPARTE FIRST NATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>TS'KW'AYLAXW FIRST NATION</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>KLUSKUS INDIAN BAND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>BRIDGE RIVER INDIAN BAND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>LITTLE SHUSWAP LAKE INDIAN BAND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>KANAKA BAR INDIAN BAND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>ULKATCHO INDIAN BAND</td>
+            <td class="amount">$30,000.00</td>
+        </tr>
+        <tr>
+            <td>MALAHAT BAND COUNCIL</td>
+            <td class="amount">$29,930.00</td>
+        </tr>
+        <tr>
+            <td>PRODUITS KRUGER INC. KRUGER PRODUCTS INC.</td>
+            <td class="amount">$29,459.00</td>
+        </tr>
+        <tr>
+            <td>NAZKO FIRST NATION</td>
+            <td class="amount">$20,000.00</td>
+        </tr>
+        <tr>
+            <td>CARCROSS/TAGISH FIRST NATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>TESLIN TLINGIT COUNCIL</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>GITGA'AT FIRST NATION</td>
+            <td class="amount">$15,000.00</td>
+        </tr>
+        <tr>
+            <td>ALEXANDRIA INDIAN BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>LAKE BABINE NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>TSAY KEH DENE BAND</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>SQUAMISH NATION</td>
+            <td class="amount">$10,000.00</td>
+        </tr>
+        <tr>
+            <td>XAXLI'P FIRST NATION</td>
+            <td class="amount">$9,280.00</td>
+        </tr>
+        <tr>
+            <td>REVENUE REFUNDS</td>
+            <td class="amount">$6,713.00</td>
+        </tr>
+        <tr>
+            <td>PETERS INDIAN BAND</td>
+            <td class="amount">$5,000.00</td>
+        </tr>
+        <tr>
+            <td>HUU–AY–AHT FIRST NATIONS</td>
+            <td class="amount">$4,964.00</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    
+    <footer>
+        <div class="footer-disclaimer">
+            <strong>Disclaimer:</strong> This is an independent hobby project and is not affiliated with, endorsed by, or connected to the Government of British Columbia. 
+            The data presented here is for informational purposes only and should not be used for legal, financial, or official purposes. 
+            For accurate and authoritative information, please refer to the official 
+            <a href="https://www2.gov.bc.ca/gov/content/governments/finances/public-accounts" target="_blank" rel="noopener">BC Government Public Accounts</a>.
+        </div>
+        <div class="other-projects">
+            <h4>Other Data Projects</h4>
+            <div class="project-links">
+                <a href="https://thereclamare.github.io/CDN_Govt_Spending/" target="_blank" rel="noopener">Canadian Federal Government Spending</a>
+                <a href="https://thereclamare.github.io/cdn-fn-wealth/" target="_blank" rel="noopener">Canadian First Nations Exposed Wealth</a>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">Data sourced from BC Government Public Accounts</p>
+    </footer>
+    
+    
+    <script>
+    function initTable() {
+        const table = document.querySelector('table');
+        if (!table) return;
+        
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Sorting
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                const isAsc = header.classList.contains('sort-asc');
+                
+                headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+                
+                const sortedRows = rows.sort((a, b) => {
+                    const aVal = a.cells[index].textContent.trim();
+                    const bVal = b.cells[index].textContent.trim();
+                    
+                    // Check if numeric (amount column)
+                    const aNum = parseFloat(aVal.replace(/[$,]/g, ''));
+                    const bNum = parseFloat(bVal.replace(/[$,]/g, ''));
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                sortedRows.forEach(row => tbody.appendChild(row));
+            });
+        });
+        
+        // Search with button
+        const searchBox = document.querySelector('.search-box');
+        const searchBtn = document.querySelector('.search-btn');
+        const clearBtn = document.querySelector('.clear-btn');
+        
+        function doSearch() {
+            const term = searchBox.value.toLowerCase().trim();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        }
+        
+        function clearSearch() {
+            searchBox.value = '';
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', doSearch);
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearSearch);
+        }
+        
+        // Also allow Enter key to trigger search
+        if (searchBox) {
+            searchBox.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initTable);
+    </script>
+</body>
+</html>
